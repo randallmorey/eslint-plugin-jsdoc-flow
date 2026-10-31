@@ -1,0 +1,54 @@
+{
+  "name": "eslint-plugin-jsdoc-flow",
+  "version": "0.1.0",
+  "description": "ESLint rules that flow JSDoc text: consistent sentence spacing, line breaks that never strand a word, and aligned tag descriptions. Autofixable.",
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin",
+    "jsdoc",
+    "comments",
+    "reflow",
+    "formatting"
+  ],
+  "license": "MIT",
+  "author": "",
+  "type": "module",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "lint": "eslint . && prettier . --check && tsc -p tsconfig.json",
+    "lint:fix": "eslint . --fix && prettier . --write",
+    "test": "node --test"
+  },
+  "peerDependencies": {
+    "eslint": ">= 9"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@types/node": "^20.19.43",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-ember": "^12.7.5",
+    "eslint-plugin-jsdoc": "^63.3.3",
+    "eslint-plugin-n": "^17.24.0",
+    "globals": "^16.5.0",
+    "prettier": "^3.9.6",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.66.0"
+  },
+  "engines": {
+    "node": ">= 20.19.0"
+  }
+}
