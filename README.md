@@ -8,21 +8,35 @@ are autofixable, and they only change whitespace or line prefixes.
 ```js
 // Before
 /**
- * Saves the note. Its title and body are written at once, so a reader never
- * sees
- * one without the other.
+ *  Saves the note. Its title and body are written at once, so
+ * a reader never sees
+ * one without the  other. Returns a promise.
  *
- * @param {Note} note - the note to save, which must already have an ID, or
- *   it throws
+ * It throws if :
+ * -  the note has no ID, which a new note gets only once it's been
+ * added to a notebook
+ * - the store is read-only
+ *
+ * @param {Note} note -  the note to save
+ * @param {SaveOptions} [options] - how long to wait: in milliseconds, or
+ *   forever if it's unset
+ * @returns {Promise<void>} resolves once both are written
  */
 
 // After `eslint --fix`
 /**
- * Saves the note.  Its title and body are written at once, so a reader never
- * sees one without the other.
+ * Saves the note.  Its title and body are written at once, so a reader
+ * never sees one without the other.  Returns a promise.
  *
- * @param {Note} note - the note to save, which must already have an ID,
- *                      or it throws
+ * It throws if:
+ * - the note has no ID, which a new note gets only once it's been
+ *   added to a notebook
+ * - the store is read-only
+ *
+ * @param {Note} note - the note to save
+ * @param {SaveOptions} [options] - how long to wait:  in milliseconds,
+ *                                  or forever if it's unset
+ * @returns {Promise<void>} resolves once both are written
  */
 ```
 
