@@ -6,7 +6,7 @@ import ember from 'eslint-plugin-ember/recommended';
 import { block } from '../helpers.js';
 
 // A narrow width keeps the inputs short:  ` * ` leaves 37 columns of text.
-const narrow = [{ width: 40 }];
+const narrow = [{ width: 42 }];
 
 const errors = [{ messageId: 'break' }];
 
@@ -61,7 +61,7 @@ export const valid = [
   },
   {
     name: 'with `shortWords` off, `a` may end a line',
-    options: [{ width: 40, shortWords: false }],
+    options: [{ width: 42, shortWords: false }],
     code: block('aaaa bbbb cccc dddd eeee ffff gggg a', 'note and more.'),
   },
   {
@@ -76,7 +76,7 @@ export const valid = [
   },
   {
     name: 'with `hang` off, a comma may not hang past the width',
-    options: [{ width: 40, hang: false }],
+    options: [{ width: 42, hang: false }],
     code: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hh, iiii jjjj kkkk.'),
   },
   {
@@ -99,22 +99,22 @@ export const valid = [
   },
   {
     name: 'with `widows` off, a short last line may stay',
-    options: [{ width: 40, widows: 0 }],
+    options: [{ width: 42, widows: 0 }],
     code: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hh i.'),
   },
   {
     name: 'with `widows` on, a last line that is long enough stays',
-    options: [{ width: 40, widows: 0.25 }],
+    options: [{ width: 42, widows: 0.25 }],
     code: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hhhh iiii.'),
   },
   {
     name: 'with `widows` on, a one-line paragraph stays',
-    options: [{ width: 40, widows: 1 }],
+    options: [{ width: 42, widows: 1 }],
     code: block('Short one.'),
   },
   {
     name: "with `widows` on, a tag's last line may not end right of the line before it",
-    options: [{ width: 40, widows: 0.5 }],
+    options: [{ width: 42, widows: 0.5 }],
     code: block(
       '@param name - aaaa bbbb cccc dddd',
       '              eeee ffff.',
@@ -216,13 +216,13 @@ export const invalid = [
   },
   {
     name: 'a number and `.` never moves to the start of a line, where it would read as a list item',
-    options: [{ width: 40, orphans: { sentence: false }, widows: 0 }],
+    options: [{ width: 42, orphans: { sentence: false }, widows: 0 }],
     code: block('aaaa bbbb cccc dddd eeee ffff since 2022.  Then more.'),
     output: block('aaaa bbbb cccc dddd eeee ffff', 'since 2022.  Then more.'),
   },
   {
     name: 'a word starting with `|` never moves to the start of a line, where it would read as a table row',
-    options: [{ width: 40, orphans: { sentence: false }, widows: 0 }],
+    options: [{ width: 42, orphans: { sentence: false }, widows: 0 }],
     code: block('aaaa bbbb cccc dddd eeee ffff ggggg || hhhh.'),
     output: block('aaaa bbbb cccc dddd eeee ffff', 'ggggg || hhhh.'),
   },
@@ -356,7 +356,7 @@ export const invalid = [
   },
   {
     name: 'no glue across a sentence end',
-    options: [{ width: 40, widows: 0 }],
+    options: [{ width: 42, widows: 0 }],
     code: block('aaaa bbbb cccc dddd eeee ffff gggg. Ok.'),
     output: block('aaaa bbbb cccc dddd eeee ffff gggg.', 'Ok.'),
   },
@@ -408,21 +408,21 @@ export const invalid = [
   {
     name: 'with `orphans.sentence` off, no glue keeps a sentence end together',
     errors: [{ messageId: 'join' }],
-    options: [{ width: 40, orphans: { sentence: false }, widows: 0 }],
+    options: [{ width: 42, orphans: { sentence: false }, widows: 0 }],
     code: block('aaaa bbbb cccc dddd eeee ffff', 'gggg hhhh.'),
     output: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hhhh.'),
   },
   {
     name: 'with `orphans.clause` off, a single word may follow a comma',
     errors: [{ messageId: 'join' }],
-    options: [{ width: 40, orphans: { clause: false } }],
+    options: [{ width: 42, orphans: { clause: false } }],
     code: block('aaaa bbbb cccc dddd eeee ffff,', 'gggg hhhh iiii jjjj.'),
     output: block('aaaa bbbb cccc dddd eeee ffff, gggg', 'hhhh iiii jjjj.'),
   },
   {
     name: 'with `orphans.paren` off, the first word inside `(` may end a line',
     errors: [{ messageId: 'join' }],
-    options: [{ width: 40, orphans: { paren: false } }],
+    options: [{ width: 42, orphans: { paren: false } }],
     code: block('aaaa bbbb cccc dddd eeee ffff', '(gggg hhhh iiii) jjjj kkkk.'),
     output: block(
       'aaaa bbbb cccc dddd eeee ffff (gggg',
@@ -432,7 +432,7 @@ export const invalid = [
   {
     name: 'with `names` off, a line may break between `Mr.` and a name',
     errors: [{ messageId: 'join' }],
-    options: [{ width: 40, names: false }],
+    options: [{ width: 42, names: false }],
     code: block('aaaa bbbb cccc dddd eeee ffff gg', 'Mr. Smith hh.'),
     output: block('aaaa bbbb cccc dddd eeee ffff gg Mr.', 'Smith hh.'),
   },
@@ -533,21 +533,21 @@ export const invalid = [
   },
   {
     name: 'with `widows` on, words move down until the last line is long enough',
-    options: [{ width: 40, widows: 0.5 }],
+    options: [{ width: 42, widows: 0.5 }],
     errors,
     code: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hhhh iiii.'),
     output: block('aaaa bbbb cccc dddd eeee', 'ffff gggg hhhh iiii.'),
   },
   {
     name: 'with `widows` on, the last line may not end right of the line before it',
-    options: [{ width: 40, widows: 1 }],
+    options: [{ width: 42, widows: 1 }],
     errors,
     code: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hhhh iiii.'),
     output: block('aaaa bbbb cccc dddd eeee', 'ffff gggg hhhh iiii.'),
   },
   {
     name: 'with `widows` on, only the last two lines change',
-    options: [{ width: 40, widows: 0.5 }],
+    options: [{ width: 42, widows: 0.5 }],
     errors,
     code: block(
       'aaaa bbbb cccc dddd eeee ffff gggg',
@@ -562,7 +562,7 @@ export const invalid = [
   },
   {
     name: "with `widows` on, a list item's last wrapped line is long enough",
-    options: [{ width: 40, widows: 0.5 }],
+    options: [{ width: 42, widows: 0.5 }],
     errors,
     code: block(
       'Text:',

@@ -121,7 +121,7 @@ them.
 **Options:**
 
 - `width`: the widest a line may be, its `*` prefix and indentation included.
-  Defaults to `78`.
+  Defaults to `80`.
 - `orphans`: `{ sentence, clause, paren }`, each `true` by default. Set one
   to `false` to turn off that limit below.
 - `names`: `true` by default. Set it to `false` to let a line break between
@@ -168,7 +168,7 @@ since they point at each gap and each line.
   has to fit within `width`, since it comes after the punctuation.
 - `widows`: a paragraph's last line has at least that fraction of `width` in
   text, not counting its `*` prefix and indentation, so with `0.15` and a
-  `width` of 78, at least 12 characters. Words move down to it from the line
+  `width` of 80, at least 12 characters. Words move down to it from the line
   before it, one at a time, until it does, but never so far that it ends
   right of the line before it, counting where each line ends on the page. If
   it can't get long enough, it gets as long as that allows. Only the last two
@@ -446,7 +446,7 @@ fixSpacing('/** One. Two  three. */', ''); // '/** One.  Two three. */'
 fixEdges('/**  One.   */', ''); // '/** One. */'
 ```
 
-- `reflowComment(text, indent, width = 78, options = {})` returns the
+- `reflowComment(text, indent, width = 80, options = {})` returns the
   reflowed block, or `null` if its form isn't one it handles. `options` takes
   `orphans`, `names`, `shortWords`, `hang` and `widows`, as the `reflow` rule
   does.

@@ -63,7 +63,7 @@ export interface ReflowOptions {
  *
  * @param text - the block, from its `/**` to its `*\/`
  * @param indent - the whitespace before the block on its line
- * @param width - the widest a line may be, prefix included (default 78)
+ * @param width - the widest a line may be, prefix included (default 80)
  * @param options - the limits on where a line may break to turn off
  * @returns the reflowed block, or null if its form isn't one this handles
  */
