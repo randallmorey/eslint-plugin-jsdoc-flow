@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-jsdoc-flow",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "ESLint rules that flow JSDoc text: consistent sentence spacing, line breaks that never strand a word, and aligned tag descriptions. Autofixable.",
   "repository": {
     "type": "git",

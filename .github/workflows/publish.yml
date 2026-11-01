@@ -2,27 +2,60 @@
 name: Publish
 on:
   push:
-    tags: ['v*']
+    branches: [main]
 
 permissions:
-  contents: write # create the GitHub Release
+  contents: write # push the tag and create the GitHub Release
   id-token: write # OIDC for npm trusted publishing
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-      - run: npm install -g npm@latest
-      - run: npm ci
-      - run: npm run lint
-      - run: npm test
-      - name: Tag must match package.json
-        run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
-      - run: npm publish
-      - run: gh release create "$GITHUB_REF_NAME" --generate-notes --verify-tag
+      - uses: actions/checkout@v6
+      - name: Compare package.json version to latest release
+        id: version
+        run: |
+          tag="v$(node -p "require('./package.json').version")"
+          latest="$(gh release view --json tagName --jq .tagName 2>/dev/null || true)"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          if [ "$tag" = "$latest" ]; then
+            echo "release=false" >> "$GITHUB_OUTPUT"
+            echo "$tag is already the latest release; skipping."
+          else
+            echo "release=true" >> "$GITHUB_OUTPUT"
+            echo "Releasing $tag (latest release: ${latest:-none})."
+          fi
         env:
           GH_TOKEN: ${{ github.token }}
+      - uses: actions/setup-node@v6
+        if: steps.version.outputs.release == 'true'
+        with:
+          node-version: 24
+      - if: steps.version.outputs.release == 'true'
+        run: npm install -g npm@latest
+      - if: steps.version.outputs.release == 'true'
+        run: npm ci
+      - if: steps.version.outputs.release == 'true'
+        run: npm run lint
+      - if: steps.version.outputs.release == 'true'
+        run: npm test
+      - name: Create tag
+        if: steps.version.outputs.release == 'true'
+        run: |
+          git tag "$TAG" "$GITHUB_SHA"
+          git push origin "refs/tags/$TAG"
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+      - name: Create release
+        if: steps.version.outputs.release == 'true'
+        run: gh release create "$TAG" --generate-notes --verify-tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+      - if: steps.version.outputs.release == 'true'
+        run: npm publish
