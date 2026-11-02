@@ -37,6 +37,7 @@ import {
   singleSettled,
   singleValid,
 } from './cases/single-line.js';
+import { verbatimCases } from './cases/verbatim.js';
 
 // All the rules together:  `--fix` with all of them, or with any one and then
 // the rest, settles on the same text, which no rule reports (except the
@@ -68,6 +69,7 @@ const configFor = (c, rules) => [
   {
     files: ['**/*.*'],
     ...(c.languageOptions && { languageOptions: c.languageOptions }),
+    ...(c.settings && { settings: c.settings }),
     plugins: { 'jsdoc-flow': plugin },
     rules: Object.fromEntries(
       rules.map((r) => [`jsdoc-flow/${r}`, ['warn', ...optionsFor(c, r)]]),
@@ -106,6 +108,7 @@ for (const c of [
   ...singleInvalid,
   ...blockValid,
   ...blockInvalid,
+  ...verbatimCases,
   ...[...noStart, ...noEnd].flatMap((token) =>
     guardBlocks(token).flatMap((code, k) =>
       convergeWidths.map((width) => ({
@@ -142,8 +145,10 @@ for (const c of [...typeValid, ...blockValid]) {
 }
 
 // A one-liner that `single-line` exempts survives `--fix` with all the rules:
-// on one line, unless `reflow` has its own reason to expand it.
-for (const c of singleSettled) {
+// on one line, unless `reflow` has its own reason to expand it.  A block with
+// an ignore comment or a verbatim tag survives it as it is, and one with only
+// what looks like them is fixed as usual.
+for (const c of [...singleSettled, ...verbatimCases]) {
   test(`all rules settle:  ${c.name}`, () => {
     assert.equal(fixWith(c, RULES, c.code), c.output ?? c.code);
   });

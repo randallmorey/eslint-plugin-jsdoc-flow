@@ -100,7 +100,81 @@ The rules check every `/** ... */` block that sits alone on its lines, in any
 file ESLint can parse: JavaScript, TypeScript (with `typescript-eslint`'s
 parser), and Ember `.gjs`/`.gts` files (with `eslint-plugin-ember`'s parser,
 which leaves comments inside `<template>` alone). Ordinary `/* */` and `//`
-comments aren't touched.
+comments aren't touched, and neither are the blocks you've
+[asked them to leave alone](#leaving-a-block-alone).
+
+## Leaving a block alone
+
+Some blocks shouldn't be flowed at all, such as a license header or an ASCII
+diagram. An ignore comment or a verbatim tag makes all fourteen rules skip a
+whole block, so none of them reports it and `--fix` doesn't change it. They all
+skip the same blocks, so `--fix` still settles on the same text whichever rule
+fixes first.
+
+### Ignore comment
+
+Put `// jsdoc-flow-ignore` or `/* jsdoc-flow-ignore */` on the line right above
+a block. Text may follow the marker, such as the reason for it:
+
+```js
+// jsdoc-flow-ignore: ASCII diagram
+/**
+ * client --> server
+ *   ^          |
+ *   +----------+
+ */
+```
+
+It works like `prettier-ignore`. Only the next block is skipped, and a blank
+line, code or another comment between the marker and the block breaks the link.
+The comment has to be on one line, with nothing else on that line, so
+`foo(); // jsdoc-flow-ignore` doesn't count, and neither does a longer name such
+as `jsdoc-flow-ignored`. A `/** jsdoc-flow-ignore */` is a JSDoc block, not a
+marker.
+
+`// eslint-disable-next-line` can't do this, since the rules report on a block's
+interior lines. ESLint then flags the directive as unused, and `--fix` removes
+it.
+
+### `verbatimTags`
+
+A block with a line that begins with one of these tags is left entirely alone.
+That includes any text above the tag and a one-line form such as
+`/** @license MIT */`, since license and preserve comments often have the tag at
+the top or the bottom with the text around it. Set them in ESLint's shared
+settings, which every rule reads:
+
+```js
+// eslint.config.js
+import jsdocFlow from 'eslint-plugin-jsdoc-flow';
+
+export default [
+  jsdocFlow.configs.recommended,
+  {
+    settings: {
+      'jsdoc-flow': {
+        verbatimTags: ['license', 'preserve', 'copyright', 'diagram'],
+      },
+    },
+  },
+];
+```
+
+- It defaults to `['license', 'preserve', 'copyright']`.
+- A value replaces the default rather than adding to it, so the list above names
+  the defaults again, and `[]` opts out.
+- Names have no `@`, and match whole and case-sensitively, as `allowTags` does:
+  `license` matches neither `@licenses` nor `@License`.
+- A value that isn't an array of unique, valid names throws an error, since
+  ESLint doesn't validate `settings`.
+
+Only a real tag line counts, as the rules read one elsewhere. A tag name inside
+a fence or other code, in a list item, or later on a line doesn't make a block
+verbatim, so neither does the `@license` of `/** See @license. */`. Nor does
+wording such as `Copyright (c) Example.` without a tag, so such a block needs an
+ignore comment. `@example` isn't on the list by default, and its usual handling
+keeps only its own lines as they are, but naming it makes its whole block
+verbatim like any other tag.
 
 ## Rules
 
@@ -540,7 +614,8 @@ The other rules still fix an exempt block's whitespace, on its one line, but
 `allowTags` turns off only this rule. `reflow` still expands a one-line block
 that doesn't fit, or that it keeps as it is, such as `@example` or a heading,
 and an expanded block stays expanded. A `@ts-*` directive is the only block
-`reflow` keeps on one line however wide it is.
+`reflow` keeps on one line however wide it is. To have every rule leave a block
+alone, use [`verbatimTags`](#verbatimtags) instead.
 
 ## API
 
@@ -572,6 +647,10 @@ fixEdges('/**  One.   */', ''); // '/** One. */'
 
 `text` is the block from its `/**` to its `*/`, and `indent` is the
 whitespace before it on its line.
+
+These functions format whatever block they're given. They don't read ESLint's
+settings, so `verbatimTags` and the ignore comment apply only to the rules, and
+a caller that wants a block kept as it is shouldn't pass it to them.
 
 ## License
 
