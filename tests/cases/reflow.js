@@ -10,7 +10,77 @@ const narrow = [{ width: 42 }];
 
 const errors = [{ messageId: 'break' }];
 
+// Blocks with a multi-line or deeply nested `{Type}`, which every rule leaves
+// as they are.
+export const typeValid = [
+  {
+    name: 'a multi-line `{Type}` is kept as it is',
+    code: block(
+      '@typedef {{',
+      '  hasNoTypes: boolean,',
+      '  maxNamedTagLength: number',
+      '}} TypelessInfo',
+    ),
+  },
+  {
+    name: 'a multi-line union keeps its lines that start with `|`',
+    code: block(
+      '@typedef {[',
+      '  (',
+      '    | boolean',
+      '    | {',
+      '      grouping?: boolean;',
+      '    }',
+      '  )?',
+      ']} RuleOptions',
+    ),
+  },
+  {
+    name: 'a multi-line `{Type}` with a description after its closing brace',
+    code: block(
+      '@param {{',
+      '  mergeSettings?: boolean',
+      '}} options - how to merge them, which is long enough to wrap onto one',
+      '             continuation line',
+      '@returns {{',
+      '  a: string',
+      '}} the result, which is long enough to wrap onto one continuation line,',
+      '   like the one above',
+    ),
+  },
+  {
+    name: 'a multi-line `{Type}` that closes after text on its closing line',
+    code: block('@param {{', '  a: string', '}[] | null} name - the name'),
+  },
+  {
+    name: 'a multi-line `{Type}` that opens on the line after its tag',
+    code: block('@param', '{{', '  a: string', '}} name - the name'),
+  },
+  {
+    name: 'a multi-line `{Type}` may hold blank lines and what looks like code',
+    code: block(
+      '@typedef {{',
+      '  a: string,',
+      '',
+      '      b:   string,',
+      '  - c',
+      '}} Name',
+      '',
+      'A paragraph after it.',
+    ),
+  },
+  {
+    name: "a tag's multi-line `{...}` needn't be a type",
+    code: block('@import {', '  a,', '  b', "} from 'x'"),
+  },
+  {
+    name: 'a `{Type}` nested three levels deep is one token of the head',
+    code: block('@param {{ a: { b: { c: string } } }} name - the name'),
+  },
+];
+
 export const valid = [
+  ...typeValid,
   {
     name: "a code span's spaces are kept as they are",
     code: block('Matches `-  x` and `a   b`, but not `c d`.'),
@@ -947,6 +1017,61 @@ export const invalid = [
       { messageId: 'join', line: 2, column: 29, endLine: 3, endColumn: 8 },
       { messageId: 'join', line: 5, column: 9, endLine: 6, endColumn: 8 },
     ],
+  },
+  {
+    name: 'the text after a multi-line `{Type}` is flowed',
+    errors: [{ messageId: 'join' }],
+    code: block(
+      '@param {{',
+      '  a: string',
+      '}} name - the name,',
+      '          which goes on',
+    ),
+    output: block(
+      '@param {{',
+      '  a: string',
+      '}} name - the name, which goes on',
+    ),
+  },
+  {
+    name: 'the text after a multi-line `{Type}` wraps under its description',
+    code: block(
+      '@typedef {{',
+      '  a: string',
+      '}} Name - the name, which is long enough that it has to wrap onto another line',
+    ),
+    output: block(
+      '@typedef {{',
+      '  a: string',
+      '}} Name - the name, which is long enough that it has to wrap onto',
+      '          another line',
+    ),
+  },
+  {
+    name: 'a wide head after a multi-line `{Type}` puts its description below',
+    code: block(
+      '@param {{',
+      '  a: string',
+      '}[] | null} aVeryLongNameThatGoesOnAndOnAndOnAndOn - the name, which has to wrap',
+    ),
+    output: block(
+      '@param {{',
+      '  a: string',
+      '}[] | null} aVeryLongNameThatGoesOnAndOnAndOnAndOn -',
+      '  the name, which has to wrap',
+    ),
+  },
+  {
+    name: "a `{` that doesn't close before the next tag is flowed as text",
+    errors: [{ messageId: 'join' }],
+    code: block('@param {name - the', '  name', '@param other - } the other'),
+    output: block('@param {name - the name', '@param other - } the other'),
+  },
+  {
+    name: 'a `{@link ...}` across lines is no type, and is joined',
+    errors: [{ messageId: 'join' }],
+    code: block('@see {@link Foo', '  bar} and more'),
+    output: block('@see {@link Foo bar} and more'),
   },
 ].map((c) => ({ errors, ...c }));
 

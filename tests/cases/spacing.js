@@ -224,6 +224,20 @@ export const spacingValid = [
       '',
     ].join('\n'),
   },
+  {
+    name: 'the gaps inside a multi-line `{Type}` are kept',
+    code: block(
+      '@param {{  a:  string,',
+      '  mergeSettings?: boolean,  b. c  d',
+      '  ( e ) ,',
+      '  -   f',
+      '}} name - the name',
+    ),
+  },
+  {
+    name: 'the gaps inside a `{Type}` nested three levels deep are kept',
+    code: block('@param {{ a: { b: { c: string } } }} name - the name'),
+  },
 ];
 
 const errors = (...ids) => ids.map((messageId) => ({ messageId }));
@@ -343,6 +357,12 @@ export const sentenceInvalid = [
     ].join('\n'),
     errors: errors('sentence'),
   },
+  {
+    name: 'the description after a multi-line `{Type}`',
+    code: block('@param {{', '  a: string', '}} name - One. Two.'),
+    output: block('@param {{', '  a: string', '}} name - One.  Two.'),
+    errors: errors('sentence'),
+  },
 ];
 
 export const colonInvalid = [
@@ -382,6 +402,12 @@ export const colonInvalid = [
     name: 'a one-liner, nested',
     code: 'class A {\n  /** Short text: more text. */\n  x = 1;\n}\n',
     output: 'class A {\n  /** Short text:  more text. */\n  x = 1;\n}\n',
+    errors: errors('colon'),
+  },
+  {
+    name: 'the description after a multi-line `{Type}`, but not inside it',
+    code: block('@param {{', '  a: string', '}} name - one: two'),
+    output: block('@param {{', '  a: string', '}} name - one:  two'),
     errors: errors('colon'),
   },
 ];
@@ -424,6 +450,12 @@ export const wordInvalid = [
     code: 'class A {\n  /** Short  text. */\n  x = 1;\n}\n',
     output: 'class A {\n  /** Short text. */\n  x = 1;\n}\n',
     errors: errors('word'),
+  },
+  {
+    name: 'the gap after a multi-line `{Type}`, and the text after it',
+    code: block('@typedef {{', '  a:  string', '}}  Name  and  more'),
+    output: block('@typedef {{', '  a:  string', '}} Name and more'),
+    errors: errors('word', 'word', 'word'),
   },
 ];
 
@@ -484,6 +516,12 @@ export const punctuationInvalid = [
     output: 'class A {\n  /** Short text. */\n  x = 1;\n}\n',
     errors: errors('punctuation'),
   },
+  {
+    name: 'the text after a multi-line `{Type}`, but not inside it',
+    code: block('@param {{', '  ( a )', '}} name - one , two'),
+    output: block('@param {{', '  ( a )', '}} name - one, two'),
+    errors: errors('punctuation'),
+  },
 ];
 
 export const tagInvalid = [
@@ -538,6 +576,26 @@ export const tagInvalid = [
     code: 'class A {\n  /** @param a  -  the a */\n  x = 1;\n}\n',
     output: 'class A {\n  /** @param a - the a */\n  x = 1;\n}\n',
     errors: errors('tag', 'tag'),
+  },
+  {
+    name: 'the `-` after a multi-line `{Type}`',
+    code: block(
+      '@param {{',
+      '  a: string',
+      '}} name  -  the name',
+      '@returns {{',
+      '  a - b',
+      '}}  - the result',
+    ),
+    output: block(
+      '@param {{',
+      '  a: string',
+      '}} name - the name',
+      '@returns {{',
+      '  a - b',
+      '}} - the result',
+    ),
+    errors: errors('tag', 'tag', 'tag'),
   },
 ];
 

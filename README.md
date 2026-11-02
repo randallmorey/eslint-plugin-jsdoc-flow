@@ -195,10 +195,12 @@ means:
 
 - A word starting with `@`, `*` or `|`, a lone `-`, or a number and `.` such
   as `2.` never moves to the start of a line, where it would read as a tag, a
-  list item or a table row.
+  list item or a table row. The lines of a multi-line `{Type}` stay as they
+  are, so a union's `|` may start one there.
 - Code spans, Markdown links, `{@link ...}`, `{Type}` and `[optional]` names
   never break, and the whitespace inside them is kept as it is (though
-  `no-exotic-whitespace` still makes it plain spaces).
+  `no-exotic-whitespace` still makes it plain spaces). A `{Type}` may nest
+  braces to any depth.
 - A line never breaks before `,`, `.`, `;`, `:`, `)` or `]`, or after `(` or
   `[`, and no space is put there either (see `no-extra-punctuation-space`).
 - An abbreviation that two spaces make a sentence end (`Elm St.  Then`) stays
@@ -259,9 +261,27 @@ next line, two spaces in:
  */
 ```
 
+A `{Type}` right after a tag's name that spans several lines keeps its line
+breaks. Its lines stay as they are through its closing brace, and the spacing
+and edge rules leave them alone too. The name and description after that brace
+are flowed as usual, with the head measured from the start of that line:
+
+```js
+/**
+ * @param {{
+ *   id: string,
+ *   title?: string
+ * }} note - the note to save, which is flowed and aligned as a description
+ *           after any other head
+ */
+```
+
+The `{` has to close before the next tag, or it's flowed as ordinary text, and
+a `{@link ...}` isn't a type.
+
 **Left as they are:** bullets and numbered lists (though a bullet's wrapped
 lines are flowed under its text, and `bullet-spacing` spaces its marker),
-tables, fenced code, indented code, and `@example` blocks.
+tables, fenced code, indented code, `@example` blocks, and multi-line `{Type}`s.
 A one-line block stays on one line if it fits, and expands otherwise (turn
 on `jsdoc-flow/single-line` to always expand it).
 
@@ -363,8 +383,8 @@ marked as one where the word could break.
 ```
 
 A line is checked from just after its `*` (or a one-line block's `/**`)
-through its text, including list items, tables and code spans. Left as they
-are:
+through its text, including list items, tables, code spans and multi-line
+`{Type}`s. Left as they are:
 
 - the indentation before each line's `*`, so a file indented with tabs keeps
   them;

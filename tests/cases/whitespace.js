@@ -92,6 +92,12 @@ export const exoticInvalid = [
     output: block('@param name - the name'),
     errors: errors(4),
   },
+  {
+    name: 'the whitespace inside a multi-line `{Type}`',
+    code: block('@typedef {{', '  a:\tstring', '}\u00a0} Name'),
+    output: block('@typedef {{', '  a: string', '} } Name'),
+    errors: errors(2),
+  },
 ];
 
 // A case with gaps that are too wide or too narrow as well as made of tabs,

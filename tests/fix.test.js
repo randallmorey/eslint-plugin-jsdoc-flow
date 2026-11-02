@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { Linter } from 'eslint';
 
 import plugin from '../lib/index.js';
-import { invalid, valid } from './cases/reflow.js';
+import { invalid, typeValid, valid } from './cases/reflow.js';
 import {
   bulletInvalid,
   colonInvalid,
@@ -104,5 +104,12 @@ for (const c of [
       left.filter((m) => m.messageId !== 'unsafe').map((m) => m.message),
       [],
     );
+  });
+}
+
+// A multi-line `{Type}` survives `--fix` with all the rules as it is.
+for (const c of typeValid) {
+  test(`all rules keep:  ${c.name}`, () => {
+    assert.equal(fixWith(c, RULES, c.code), c.code);
   });
 }

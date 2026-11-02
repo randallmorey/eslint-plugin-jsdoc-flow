@@ -75,6 +75,10 @@ export const bulletAlignValid = [
     name: 'a one-line block',
     code: '/** - a bullet */\nexport const x = 1;\n',
   },
+  {
+    name: 'a line of a multi-line `{Type}` that looks like a list item',
+    code: block('@typedef {{', '  - a', 'b', '}} Name'),
+  },
 ];
 
 export const bulletAlignInvalid = [
