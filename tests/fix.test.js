@@ -38,6 +38,7 @@ import {
   singleValid,
 } from './cases/single-line.js';
 import { verbatimCases } from './cases/verbatim.js';
+import { preformattedCases, unguardedCases } from './cases/preformatted.js';
 
 // All the rules together:  `--fix` with all of them, or with any one and then
 // the rest, settles on the same text, which no rule reports (except the
@@ -109,6 +110,8 @@ for (const c of [
   ...blockValid,
   ...blockInvalid,
   ...verbatimCases,
+  ...preformattedCases,
+  ...unguardedCases,
   ...[...noStart, ...noEnd].flatMap((token) =>
     guardBlocks(token).flatMap((code, k) =>
       convergeWidths.map((width) => ({
@@ -147,8 +150,14 @@ for (const c of [...typeValid, ...blockValid]) {
 // A one-liner that `single-line` exempts survives `--fix` with all the rules:
 // on one line, unless `reflow` has its own reason to expand it.  A block with
 // an ignore comment or a verbatim tag survives it as it is, and one with only
-// what looks like them is fixed as usual.
-for (const c of [...singleSettled, ...verbatimCases]) {
+// what looks like them is fixed as usual.  So does a block that the guard on
+// unfenced code keeps, in part or whole.
+for (const c of [
+  ...singleSettled,
+  ...verbatimCases,
+  ...preformattedCases,
+  ...unguardedCases,
+]) {
   test(`all rules settle:  ${c.name}`, () => {
     assert.equal(fixWith(c, RULES, c.code), c.output ?? c.code);
   });

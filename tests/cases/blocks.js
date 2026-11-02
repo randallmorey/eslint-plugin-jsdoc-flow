@@ -681,10 +681,24 @@ export const noStart = [
   ':--|--:',
   '|',
   '@foo',
+  '^',
+  '^^^',
+  '~',
+  '~~',
+  '^~~',
 ];
 
 // The tokens that may start a line, which only look like a construct.
-export const mayStart = ['#foo', '+1', '1)x', '=foo', '<code>', '[ref]'];
+export const mayStart = [
+  '#foo',
+  '+1',
+  '1)x',
+  '=foo',
+  '<code>',
+  '[ref]',
+  '^foo',
+  '~foo',
+];
 
 // A token that ends in a hard break, which a wrap must never leave at the end of
 // a line.

@@ -176,6 +176,122 @@ ignore comment. `@example` isn't on the list by default, and its usual handling
 keeps only its own lines as they are, but naming it makes its whole block
 verbatim like any other tag.
 
+## Unfenced code and diagrams
+
+Authors often write code and diagrams in a comment without a fence. So the rules
+guess at those lines and keep them as they are, a run at a time, unlike the rest
+of the block, which they fix as usual. Every rule reads a block the same way, so
+none of them reports a kept line, nothing flows into one, and `--fix` still
+settles on the same text whichever rule fixes first:
+
+```js
+/**
+ * Flow:
+ *   A --> B
+ *   |     |
+ *   v     v
+ *   C --> D
+ *
+ * - `function foo() {}`
+ *    ^^^^^^^^^^^^
+ */
+```
+
+A run of kept lines starts at any of these:
+
+- A line indented at least two more than the paragraph line above it. So a
+  paragraph's first line never starts a run, since no line is above it:
+  ` *  Saves the note.` is fixed as usual, and so are the lines of a paragraph
+  indented alike. Neither does a line one space further in than the line above.
+- A pointer line, which is only runs of `^` and `~` with whitespace between
+  them, right under a line that isn't blank. Three or more `~` at its start open
+  a fence, as in Markdown, and `^^^ insert` is an ordinary line, unless it's
+  indented as above.
+- A line after a short label, which is a line ending in `:` with at most 24
+  characters other than whitespace, such as `Examples:`. It's enough for the
+  line to be indented past the label at all. Otherwise, the lines from there to
+  the end of the paragraph have to be line-oriented: two or more, each with at
+  most 50 characters other than whitespace, and none ending in `.`, `!` or `?`.
+  The label has to start its paragraph for those. So ordinary prose after a
+  colon is still flowed, whether it's one line, a sentence or a full line wide.
+
+A run ends at the first of these, and what ends it is read as usual:
+
+- a blank line, so a diagram with blank lines in it is several runs, and each
+  has to start as above. The line after a blank line has no line above it, so
+  it's kept only if four spaces make it indented code;
+- a tag line;
+- a fence or verbatim HTML (`<pre>`, `<script>`, `<style>`, `<textarea>` or
+  `<!--`), which is kept as that;
+- a line no more indented than the paragraph line above the run, which starts a
+  new paragraph. After a pointer line that started the run, it's a line less
+  indented than the pointer, or a line that isn't indented at all. An indented
+  list item, table row or the like stays in the run, as the `|` of the diagram
+  above does, but one that isn't indented ends it;
+- for line-oriented lines, the end of their paragraph.
+
+A label that's the last line of a paragraph, right above a run, stays on a line
+of its own, rather than joining the text above it. The label itself isn't kept,
+so its spacing is still fixed.
+
+A tag's continuation lines and a list item's wrapped lines are lines these rules
+set the indentation of, so only a pointer line starts a run among them. That
+includes the two-space form of a wide tag head's description, so `tag-align` and
+`bullet-align` work as usual, and `reflow`'s output reads the same the next
+time.
+
+### `preformatted`
+
+The guard is on by default. Turn it off in ESLint's shared settings, which every
+rule reads, and those lines are flowed like any others:
+
+```js
+// eslint.config.js
+import jsdocFlow from 'eslint-plugin-jsdoc-flow';
+
+export default [
+  jsdocFlow.configs.recommended,
+  {
+    settings: {
+      'jsdoc-flow': {
+        preformatted: false,
+      },
+    },
+  },
+];
+```
+
+A value that isn't a boolean throws an error, since ESLint doesn't validate
+`settings`.
+
+### Known limits
+
+The guard goes by how lines are laid out, not by what they say, so it gets some
+blocks wrong both ways.
+
+It can miss code, which then flows as usual. Put that code in a fence, or use an
+[ignore comment](#ignore-comment). It misses:
+
+- code that isn't indented and has no label above it, or only one line of it, as
+  in `Examples:` and then `const { a } = foo;`;
+- code after a label and a blank line, or after a line that doesn't end in a
+  colon, such as `e.g.`, unless it's indented;
+- an indented line right after a blank line, with fewer than four spaces;
+- indented code in a tag's description or among a list item's wrapped lines;
+- short lines after a label that end in `.`, `!` or `?`.
+
+A pointer line stays put, but the line it points at isn't kept unless it's in a
+run itself, so spacing or flowing that line can still leave the pointer pointing
+at the wrong column.
+
+It can also stop some prose from flowing, and leave its spacing and indentation
+as they are. To flow it again, remove the indentation:
+
+- prose that hangs its later lines, as in `Returns the names` over
+  `  that should be included`;
+- short lines of prose after a label, with no sentence end among them;
+- a line after a label that's indented by accident.
+
 ## Rules
 
 | Rule                                    | Description                                            | Fixable |
@@ -271,14 +387,15 @@ means:
   a Markdown block. That goes for a word starting with `@`, `*`, `|`, `>`,
   ` ``` `, `~~~`, `<!--`, an HTML block's tag such as `<pre>` or `</div>`, or a
   link reference's `[ref]:`, and for a word that's only up to six `#`, a list
-  marker (`-`, `+`, or a number and `.` or `)`), a run of `=` or `_`, or the `-`,
-  `:` and `|` of a thematic break, an underline or a table's delimiter row, such
-  as `---` or `--|--`. A description that starts with one of these stays on its
-  tag's line, however wide the tag's head. The lines of a multi-line `{Type}`
-  stay as they are, so a union's `|` may start one there.
-- A word that would read as a thematic break, an underline or a link reference
-  definition if a paragraph's first line ended there, as `---` would in
-  `--- then more`, stays with the word after it.
+  marker (`-`, `+`, or a number and `.` or `)`), a run of `=` or `_`, the `^`
+  and `~` of a pointer line, or the `-`, `:` and `|` of a thematic break, an
+  underline or a table's delimiter row, such as `---` or `--|--`. A description
+  that starts with one of these stays on its tag's line, however wide the tag's
+  head. The lines of a multi-line `{Type}` stay as they are, so a union's `|` may
+  start one there.
+- A word that would read as a thematic break, an underline, a link reference
+  definition or a pointer line if a paragraph's first line ended there, as `---`
+  would in `--- then more`, stays with the word after it.
 - A word that ends in a hard break (`<br>` or a backslash) and isn't at the end
   of its line stays with the word after it, so wrapping never adds a hard break.
 - Code spans, Markdown links, `{@link ...}`, `{Type}` and `[optional]` names
@@ -391,7 +508,9 @@ their lines, and nothing flows into them:
   such as `<div>`, `<table>`, `<ul>` or `<p>`, and any closing tag of these, run
   to the next blank line or tag, as in Markdown. Inline elements and tags with
   other names, such as `<code>` or `<T>`, are ordinary text;
-- indented code, `@example` blocks, and multi-line `{Type}`s.
+- indented code, `@example` blocks, and multi-line `{Type}`s;
+- what looks like [unfenced code or a diagram](#unfenced-code-and-diagrams), a
+  guess you can turn off.
 
 These apply in a tag's description too. A tag line ends each of them except a
 fence and closed verbatim HTML, and the text after them starts a new paragraph,
@@ -514,8 +633,8 @@ through its text, including list items, tables, code spans and multi-line
 - the indentation before each line's `*`, so a file indented with tabs keeps
   them;
 - the whitespace after a line's text, which `no-trailing-space` removes;
-- fenced code, HTML blocks, indented code and `@example` blocks, where a tab
-  may belong;
+- fenced code, HTML blocks, indented code, `@example` blocks and what looks like
+  [unfenced code](#unfenced-code-and-diagrams), where a tab may belong;
 - joiners such as U+200C, U+200D and U+2060, which aren't spaces.
 
 ESLint's own `no-irregular-whitespace` reports some of these characters in
@@ -637,20 +756,22 @@ fixEdges('/**  One.   */', ''); // '/** One. */'
 - `reflowComment(text, indent, width = 80, options = {})` returns the
   reflowed block, or `null` if its form isn't one it handles. `options` takes
   `orphans`, `names`, `shortWords`, `hang` and `widows`, as the `reflow` rule
-  does.
-- `fixSpacing(text, indent)` returns the block with the gaps between its
-  words spaced.
-- `fixEdges(text, indent)` returns the block with the whitespace at its
-  lines' edges fixed.
-- `alignTags(text, indent)` returns the block with its tag continuation lines
-  aligned.
+  does, and `preformatted`.
+- `fixSpacing(text, indent, preformatted = true)` returns the block with the
+  gaps between its words spaced.
+- `fixEdges(text, indent, preformatted = true)` returns the block with the
+  whitespace at its lines' edges fixed.
+- `alignTags(text, indent, preformatted = true)` returns the block with its tag
+  continuation lines aligned.
 
 `text` is the block from its `/**` to its `*/`, and `indent` is the
 whitespace before it on its line.
 
 These functions format whatever block they're given. They don't read ESLint's
 settings, so `verbatimTags` and the ignore comment apply only to the rules, and
-a caller that wants a block kept as it is shouldn't pass it to them.
+a caller that wants a block kept as it is shouldn't pass it to them. The guard on
+[unfenced code](#unfenced-code-and-diagrams) is on unless `preformatted` is
+`false`, whatever the settings say.
 
 ## License
 

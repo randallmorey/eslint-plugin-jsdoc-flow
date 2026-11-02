@@ -56,6 +56,12 @@ export interface ReflowOptions {
    * long enough, but never so far that it ends right of that line.
    */
   widows?: number;
+  /**
+   * Whether what looks like unfenced code or a diagram is kept as it is, which
+   * it is unless set to `false`.  This isn't an option of the `reflow` rule,
+   * which takes it from the shared settings, so that all the rules agree.
+   */
+  preformatted?: boolean;
 }
 
 /**
@@ -77,26 +83,44 @@ export function reflowComment(
 /**
  * @param text - the block, from its `/**` to its `*\/`
  * @param indent - the whitespace before the block on its line
+ * @param preformatted - whether to keep what looks like unfenced code or
+ *   a diagram as it is, which it does unless this is `false`
  * @returns the block, with its tag continuation lines aligned
  */
-export function alignTags(text: string, indent: string): string;
+export function alignTags(
+  text: string,
+  indent: string,
+  preformatted?: boolean,
+): string;
 
 /**
  * @param text - the block, from its `/**` to its `*\/`
  * @param indent - the whitespace before the block on its line
+ * @param preformatted - whether to keep what looks like unfenced code or
+ *   a diagram as it is, which it does unless this is `false`
  * @returns the block, with two spaces after each sentence end or colon
  *   followed by more text on its line, one on either side of a tag's `-`,
  *   and one between other words, except that the spaces before
  *   `, . ; : ) ]` and after `( [` are left as they are, and so is a gap
  *   that's already as wide as it should be, even if it's a tab
  */
-export function fixSpacing(text: string, indent: string): string;
+export function fixSpacing(
+  text: string,
+  indent: string,
+  preformatted?: boolean,
+): string;
 
 /**
  * @param text - the block, from its `/**` to its `*\/`
  * @param indent - the whitespace before the block on its line
+ * @param preformatted - whether to keep what looks like unfenced code or
+ *   a diagram as it is, which it does unless this is `false`
  * @returns the block, with the whitespace at its lines' edges fixed:  each
  *   `*` under the `/**`, one space between it and the text, and no
  *   whitespace after the text
  */
-export function fixEdges(text: string, indent: string): string;
+export function fixEdges(
+  text: string,
+  indent: string,
+  preformatted?: boolean,
+): string;
