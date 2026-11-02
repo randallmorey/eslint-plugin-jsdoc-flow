@@ -3,6 +3,14 @@ import { test } from 'node:test';
 import { Linter } from 'eslint';
 
 import plugin from '../lib/index.js';
+import {
+  blockInvalid,
+  blockValid,
+  guardBlocks,
+  convergeWidths,
+  noEnd,
+  noStart,
+} from './cases/blocks.js';
 import { invalid, typeValid, valid } from './cases/reflow.js';
 import {
   bulletInvalid,
@@ -96,6 +104,17 @@ for (const c of [
   ...bulletAlignInvalid,
   ...singleValid,
   ...singleInvalid,
+  ...blockValid,
+  ...blockInvalid,
+  ...[...noStart, ...noEnd].flatMap((token) =>
+    guardBlocks(token).flatMap((code, k) =>
+      convergeWidths.map((width) => ({
+        name: `\`${token}\` in a wrap, block ${k + 1} at ${width}`,
+        options: [{ width }],
+        code,
+      })),
+    ),
+  ),
 ]) {
   test(`all rules converge:  ${c.name}`, () => {
     const all = fixWith(c, RULES, c.code);
@@ -114,8 +133,9 @@ for (const c of [
   });
 }
 
-// A multi-line `{Type}` survives `--fix` with all the rules as it is.
-for (const c of typeValid) {
+// A multi-line `{Type}` or a Markdown block survives `--fix` with all the rules
+// as it is.
+for (const c of [...typeValid, ...blockValid]) {
   test(`all rules keep:  ${c.name}`, () => {
     assert.equal(fixWith(c, RULES, c.code), c.code);
   });

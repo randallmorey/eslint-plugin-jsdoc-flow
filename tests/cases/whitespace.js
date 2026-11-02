@@ -27,6 +27,22 @@ export const exoticValid = [
     ),
   },
   {
+    name: 'tabs in `~~~` fences and HTML blocks are kept',
+    code: block(
+      '~~~',
+      'if (a)\t{',
+      '~~~',
+      '',
+      '<pre>',
+      'if (a)\t{',
+      '',
+      '</pre>',
+      '<pre>if (a)\t{</pre>',
+      '<div>',
+      'if (a)\t{',
+    ),
+  },
+  {
     name: 'the tabs that indent a block are kept',
     code: 'class A {\n\t/**\n\t * One.\n\t */\n\tx = 1;\n}\n',
   },
@@ -37,6 +53,32 @@ export const exoticValid = [
 ];
 
 export const exoticInvalid = [
+  {
+    name: "a zero-width space after a marker doesn't change what a line is",
+    code: block(
+      '+\u200bone',
+      '  two',
+      '1)\u200bone',
+      '   two',
+      '',
+      '#\u200bTitle',
+      'text',
+      '>\u200bquote',
+      'text',
+    ),
+    output: block(
+      '+ one',
+      '  two',
+      '1) one',
+      '   two',
+      '',
+      '# Title',
+      'text',
+      '> quote',
+      'text',
+    ),
+    errors: errors(4),
+  },
   {
     name: 'a tab, a no-break space and other Unicode spaces between words',
     code: block('One\ttwo\u00a0three\u2003four\u202ffive\u3000six.'),

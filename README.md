@@ -112,7 +112,7 @@ comments aren't touched.
 | `jsdoc-flow/word-spacing`               | One space between other words                          | ✓       |
 | `jsdoc-flow/no-extra-punctuation-space` | No space before `, . ; : ) ]` or after `( [`           | ✓       |
 | `jsdoc-flow/tag-spacing`                | One space on either side of a tag's `-`                | ✓       |
-| `jsdoc-flow/bullet-spacing`             | One space after a list item's `-`, `*` or `1.`         | ✓       |
+| `jsdoc-flow/bullet-spacing`             | One space after a list item's marker                   | ✓       |
 | `jsdoc-flow/no-exotic-whitespace`       | Plain spaces, not tabs or other Unicode spaces         | ✓       |
 | `jsdoc-flow/star-align`                 | Put each line's `*` under the `/**`                    | ✓       |
 | `jsdoc-flow/text-indent`                | One space between a line's `*` and its text            | ✓       |
@@ -193,10 +193,20 @@ since they point at each gap and each line.
 These limits are always on, since breaking them would change what the text
 means:
 
-- A word starting with `@`, `*` or `|`, a lone `-`, or a number and `.` such
-  as `2.` never moves to the start of a line, where it would read as a tag, a
-  list item or a table row. The lines of a multi-line `{Type}` stay as they
-  are, so a union's `|` may start one there.
+- A word never moves to the start of a line where it would read as a tag or
+  a Markdown block. That goes for a word starting with `@`, `*`, `|`, `>`,
+  ` ``` `, `~~~`, `<!--`, an HTML block's tag such as `<pre>` or `</div>`, or a
+  link reference's `[ref]:`, and for a word that's only up to six `#`, a list
+  marker (`-`, `+`, or a number and `.` or `)`), a run of `=` or `_`, or the `-`,
+  `:` and `|` of a thematic break, an underline or a table's delimiter row, such
+  as `---` or `--|--`. A description that starts with one of these stays on its
+  tag's line, however wide the tag's head. The lines of a multi-line `{Type}`
+  stay as they are, so a union's `|` may start one there.
+- A word that would read as a thematic break, an underline or a link reference
+  definition if a paragraph's first line ended there, as `---` would in
+  `--- then more`, stays with the word after it.
+- A word that ends in a hard break (`<br>` or a backslash) and isn't at the end
+  of its line stays with the word after it, so wrapping never adds a hard break.
 - Code spans, Markdown links, `{@link ...}`, `{Type}` and `[optional]` names
   never break, and the whitespace inside them is kept as it is (though
   `no-exotic-whitespace` still makes it plain spaces). A `{Type}` may nest
@@ -279,13 +289,52 @@ are flowed as usual, with the head measured from the start of that line:
 The `{` has to close before the next tag, or it's flowed as ordinary text, and
 a `{@link ...}` isn't a type.
 
-**Left as they are:** bullets and numbered lists (though a bullet's wrapped
-lines are flowed under its text, and `bullet-spacing` spaces its marker),
-tables, fenced code, indented code, `@example` blocks, and multi-line `{Type}`s.
-A one-line block stays on one line if it fits, and expands otherwise (turn
-on `jsdoc-flow/single-line` to expand it even when it fits). A one-line `@ts-*`
-directive stays on one line however wide it is, since it stops working when
-it's expanded.
+**Left as they are:** line breaks carry meaning in Markdown, so these keep
+their lines, and nothing flows into them:
+
+- bullets and numbered lists, with `-`, `*`, `+`, `1.` or `1)` as a marker
+  (though a bullet's wrapped lines are flowed under its text, and
+  `bullet-spacing` spaces its marker), a marker alone on its line, and a number
+  with a space before its `.` or `)`, as in `1 ) one`;
+- ATX headings, up to six `#` and then a space or nothing, so `#foo` isn't one;
+- setext headings and thematic breaks: a line of `=` or of two or more `-`, the
+  line above it, even a tag's, and `***`, `___` or a spaced `- - -`;
+- blockquotes: every line starting with `>`, which Markdown doesn't require a
+  space after, so each quoted line stays verbatim, and an unmarked line after
+  one is flowed as a paragraph of its own;
+- tables, whether or not they have edge pipes. A delimiter row such as
+  `---|---` and the line above it are kept. Without a `|` at the start of the
+  delimiter row, the lines below it are kept until a blank line or a tag;
+- link reference definitions: `[ref]: url`, or `[ref] : url`, and perhaps a
+  title, alone on a line. `[ref]: more than one word` is ordinary text;
+- fenced code, opened by ` ``` ` or `~~~`. A `~~~` fence closes only on a `~~~`
+  at least as long, alone on its line. Either kind runs to the end of the block
+  if nothing closes it, across blank lines and tags;
+- HTML blocks. `<pre>`, `<script>`, `<style>`, `<textarea>` and an `<!--` comment
+  run through the line that closes them, across blank lines and tags, like a
+  fence. If nothing closes them, they end at the next blank line or tag, so a
+  stray `<pre>` can't freeze the rest of the block. Other block-level elements,
+  such as `<div>`, `<table>`, `<ul>` or `<p>`, and any closing tag of these, run
+  to the next blank line or tag, as in Markdown. Inline elements and tags with
+  other names, such as `<code>` or `<T>`, are ordinary text;
+- indented code, `@example` blocks, and multi-line `{Type}`s.
+
+These apply in a tag's description too. A tag line ends each of them except a
+fence and closed verbatim HTML, and the text after them starts a new paragraph,
+so it no longer lines up as the tag's description.
+
+Conservatism wins here, so prose that looks like a construct at the start of a
+line, such as `> 5 is required` or `+ 1 more`, isn't flowed.
+
+A hard break stays too. A paragraph's line that ends in `<br>`, `<br/>` or a
+backslash keeps its break there, and the text on either side of it is flowed on
+its own, with a tag's or a list item's hanging indent. Two spaces at the end of
+a line aren't kept as a hard break, since `no-trailing-space` removes them.
+
+A one-line block stays on one line if it fits, unless it's one of the
+constructs above, and expands otherwise (turn on `jsdoc-flow/single-line` to
+expand it even when it fits). A one-line `@ts-*` directive stays on one line
+however wide it is, since it stops working when it's expanded.
 
 A block is skipped if its form isn't one the rule handles: text after `/**`
 on a line of its own, a body line without a leading `*`, or text before the
@@ -315,8 +364,8 @@ Six rules check the gaps between words, each one kind of gap:
   When a wide head ends its line with the `-`, only the space before it is
   checked.
 - `jsdoc-flow/bullet-spacing`: one space follows a list item's marker (`-`,
-  `*`, or a number and `.`), so `-   an item` becomes `- an item`. Only
-  that gap is checked: the indentation before a nested item's marker is
+  `*`, `+`, or a number and `.` or `)`), so `-   an item` becomes `- an item`.
+  Only that gap is checked: the indentation before a nested item's marker is
   left as it is, and so is the rest of the item's line, which the other
   spacing rules skip (so the `.` of `1.` never counts as a sentence end).
   A marker with nothing after it doesn't start a list item.
@@ -391,7 +440,8 @@ through its text, including list items, tables, code spans and multi-line
 - the indentation before each line's `*`, so a file indented with tabs keeps
   them;
 - the whitespace after a line's text, which `no-trailing-space` removes;
-- fenced code, indented code and `@example` blocks, where a tab may belong;
+- fenced code, HTML blocks, indented code and `@example` blocks, where a tab
+  may belong;
 - joiners such as U+200C, U+200D and U+2060, which aren't spaces.
 
 ESLint's own `no-irregular-whitespace` reports some of these characters in
@@ -420,8 +470,8 @@ description column, and fixes it by changing its indentation.
 
 Reports each wrapped line of a list item that doesn't start under the item's
 text, one space after its marker, and fixes it by changing its indentation.
-Nested items, numbered items such as `10.`, and items in a tag's description
-each line up under their own text.
+Nested items, numbered items such as `10.` or `10)`, and items in a tag's
+description each line up under their own text.
 
 ```js
 // Before
@@ -438,8 +488,9 @@ each line up under their own text.
 ```
 
 As in Markdown, the lines right after a list item are its wrapped lines,
-until a blank line, a tag, another list item, a table or code. So a
-paragraph after a list needs a blank line before it. The item's own line is
+until a blank line, a tag, another list item, a table, code or another line
+that's left as it is. So a paragraph after a list needs a blank line before it.
+The item's own line is
 left as it is, so its marker's column is the author's, and the text column is
 measured as `bullet-spacing` would space the marker.
 
@@ -487,9 +538,9 @@ the first tag counts: `/** @type {Note} @since 2 */` is exempt, and
 
 The other rules still fix an exempt block's whitespace, on its one line, but
 `allowTags` turns off only this rule. `reflow` still expands a one-line block
-that doesn't fit, or that it keeps as code, such as `@example`, and an expanded
-block stays expanded. A `@ts-*` directive is the only block `reflow` keeps on
-one line however wide it is.
+that doesn't fit, or that it keeps as it is, such as `@example` or a heading,
+and an expanded block stays expanded. A `@ts-*` directive is the only block
+`reflow` keeps on one line however wide it is.
 
 ## API
 

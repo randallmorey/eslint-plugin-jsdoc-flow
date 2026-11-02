@@ -194,11 +194,14 @@ export const spacingValid = [
       '1. a numbered one',
       '10. Then a sentence. And another',
       '   2. nested',
+      '+ a plus. And another',
+      '1) a parenthesized one.  And another',
+      '   20) nested',
     ),
   },
   {
     name: "a marker with no text after it doesn't start a list item",
-    code: block('A list:', '', '-', '', '1.'),
+    code: block('A list:', '', '-', '', '1.', '', '+', '', '1)'),
   },
   {
     name: 'list markers in code and `@example` keep their spaces',
@@ -600,6 +603,12 @@ export const tagInvalid = [
 ];
 
 export const bulletInvalid = [
+  {
+    name: 'more than one space after a `+` or a `1)`',
+    code: block('+  a bullet', '  +   a nested one', '1)   one', '10)  ten'),
+    output: block('+ a bullet', '  + a nested one', '1) one', '10) ten'),
+    errors: errors('bullet', 'bullet', 'bullet', 'bullet'),
+  },
   {
     name: "more than one space after a list item's marker",
     code: block(
