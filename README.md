@@ -283,7 +283,9 @@ a `{@link ...}` isn't a type.
 lines are flowed under its text, and `bullet-spacing` spaces its marker),
 tables, fenced code, indented code, `@example` blocks, and multi-line `{Type}`s.
 A one-line block stays on one line if it fits, and expands otherwise (turn
-on `jsdoc-flow/single-line` to always expand it).
+on `jsdoc-flow/single-line` to expand it even when it fits). A one-line `@ts-*`
+directive stays on one line however wide it is, since it stops working when
+it's expanded.
 
 A block is skipped if its form isn't one the rule handles: text after `/**`
 on a line of its own, a body line without a leading `*`, or text before the
@@ -460,8 +462,34 @@ ends up too wide is left to `reflow`.
 
 Why? A block's text is easier to scan when every block has the same shape:
 its text always starts on the line after the `/**`, under a `*`, whether it's
-one line long or ten. That includes tag-only blocks such as
-`/** @type {Note} */`.
+one line long or ten.
+
+A one-line `@ts-*` directive, such as `/** @ts-expect-error reason */`, is
+always left on one line, whatever the options say. TypeScript reads
+`@ts-expect-error` and `@ts-ignore` only from a block's last line, so spreading
+one out would bring back the error it suppresses. The rule doesn't collapse
+a directive that's already on lines of its own, where TypeScript ignores it.
+
+**Options:**
+
+- `allowTags`: an array of tag names, without the `@`, whose one-line blocks
+  are left on one line. Defaults to `[]`.
+
+```js
+'jsdoc-flow/single-line': ['warn', { allowTags: ['type', 'typedef', 'deprecated'] }],
+```
+
+A block is exempt only if it begins with an allowed tag, so with these options
+`/** Saves the note. */` and `/** Saves the note. @deprecated */` are still
+spread out. A second tag on the line is read as the first tag's text, so only
+the first tag counts: `/** @type {Note} @since 2 */` is exempt, and
+`/** @since 2 @type {Note} */` isn't.
+
+The other rules still fix an exempt block's whitespace, on its one line, but
+`allowTags` turns off only this rule. `reflow` still expands a one-line block
+that doesn't fit, or that it keeps as code, such as `@example`, and an expanded
+block stays expanded. A `@ts-*` directive is the only block `reflow` keeps on
+one line however wide it is.
 
 ## API
 

@@ -24,7 +24,11 @@ import {
 import { exoticInvalid, exoticMixed, exoticValid } from './cases/whitespace.js';
 import { alignInvalid, alignValid } from './cases/tag-align.js';
 import { bulletAlignInvalid, bulletAlignValid } from './cases/bullet-align.js';
-import { singleInvalid, singleValid } from './cases/single-line.js';
+import {
+  singleInvalid,
+  singleSettled,
+  singleValid,
+} from './cases/single-line.js';
 
 // All the rules together:  `--fix` with all of them, or with any one and then
 // the rest, settles on the same text, which no rule reports (except the
@@ -46,16 +50,19 @@ const RULES = [
   'single-line',
 ];
 const linter = new Linter();
+// A case's options are for `single-line` if they're its `allowTags`, and
+// otherwise for `reflow`.
+const optionsFor = (c, rule) =>
+  rule === (c.options?.[0].allowTags ? 'single-line' : 'reflow')
+    ? (c.options ?? [])
+    : [];
 const configFor = (c, rules) => [
   {
     files: ['**/*.*'],
     ...(c.languageOptions && { languageOptions: c.languageOptions }),
     plugins: { 'jsdoc-flow': plugin },
     rules: Object.fromEntries(
-      rules.map((r) => [
-        `jsdoc-flow/${r}`,
-        ['warn', ...(r === 'reflow' ? (c.options ?? []) : [])],
-      ]),
+      rules.map((r) => [`jsdoc-flow/${r}`, ['warn', ...optionsFor(c, r)]]),
     ),
   },
 ];
@@ -111,5 +118,13 @@ for (const c of [
 for (const c of typeValid) {
   test(`all rules keep:  ${c.name}`, () => {
     assert.equal(fixWith(c, RULES, c.code), c.code);
+  });
+}
+
+// A one-liner that `single-line` exempts survives `--fix` with all the rules:
+// on one line, unless `reflow` has its own reason to expand it.
+for (const c of singleSettled) {
+  test(`all rules settle:  ${c.name}`, () => {
+    assert.equal(fixWith(c, RULES, c.code), c.output ?? c.code);
   });
 }

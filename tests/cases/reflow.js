@@ -208,6 +208,23 @@ export const valid = [
     code: 'class A {\n  /** Short text.  More text. */\n  x = 1;\n}\n',
   },
   {
+    name: 'a `@ts-*` directive too wide to fit stays on one line',
+    code: '/** @ts-expect-error the upstream type is wrong here, and it stays wrong until the next major */\nexport const x = 1;\n',
+  },
+  {
+    name: 'a `@ts-*` directive too wide for a narrow width stays on one line',
+    options: narrow,
+    code: 'class A {\n  /** @ts-ignore one reason, then some more of it. */\n  x = 1;\n}\n',
+  },
+  {
+    name: "a wide `@ts-*` directive's spacing is left to the spacing rules",
+    code: '/** @ts-expect-error the upstream type is wrong. It  stays wrong until the next major one */\nexport const x = 1;\n',
+  },
+  {
+    name: "a `@ts-*` directive's extra whitespace is left to the edge rules",
+    code: '/**     @ts-ignore a reason  */\nexport const x = 1;\n',
+  },
+  {
     name: "a block whose only problems are its lines' edges is left to the edge rules",
     code: [
       '/**',
@@ -916,6 +933,13 @@ export const invalid = [
       'foo(  a,  b );  // a long comment that goes past forty',
       '@returns the result',
     ),
+  },
+  {
+    name: 'a description before a `@ts-*` tag expands when it does not fit',
+    options: narrow,
+    code: '/** A reason that is too long to fit. @ts-ignore */\nexport const x = 1;\n',
+    output: block('A reason that is too long', 'to fit.  @ts-ignore'),
+    errors,
   },
   {
     name: "a one-liner expands when it doesn't fit",
