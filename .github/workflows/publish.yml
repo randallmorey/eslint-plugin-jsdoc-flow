@@ -44,18 +44,19 @@ jobs:
         run: npm run lint
       - if: steps.version.outputs.release == 'true'
         run: npm test
-      - name: Create tag
+      - name: Publish to npm
         if: steps.version.outputs.release == 'true'
         run: |
-          git tag "$TAG" "$GITHUB_SHA"
-          git push origin "refs/tags/$TAG"
-        env:
-          TAG: ${{ steps.version.outputs.tag }}
-      - name: Create release
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "$VERSION already on npm, skipping"
+          else
+            npm stage publish
+          fi
+      - name: Create release (and tag)
         if: steps.version.outputs.release == 'true'
-        run: gh release create "$TAG" --generate-notes --verify-tag
+        run: gh release create "$TAG" --generate-notes
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}
-      - if: steps.version.outputs.release == 'true'
-        run: npm publish
