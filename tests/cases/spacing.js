@@ -169,6 +169,13 @@ export const spacingValid = [
     ),
   },
   {
+    name: 'spaces inside multi-backtick code spans are kept',
+    code: block(
+      'Use ``a.  b`` or ```c: d ` e```, {@link ``}``  Foo} and ``a span',
+      'that.  crosses`` lines.',
+    ),
+  },
+  {
     name: 'indentation and trailing whitespace are left to the other rules',
     code: [
       '/**',
@@ -452,6 +459,28 @@ export const sentenceInvalid = [
     code: block('Set `a: b`.  Then `c d`. Here'),
     output: block('Set `a: b`.  Then `c d`.  Here'),
     errors: [{ messageId: 'sentence', column: 22, endColumn: 33 }],
+  },
+  {
+    name: 'after a code span holding a backtick',
+    code: block(
+      'Or backtick ``` ` ``` needs one. This opening one is at `Foo`, or `Bar`.',
+    ),
+    output: block(
+      'Or backtick ``` ` ``` needs one.  This opening one is at `Foo`, or `Bar`.',
+    ),
+    errors: errors('sentence'),
+  },
+  {
+    name: 'after a run of backticks that nothing closes',
+    code: block('A stray ``` here. Then `one`. Then more.'),
+    output: block('A stray ``` here.  Then `one`.  Then more.'),
+    errors: errors('sentence', 'sentence'),
+  },
+  {
+    name: 'after a multi-backtick code span, but not inside it',
+    code: block('Set ``a. b``. Then ```c. d```. Here'),
+    output: block('Set ``a. b``.  Then ```c. d```.  Here'),
+    errors: errors('sentence', 'sentence'),
   },
   {
     name: "a tag's description",

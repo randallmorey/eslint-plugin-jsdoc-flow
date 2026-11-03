@@ -468,7 +468,9 @@ means:
 - Code spans, Markdown links, `{@link ...}`, `{Type}` and `[optional]` names
   never break, and the whitespace inside them is kept as it is (though
   `no-exotic-whitespace` still makes it plain spaces). A `{Type}` may nest
-  braces to any depth.
+  braces to any depth. As in Markdown, a code span opened by a run of backticks
+  closes only at the next run of exactly as many, so ` `` a ` b `` ` is one span.
+  A run that nothing closes starts no span, and is plain text.
 - A line never breaks before `,`, `.`, `;`, `:`, `)` or `]`, or after `(` or
   `[`, and no space is put there either (see `no-extra-punctuation-space`).
 - An abbreviation that two spaces make a sentence end (`Elm St.  Then`) stays

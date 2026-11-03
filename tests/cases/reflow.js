@@ -86,6 +86,10 @@ export const valid = [
     code: block('Matches `-  x` and `a   b`, but not `c d`.'),
   },
   {
+    name: "a multi-backtick code span's spaces are kept as they are",
+    code: block('Matches ``-  x`` and ```a   b```, but not `` c  ` d ``.'),
+  },
+  {
     name: 'an already flowed block',
     code: block(
       'Reflows a paragraph.  Two spaces follow a sentence end and',
@@ -941,6 +945,80 @@ export const invalid = [
     options: narrow,
     code: block('aaaa bbbb cccc dddd `a code span` eeee ffff.'),
     output: block('aaaa bbbb cccc dddd `a code span`', 'eeee ffff.'),
+  },
+  {
+    name: 'a code span of two backticks is unbreakable',
+    options: narrow,
+    code: block('aaaa bbbb cccc dddd ``a code span`` eeee ffff.'),
+    output: block('aaaa bbbb cccc dddd ``a code span``', 'eeee ffff.'),
+  },
+  {
+    name: 'a code span of three backticks holds fewer, and is unbreakable',
+    options: narrow,
+    code: block('aaaa bbbb cccc ddd ``` a `` b ` c ``` eeee ffff.'),
+    output: block('aaaa bbbb cccc ddd ``` a `` b ` c ```', 'eeee ffff.'),
+  },
+  {
+    name: 'the text after a code span holding a backtick flows',
+    options: narrow,
+    code: block(
+      'aaaa ``` ` ``` bbbb cccc dddd eeee ffff `gggg` hhhh iiii `jjjj` kkkk.',
+    ),
+    output: block(
+      'aaaa ``` ` ``` bbbb cccc dddd eeee',
+      'ffff `gggg` hhhh iiii `jjjj` kkkk.',
+    ),
+  },
+  {
+    name: 'a real comment with a code span holding a backtick flows',
+    code: block(
+      'Determines whether an opening parenthesis `(`, bracket `[` or backtick ``` ` ``` needs to be preceded by a semicolon.',
+      'This opening parenthesis or bracket should be at the start of an `ExpressionStatement`, a `MethodDefinition` or at',
+      'the start of the body of an `ArrowFunctionExpression`.',
+      '@param {SourceCode} sourceCode The source code object.',
+    ),
+    output: block(
+      'Determines whether an opening parenthesis `(`, bracket `[` or',
+      'backtick ``` ` ``` needs to be preceded by a semicolon.  This opening',
+      'parenthesis or bracket should be at the start of an `ExpressionStatement`,',
+      'a `MethodDefinition` or at the start of the body of',
+      'an `ArrowFunctionExpression`.',
+      '@param {SourceCode} sourceCode The source code object.',
+    ),
+  },
+  {
+    name: 'a run of backticks is closed only by a run just as long',
+    options: narrow,
+    code: block('aaaa ``` bbbb `` cccc dddd eeee ffff gggg hhhh ` iiii.'),
+    output: block('aaaa ``` bbbb `` cccc dddd eeee ffff', 'gggg hhhh ` iiii.'),
+  },
+  {
+    name: 'a run of backticks that nothing closes is plain text',
+    options: narrow,
+    code: block('aaaa `` bbbb cccc dddd eeee ffff gggg hhhh `iiii` jjjj.'),
+    output: block('aaaa `` bbbb cccc dddd eeee ffff gggg', 'hhhh `iiii` jjjj.'),
+  },
+  {
+    name: 'a code span of two backticks may cross lines',
+    errors: [{ messageId: 'join' }],
+    options: narrow,
+    code: block('aaaa ``x  y', 'z`` bbbb cccc.'),
+    output: block('aaaa ``x  y z`` bbbb cccc.'),
+  },
+  {
+    name: 'a bracket in a multi-backtick code span never pairs with one outside it',
+    options: narrow,
+    code: block('aaaa ``[`` bbbb cccc dddd eeee ffff gggg hhhh ``]`` iiii.'),
+    output: block(
+      'aaaa ``[`` bbbb cccc dddd eeee ffff',
+      'gggg hhhh ``]`` iiii.',
+    ),
+  },
+  {
+    name: 'a brace in a multi-backtick code span never closes the `{...}` around it',
+    options: narrow,
+    code: block('aaaa bbbb cccc dddd {@link ``}`` Foo bar} eeee.'),
+    output: block('aaaa bbbb cccc dddd', '{@link ``}`` Foo bar} eeee.'),
   },
   {
     name: 'links and `{...}` are unbreakable',
