@@ -91,6 +91,70 @@ export const spacingValid = [
     code: block('A token, e.g.  this one, and so on, etc.  Then more.'),
   },
   {
+    name: '`approx.` before a number does not end a sentence',
+    code: block('It takes approx. 5 tries, or APPROX. 6 at most.'),
+  },
+  {
+    name: '`no.` and `nos.` before a number do not end a sentence, in any case',
+    code: block('See no. 5, No. 6, NO. 7, nos. 8 and Nos. 9-10, or (no. 11).'),
+  },
+  {
+    name: '`Inc.`, `Ltd.`, `Corp.` and `Co.` before a lowercase word do not end a sentence',
+    code: block(
+      'Foo Inc. in 2020, Foo Ltd. in 2021, Foo Corp. or Foo Co. in 2022.',
+    ),
+  },
+  {
+    name: '`Jr.` and `Sr.` before a lowercase word do not end a sentence',
+    code: block('Foo Jr. said so, and Foo Sr. did not.'),
+  },
+  {
+    name: 'a dotted initialism before a capitalized word does not end a sentence',
+    code: block(
+      'The U.S. Government, the U.K. Parliament, a non-U.N. Agency, (U.S.A.) Team.',
+    ),
+  },
+  {
+    name: 'closing emphasis or a quote around a dotted initialism changes nothing',
+    code: block('The **U.S.** Government, or the \u201cU.K.\u201d Parliament.'),
+  },
+  {
+    name: 'two spaces after a dotted initialism end a sentence, and are kept',
+    code: block('In the U.S.  Then we left, from the **U.K.**  Then we met.'),
+  },
+  {
+    name: 'two spaces after the new abbreviations end a sentence, and are kept',
+    code: block(
+      'It was approx.  5 or no.  5, at Foo Inc.  in 2020 with Foo Jr.  said.',
+    ),
+  },
+  {
+    name: 'closing emphasis after a sentence end',
+    code: block('**Note.**  Then *done!*  Then _done?_  Then more.'),
+  },
+  {
+    name: 'a closing curly quote after a sentence end',
+    code: block('\u201cDone.\u201d  Then \u2018done.\u2019  Then more.'),
+  },
+  {
+    name: 'closing emphasis or a closing curly quote after a colon',
+    code: block(
+      '**Note:**  then *note:*  then _note:_  then \u201cnote:\u201d  then more.',
+    ),
+  },
+  {
+    name: 'a `*` or `_` that closes no emphasis shows no sentence end or colon',
+    code: block(
+      'A foo_ Bar, foo_bar_ Baz, 2 * 3 or 2 * Four, foo._ Bar, foo.__ Bar, the',
+      '.eslintrc.* files, .* or *.* and _._ or *:* with s3:* on, foo:_ Bar and',
+      "'.*' or a **.** Bar.",
+    ),
+  },
+  {
+    name: 'a single `*` or `_` that an earlier word opened shows no sentence end',
+    code: block('_Only in browsers._ Then *all of it.* Then more.'),
+  },
+  {
     name: 'a closing bracket or quote after a sentence end',
     code: block('It ends (like this.)  Or "like this."  Then more.'),
   },
@@ -291,6 +355,91 @@ export const sentenceInvalid = [
     errors: errors('sentence', 'sentence'),
   },
   {
+    name: '`no.` and `nos.` before anything but a number end a sentence',
+    code: block(
+      'The answer is no. Then No. then no. `x`, or nos. Then (no. Then) more.',
+    ),
+    output: block(
+      'The answer is no.  Then No.  then no.  `x`, or nos.  Then (no.  Then) more.',
+    ),
+    errors: errors('sentence', 'sentence', 'sentence', 'sentence', 'sentence'),
+  },
+  {
+    name: 'a word that ends in the letters of `no.` is not one, before a number',
+    code: block('On the piano. 5 more, at the casino. 6 more.'),
+    output: block('On the piano.  5 more, at the casino.  6 more.'),
+    errors: errors('sentence', 'sentence'),
+  },
+  {
+    name: '`approx.`, `Inc.`, `Ltd.`, `Corp.`, `Co.`, `Jr.` and `Sr.` before a capitalized word',
+    code: block(
+      'It was approx. Then Foo Inc. Then Foo Ltd. Then Foo Corp. Then Foo Co.',
+      'Then Foo Jr. Then Foo Sr. Then more.',
+    ),
+    output: block(
+      'It was approx.  Then Foo Inc.  Then Foo Ltd.  Then Foo Corp.  Then Foo Co.',
+      'Then Foo Jr.  Then Foo Sr.  Then more.',
+    ),
+    errors: errors(
+      'sentence',
+      'sentence',
+      'sentence',
+      'sentence',
+      'sentence',
+      'sentence',
+    ),
+  },
+  {
+    name: 'three spaces after a dotted initialism end a sentence, too',
+    code: block('In the U.S.   Then we left.'),
+    output: block('In the U.S.  Then we left.'),
+    errors: errors('sentence'),
+  },
+  {
+    name: 'what looks like a dotted initialism but is not one ends a sentence',
+    code: block('In u.s. Then plan B. Then Foo.A.B. Then Ph.D. in more.'),
+    output: block('In u.s.  Then plan B.  Then Foo.A.B.  Then Ph.D.  in more.'),
+    errors: errors('sentence', 'sentence', 'sentence', 'sentence'),
+  },
+  {
+    name: 'closing emphasis after a sentence end',
+    code: block(
+      '**Note.** Then *Done.* Then _Done._ Then __Done!__ Then ***Done?*** Then.',
+    ),
+    output: block(
+      '**Note.**  Then *Done.*  Then _Done._  Then __Done!__  Then ***Done?***  Then.',
+    ),
+    errors: errors('sentence', 'sentence', 'sentence', 'sentence', 'sentence'),
+  },
+  {
+    name: 'a closing curly quote after a sentence end',
+    code: block('\u201cDone.\u201d Then \u2018Done.\u2019 Then more.'),
+    output: block('\u201cDone.\u201d  Then \u2018Done.\u2019  Then more.'),
+    errors: errors('sentence', 'sentence'),
+  },
+  {
+    name: 'closing emphasis with brackets and quotes after a sentence end',
+    code: block(
+      '_**Done.**_ Then (**Done.**) Then \u201c*Done.*\u201d Then **"Done."** Then.',
+    ),
+    output: block(
+      '_**Done.**_  Then (**Done.**)  Then \u201c*Done.*\u201d  Then **"Done."**  Then.',
+    ),
+    errors: errors('sentence', 'sentence', 'sentence', 'sentence'),
+  },
+  {
+    name: '`**` closes what an earlier word opened, after a sentence end',
+    code: block('**Note this well.** Then **and this (too).** Then more.'),
+    output: block('**Note this well.**  Then **and this (too).**  Then more.'),
+    errors: errors('sentence', 'sentence'),
+  },
+  {
+    name: 'snake_case before a sentence end',
+    code: block('Call foo_bar. Then _private. Then foo_. Then more.'),
+    output: block('Call foo_bar.  Then _private.  Then foo_.  Then more.'),
+    errors: errors('sentence', 'sentence', 'sentence'),
+  },
+  {
     name: 'the words around the gap are reported, at their line and columns',
     code: block('Fine.  Fine.', 'Here. And here.'),
     output: block('Fine.  Fine.', 'Here.  And here.'),
@@ -396,6 +545,22 @@ export const colonInvalid = [
     ],
   },
   {
+    name: 'closing emphasis after a colon',
+    code: block(
+      '**Note:** Then *note:* then _note:_ then **note this:** then.',
+    ),
+    output: block(
+      '**Note:**  Then *note:*  then _note:_  then **note this:**  then.',
+    ),
+    errors: errors('colon', 'colon', 'colon', 'colon'),
+  },
+  {
+    name: 'a closing curly quote after a colon',
+    code: block('\u201cNote:\u201d Then \u2018note:\u2019 then more.'),
+    output: block('\u201cNote:\u201d  Then \u2018note:\u2019  then more.'),
+    errors: errors('colon', 'colon'),
+  },
+  {
     name: "a tag's description",
     code: block('@param {string} name - the description: more.'),
     output: block('@param {string} name - the description:  more.'),
@@ -435,6 +600,12 @@ export const wordInvalid = [
     errors: [
       { messageId: 'word', line: 3, column: 9, endLine: 3, endColumn: 19 },
     ],
+  },
+  {
+    name: 'a `*` or `_` that closes no emphasis is a word',
+    code: block('A foo_  Bar, 2  *  3, foo.*  Bar, s3:*  on and foo._  Bar.'),
+    output: block('A foo_ Bar, 2 * 3, foo.* Bar, s3:* on and foo._ Bar.'),
+    errors: errors('word', 'word', 'word', 'word', 'word', 'word'),
   },
   {
     name: "a tag's head and description",

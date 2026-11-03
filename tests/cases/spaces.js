@@ -28,6 +28,25 @@ export const oneSpaceValid = [
     ),
   },
   {
+    name: 'one space after the abbreviations that may not end a sentence',
+    code: block(
+      'It was approx. 5, no. 5 or No. 6, at Foo Inc. in 2020 with Foo Jr. said.',
+      'The U.S. Government, in the U.S. Then Foo Inc. Then Foo Jr. Then more.',
+      'The answer is no. Then more.',
+    ),
+  },
+  {
+    name: 'one space after closing emphasis or a closing curly quote',
+    code: block(
+      '**Note.** Then *Done.* Then _Done._ Then \u201cDone.\u201d Then \u2018Done.\u2019',
+      'Then **Note:** Then *note:* then \u201cnote:\u201d then more.',
+    ),
+  },
+  {
+    name: 'one space after a `*` or `_` that closes no emphasis',
+    code: block('A foo_ Bar, 2 * 3, foo.* Bar, s3:* on and foo._ Bar.'),
+  },
+  {
     name: 'spaces inside code spans, links, `{...}` and `[...]` are kept',
     code: block(
       'Use `a.  b` or `c:  d`, [a link.  Here](http://x),',
@@ -88,6 +107,24 @@ export const oneSpaceSentenceInvalid = [
     errors: errors('sentence', 'sentence'),
   },
   {
+    name: 'the abbreviations that end a sentence before a capitalized word',
+    code: block('Foo Inc.  Then Foo Jr.  Then approx.  Then no.  Then more.'),
+    output: block('Foo Inc. Then Foo Jr. Then approx. Then no. Then more.'),
+    errors: errors('sentence', 'sentence', 'sentence', 'sentence'),
+  },
+  {
+    name: 'closing emphasis after a sentence end',
+    code: block('**Note.**  Then *Done.*  Then _Done._  Then more.'),
+    output: block('**Note.** Then *Done.* Then _Done._ Then more.'),
+    errors: errors('sentence', 'sentence', 'sentence'),
+  },
+  {
+    name: 'a closing curly quote after a sentence end',
+    code: block('\u201cDone.\u201d  Then \u2018Done.\u2019  Then more.'),
+    output: block('\u201cDone.\u201d Then \u2018Done.\u2019 Then more.'),
+    errors: errors('sentence', 'sentence'),
+  },
+  {
     name: 'the words around the gap are reported, at their line and columns',
     code: block('Fine. Fine.', 'Here.  And here.'),
     output: block('Fine. Fine.', 'Here. And here.'),
@@ -141,6 +178,16 @@ export const oneSpaceColonInvalid = [
     errors: errors('colon', 'colon'),
   },
   {
+    name: 'closing emphasis or a closing curly quote after a colon',
+    code: block(
+      '**Note:**  Then *note:*  then _note:_  then \u201cnote:\u201d  then.',
+    ),
+    output: block(
+      '**Note:** Then *note:* then _note:_ then \u201cnote:\u201d then.',
+    ),
+    errors: errors('colon', 'colon', 'colon', 'colon'),
+  },
+  {
     name: "a tag's description",
     code: block('@param {string} name - the description:  more.'),
     output: block('@param {string} name - the description: more.'),
@@ -174,6 +221,28 @@ export const oneSpaceWordInvalid = [
     code: block('A token, e.g.  this one, and keys, incl.  these.'),
     output: block('A token, e.g. this one, and keys, incl. these.'),
     errors: errors('word', 'word'),
+  },
+  {
+    name: 'two spaces after a dotted initialism are not a sentence end',
+    code: block('In the U.S.  Then we left, and the U.K.  Government.'),
+    output: block('In the U.S. Then we left, and the U.K. Government.'),
+    errors: errors('word', 'word'),
+  },
+  {
+    name: 'two spaces after `no.`, `approx.`, `Inc.` or `Jr.` before what stays inside',
+    code: block(
+      'It was no.  5 or approx.  6, at Foo Inc.  in 2020, Foo Jr.  said.',
+    ),
+    output: block(
+      'It was no. 5 or approx. 6, at Foo Inc. in 2020, Foo Jr. said.',
+    ),
+    errors: errors('word', 'word', 'word', 'word'),
+  },
+  {
+    name: 'two spaces after a `*` or `_` that closes no emphasis',
+    code: block('A foo_  Bar, foo.*  Bar, s3:*  on and foo._  Bar.'),
+    output: block('A foo_ Bar, foo.* Bar, s3:* on and foo._ Bar.'),
+    errors: errors('word', 'word', 'word', 'word'),
   },
   {
     name: 'two spaces after `Mr.` or `vs.`, as with two spaces',
@@ -234,6 +303,18 @@ export const oneSpaceReflowInvalid = [
       '             wrap onto another line',
     ),
     errors: errors('break'),
+  },
+  {
+    name: 'closing emphasis and a curly quote get one space along with the reflow',
+    code: block('**Note.**  Then \u201cdone.\u201d', 'Then **note:**  more.'),
+    output: block('**Note.** Then \u201cdone.\u201d Then **note:** more.'),
+    errors: errors('join'),
+  },
+  {
+    name: 'a dotted initialism with two spaces is not glued as a sentence end',
+    code: block('In the U.S.  Then', 'more.'),
+    output: block('In the U.S. Then more.'),
+    errors: errors('join'),
   },
   {
     name: 'an abbreviation with two spaces is not glued as a sentence end',

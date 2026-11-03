@@ -168,6 +168,15 @@ export const valid = [
     code: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hhh, iiii jjjj kkkk.'),
   },
   {
+    name: 'with `hang` on, closing emphasis may not hang past the width',
+    options: narrow,
+    code: block('aaaa bbbb cccc dddd eeee ffff', 'gggg _hh._ iiii jjjj kkkk.'),
+  },
+  {
+    name: 'a block whose only problem is the gap after closing emphasis or a curly quote',
+    code: block('**Note.** Then \u201cdone.\u201d Then **note:** then more.'),
+  },
+  {
     name: 'with `widows` off, a short last line may stay',
     options: [{ width: 42, widows: 0 }],
     code: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hh i.'),
@@ -275,6 +284,99 @@ export const valid = [
 ];
 
 export const invalid = [
+  {
+    name: 'closing emphasis and a closing curly quote get two spaces when joined',
+    errors: [{ messageId: 'join' }],
+    code: block(
+      'It is **done.**',
+      'Then \u201cdone.\u201d',
+      'Then **note:**',
+      'then.',
+    ),
+    output: block(
+      'It is **done.**  Then \u201cdone.\u201d  Then **note:**  then.',
+    ),
+  },
+  {
+    name: 'the abbreviations that stay inside a sentence get one space when joined',
+    errors: [{ messageId: 'join' }],
+    code: block(
+      'The U.S.',
+      'Government, approx.',
+      '5, no.',
+      '6, Foo Inc.',
+      'in 2020, Foo Jr.',
+      'said.',
+    ),
+    output: block(
+      'The U.S. Government, approx. 5, no. 6, Foo Inc. in 2020, Foo Jr. said.',
+    ),
+  },
+  {
+    name: 'the abbreviations that end a sentence get two spaces when joined',
+    errors: [{ messageId: 'join' }],
+    code: block(
+      'The answer is no.',
+      'Then Foo Inc.',
+      'Then Foo Jr.',
+      'Then more.',
+    ),
+    output: block('The answer is no.  Then Foo Inc.  Then Foo Jr.  Then more.'),
+  },
+  {
+    name: 'a closing curly quote ends a sentence, so a line may break after it',
+    options: narrow,
+    code: block(
+      'aaaa bbbb cccc dddd eeee \u201cdone.\u201d Then more words here.',
+    ),
+    output: block(
+      'aaaa bbbb cccc dddd eeee \u201cdone.\u201d',
+      'Then more words here.',
+    ),
+  },
+  {
+    name: 'closing emphasis ends a sentence, so a line may break after it',
+    options: narrow,
+    code: block('aaaa bbbb cccc dddd eeee _done._ Then more words here now.'),
+    output: block(
+      'aaaa bbbb cccc dddd eeee _done._',
+      'Then more words here now.',
+    ),
+  },
+  {
+    name: 'a word with a comma and a closing curly quote is a clause, as with a straight one',
+    options: narrow,
+    code: block(
+      'aaaa bbbb cccc dddd eeee, \u201cfff,\u201d gggg hhhh iiii jjjj kkkk.',
+    ),
+    output: block(
+      'aaaa bbbb cccc dddd eeee, \u201cfff,\u201d',
+      'gggg hhhh iiii jjjj kkkk.',
+    ),
+  },
+  {
+    name: 'a dotted initialism with two spaces stays with the next word',
+    options: narrow,
+    code: block('aaaa bbbb cccc dddd eeee ffff gg U.S.  Then more words.'),
+    output: block('aaaa bbbb cccc dddd eeee ffff', 'gg U.S.  Then more words.'),
+  },
+  {
+    name: 'a new abbreviation with two spaces stays with the next word',
+    options: narrow,
+    code: block('aaaa bbbb cccc dddd eeee ffff gg Inc.  in more words.'),
+    output: block('aaaa bbbb cccc dddd eeee ffff', 'gg Inc.  in more words.'),
+  },
+  {
+    name: 'a dotted initialism with one space may end a line',
+    options: narrow,
+    code: block(
+      'aaaa bbbb cccc dddd eeee ffff gg U.S. Government more words here.',
+    ),
+    output: block(
+      'aaaa bbbb cccc dddd eeee ffff gg U.S.',
+      'Government more words here.',
+    ),
+  },
   {
     name: 'a bracket in a code span never pairs with a bracket outside it',
     options: narrow,

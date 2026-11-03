@@ -347,6 +347,10 @@ isn't a sentence end then, and `word-spacing` narrows its gap, not
 `sentence-spacing`. The same goes for `He met Paul.  St. Paul` and for two spaces
 after an abbreviation before a lowercase word, such as `e.g.  this`.
 
+So `In the U.S.  Then` and `no.  5` are `word-spacing`'s too, while
+`Foo Inc.  Then` is `sentence-spacing`'s, since the capitalized word makes it a
+sentence end either way.
+
 A two-space gap after a sentence end or a colon is still `sentence-spacing`'s or
 `colon-spacing`'s, so with those two off it stays, and `word-spacing` doesn't
 report it, unless `reflow` rewrites its paragraph for some other reason.
@@ -604,10 +608,11 @@ Six rules check the gaps between words, each one kind of gap:
 
 - `jsdoc-flow/sentence-spacing`: two spaces, or one with
   [`spaces: 1`](#one-space-or-two), follow a sentence-ending `.`, `!`, or `?`
-  when more text follows on the same line. Note that `e.g.`, `i.e.`, and `etc.`
-  don't end a sentence.
+  when more text follows on the same line. Not every period ends a sentence:
+  see [what ends a sentence](#what-ends-a-sentence).
 - `jsdoc-flow/colon-spacing`: two spaces, or one with `spaces: 1`, follow a
-  colon when more text follows on the same line.
+  colon when more text follows on the same line, including one inside closing
+  emphasis or quotes, as in `**Note:** Then`.
 - `jsdoc-flow/word-spacing`: one space separates any other two words.
 - `jsdoc-flow/no-extra-punctuation-space`: no space comes before `,`, `.`,
   `;`, `:`, `)` or `]`, or after `(` or `[`, so `( see above ) ,` becomes
@@ -632,6 +637,52 @@ They're independent: turn on any of them without the others, and each
 reports and fixes only its own kind of gap. They check only how wide a gap
 is, so a tab or a no-break space where one space belongs is left to
 `no-exotic-whitespace`.
+
+#### What ends a sentence
+
+A word ending in `.`, `!` or `?` ends a sentence. Closing brackets, quotes
+(straight or curly) and emphasis after that don't change it, so `"Done." Then`,
+`“Done.” Then`, `(Done.) Then`, `**Note.** Then`, `*Done.* Then` and
+`_Done._ Then` all get two spaces, and so does the colon of `**Note:** Then`.
+
+Emphasis is read from the word alone, since `*` and `_` also appear in text that
+has nothing to do with emphasis. A `*` or `_` closes emphasis only if the word
+opens with the same marks (`*Done.*`), so `.eslintrc.* files`, `s3:* on`,
+`foo._ Bar`, `foo_ Bar` and `2 * 3` keep one space. Only `**` may close what an
+earlier word opened (`**Note this well.** Then`). A single `*` or `_` can't be
+told from those others, so `_Only in browsers._ Then` keeps one space.
+
+A period may also end an abbreviation. What a sentence does after one depends on
+the abbreviation. Matching ignores case, except for dotted initialisms.
+
+- `e.g.`, `i.e.`, `etc.`, `et al.`, `a.k.a.`, `w.r.t.`, `esp.`, `incl.`,
+  `approx.`, `fig.`, `eq.`, `sec.`, `ch.`, `vol.`, `pp.`, `a.m.`, `p.m.`, `a.d.`,
+  `b.c.`, `a.c.e.` and `b.c.e.` end a sentence only before a capitalized word
+  (`etc. Then`). They don't before anything else, as in `approx. 5`.
+- `Inc.`, `Ltd.`, `Corp.`, `Co.`, `Jr.` and `Sr.` work the same way, so
+  `Foo Inc. in 2020` and `Foo Jr. said` keep one space, and `Foo Inc. Then` gets
+  two. They close the name before them, so a capitalized word after one more
+  likely starts a sentence. `Foo Inc. Board` gets two spaces as well, which is
+  the cost of that.
+- `no.` and `nos.` are words too, so they stay inside a sentence only before a
+  number, as in `no. 5` or `Nos. 5-6`. `The answer is no. Then` ends one, and so
+  does `no. then`.
+- `St.` and dotted initialisms, which are two or more capitals each with a period
+  (`U.S.`, `U.K.`, `U.N.`), stay inside a sentence before anything, as in
+  `St. Paul` and `The U.S. Government`, since the capitalized word may go on with
+  a name.
+- `Dr.`, `Mr.`, `Mrs.`, `Ms.`, `Prof.`, `vs.` and `cf.` always stay inside a
+  sentence, however many spaces follow them.
+
+Except for that last group, two spaces after an abbreviation mark a sentence end
+that the words can't show, and they're kept, as in `Elm St.  Then`,
+`In the U.S.  Then we left` and `no.  5`. With one space, `The U.S. Government`
+and `In the U.S. Then we left` look the same, so neither is widened. Two spaces
+can't count with [`spaces: 1`](#one-space-or-two), where the words alone decide.
+
+Because two spaces always count, a gap that an earlier version of these rules
+widened, such as `Foo Inc.  in 2020` or `The U.S.  Government`, stays wide until
+you narrow it by hand.
 
 Why two spaces by default? Traditional typesetting set a wider space between
 sentences than between words. Typewriters, limited to fixed-width characters,
