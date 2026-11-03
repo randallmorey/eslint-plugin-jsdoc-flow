@@ -51,6 +51,20 @@ export const edgeValid = [
       '',
     ].join('\n'),
   },
+  {
+    name: 'the lines of a multi-line `{Type}` are skipped, through its closing brace',
+    code: [
+      '/**',
+      '   *    @param {{  ',
+      '* a: string  ',
+      '   *',
+      ' *     b: string',
+      '  *   }} name - the name',
+      ' */',
+      'export const x = 1;',
+      '',
+    ].join('\n'),
+  },
 ];
 
 export const starInvalid = [
@@ -172,6 +186,26 @@ export const trailingInvalid = [
     errors: [
       { messageId: 'trailing', line: 1, column: 5, endLine: 1, endColumn: 20 },
     ],
+  },
+  {
+    name: 'whitespace after the text that follows a multi-line `{Type}`',
+    code: block(
+      '@param {{',
+      '  a: string',
+      '}} name  ',
+      '@typedef {',
+      '  a',
+      '}  ',
+    ),
+    output: block(
+      '@param {{',
+      '  a: string',
+      '}} name',
+      '@typedef {',
+      '  a',
+      '}',
+    ),
+    errors: [{ messageId: 'trailing' }, { messageId: 'trailing' }],
   },
 ];
 

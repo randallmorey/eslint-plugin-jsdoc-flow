@@ -17,6 +17,12 @@ export const bulletAlignValid = [
       '   continued',
       '10. ten,',
       '    continued',
+      '+ a plus,',
+      '  continued',
+      '1) a parenthesized one,',
+      '   continued',
+      '10) ten,',
+      '    continued',
     ),
   },
   {
@@ -75,9 +81,19 @@ export const bulletAlignValid = [
     name: 'a one-line block',
     code: '/** - a bullet */\nexport const x = 1;\n',
   },
+  {
+    name: 'a line of a multi-line `{Type}` that looks like a list item',
+    code: block('@typedef {{', '  - a', 'b', '}} Name'),
+  },
 ];
 
 export const bulletAlignInvalid = [
+  {
+    name: 'wrapped lines under a `+` or a `1)`',
+    errors: alignErrors(2),
+    code: block('+ a bullet,', 'continued', '10) ten,', '   continued'),
+    output: block('+ a bullet,', '  continued', '10) ten,', '    continued'),
+  },
   {
     // Text that starts before its column is highlighted from its start.
     name: "wrapped lines under the item's marker",

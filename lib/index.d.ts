@@ -24,11 +24,32 @@ declare const plugin: ESLint.Plugin & {
 export default plugin;
 
 /**
+ * How the exported functions read and space a block.  Neither is an option of
+ * a rule, since the rules take both from the shared settings, so that they
+ * all agree.
+ */
+export interface BlockOptions {
+  /**
+   * Whether what looks like unfenced code or a diagram is kept as it is, which
+   * it is unless set to `false`.
+   */
+  preformatted?: boolean;
+  /**
+   * How many spaces follow a sentence end or a colon on a line, `2` unless
+   * set.  With `2`, two spaces after an abbreviation can show that a sentence
+   * ended, and with `1`, they can't.  `fixEdges` spaces no such gap, so it
+   * ignores this.
+   */
+  spaces?: 1 | 2;
+}
+
+/**
  * The limits on where a line may break that `reflowComment` and the `reflow`
  * rule can turn on or off.  Each is on unless set to `false`, except
- * `widows`, which is `0.15` unless set, and off at `0`.
+ * `widows`, which is `0.15` unless set, and off at `0`.  `reflowComment` also
+ * takes the `BlockOptions`.
  */
-export interface ReflowOptions {
+export interface ReflowOptions extends BlockOptions {
   /**
    * Whether a sentence's first two and last two words stay together
    * (`sentence`), a single word after `, ; :` may not end a line or be a line
@@ -64,7 +85,8 @@ export interface ReflowOptions {
  * @param text - the block, from its `/**` to its `*\/`
  * @param indent - the whitespace before the block on its line
  * @param width - the widest a line may be, prefix included (default 80)
- * @param options - the limits on where a line may break to turn off
+ * @param options - the limits on where a line may break to turn off, and how
+ *   to read and space the block
  * @returns the reflowed block, or null if its form isn't one this handles
  */
 export function reflowComment(
@@ -77,26 +99,42 @@ export function reflowComment(
 /**
  * @param text - the block, from its `/**` to its `*\/`
  * @param indent - the whitespace before the block on its line
+ * @param options - how to read and space the block
  * @returns the block, with its tag continuation lines aligned
  */
-export function alignTags(text: string, indent: string): string;
+export function alignTags(
+  text: string,
+  indent: string,
+  options?: BlockOptions,
+): string;
 
 /**
  * @param text - the block, from its `/**` to its `*\/`
  * @param indent - the whitespace before the block on its line
+ * @param options - how to read and space the block
  * @returns the block, with two spaces after each sentence end or colon
- *   followed by more text on its line, one on either side of a tag's `-`,
+ *   followed by more text on its line, or one if `options.spaces` is `1`,
+ *   one on either side of a tag's `-`,
  *   and one between other words, except that the spaces before
  *   `, . ; : ) ]` and after `( [` are left as they are, and so is a gap
  *   that's already as wide as it should be, even if it's a tab
  */
-export function fixSpacing(text: string, indent: string): string;
+export function fixSpacing(
+  text: string,
+  indent: string,
+  options?: BlockOptions,
+): string;
 
 /**
  * @param text - the block, from its `/**` to its `*\/`
  * @param indent - the whitespace before the block on its line
+ * @param options - how to read and space the block
  * @returns the block, with the whitespace at its lines' edges fixed:  each
  *   `*` under the `/**`, one space between it and the text, and no
  *   whitespace after the text
  */
-export function fixEdges(text: string, indent: string): string;
+export function fixEdges(
+  text: string,
+  indent: string,
+  options?: BlockOptions,
+): string;

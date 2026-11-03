@@ -127,6 +127,27 @@ export const alignValid = [
       '',
     ].join('\n'),
   },
+  {
+    name: 'the lines of a multi-line `{Type}` are left as they are',
+    code: block(
+      '@param {{',
+      '  a: string,',
+      '      b: string',
+      '}} name',
+      '@returns {',
+      'a',
+      '} the result',
+    ),
+  },
+  {
+    name: 'the description after a multi-line `{Type}`, aligned',
+    code: block(
+      '@param {{',
+      '  a: string',
+      '}} name - the description,',
+      '          continued',
+    ),
+  },
 ];
 
 export const alignInvalid = [
@@ -329,6 +350,55 @@ export const alignInvalid = [
     output: block(
       '@returns {Promise<void>} once it is done,',
       '                         or not',
+    ),
+  },
+  {
+    name: 'the description after a multi-line `{Type}`',
+    code: block(
+      '@param {{',
+      '  a: string',
+      '}} name - the description,',
+      '  continued',
+      '@returns {{',
+      '  a: string',
+      '}} the result,',
+      '  continued',
+    ),
+    output: block(
+      '@param {{',
+      '  a: string',
+      '}} name - the description,',
+      '          continued',
+      '@returns {{',
+      '  a: string',
+      '}} the result,',
+      '   continued',
+    ),
+    errors: alignErrors(2),
+  },
+  {
+    name: 'a closing line indented under a multi-line `{Type}`',
+    code: block('@param {{', '  a: string', '  }} name - one,', '  two'),
+    output: block(
+      '@param {{',
+      '  a: string',
+      '  }} name - one,',
+      '            two',
+    ),
+  },
+  {
+    name: 'a wide head after a multi-line `{Type}` hangs its description two in',
+    code: block(
+      '@param {{',
+      '  a: string',
+      '}[] | null} aVeryLongNameThatGoesOnAndOnAndOnAndOn -',
+      '     the name',
+    ),
+    output: block(
+      '@param {{',
+      '  a: string',
+      '}[] | null} aVeryLongNameThatGoesOnAndOnAndOnAndOn -',
+      '  the name',
     ),
   },
 ].map((c) => ({ errors: alignErrors(1), ...c }));

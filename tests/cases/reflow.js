@@ -10,10 +10,88 @@ const narrow = [{ width: 42 }];
 
 const errors = [{ messageId: 'break' }];
 
+// Blocks with a multi-line or deeply nested `{Type}`, which every rule leaves
+// as they are.
+export const typeValid = [
+  {
+    name: 'a multi-line `{Type}` is kept as it is',
+    code: block(
+      '@typedef {{',
+      '  hasNoTypes: boolean,',
+      '  maxNamedTagLength: number',
+      '}} TypelessInfo',
+    ),
+  },
+  {
+    name: 'a multi-line union keeps its lines that start with `|`',
+    code: block(
+      '@typedef {[',
+      '  (',
+      '    | boolean',
+      '    | {',
+      '      grouping?: boolean;',
+      '    }',
+      '  )?',
+      ']} RuleOptions',
+    ),
+  },
+  {
+    name: 'a multi-line `{Type}` with a description after its closing brace',
+    code: block(
+      '@param {{',
+      '  mergeSettings?: boolean',
+      '}} options - how to merge them, which is long enough to wrap onto one',
+      '             continuation line',
+      '@returns {{',
+      '  a: string',
+      '}} the result, which is long enough to wrap onto one continuation line,',
+      '   like the one above',
+    ),
+  },
+  {
+    name: 'a multi-line `{Type}` that closes after text on its closing line',
+    code: block('@param {{', '  a: string', '}[] | null} name - the name'),
+  },
+  {
+    name: 'a multi-line `{Type}` that opens on the line after its tag',
+    code: block('@param', '{{', '  a: string', '}} name - the name'),
+  },
+  {
+    name: 'a multi-line `{Type}` may hold blank lines and what looks like code',
+    code: block(
+      '@typedef {{',
+      '  a: string,',
+      '',
+      '      b:   string,',
+      '  - c',
+      '}} Name',
+      '',
+      'A paragraph after it.',
+    ),
+  },
+  {
+    name: "a tag's multi-line `{...}` needn't be a type",
+    code: block('@import {', '  a,', '  b', "} from 'x'"),
+  },
+  {
+    name: 'a `{Type}` nested three levels deep is one token of the head',
+    code: block('@param {{ a: { b: { c: string } } }} name - the name'),
+  },
+];
+
 export const valid = [
+  ...typeValid,
   {
     name: "a code span's spaces are kept as they are",
     code: block('Matches `-  x` and `a   b`, but not `c d`.'),
+  },
+  {
+    name: "a multi-backtick code span's spaces are kept as they are",
+    code: block('Matches ``-  x`` and ```a   b```, but not `` c  ` d ``.'),
+  },
+  {
+    name: 'a one-liner starting with an inline ``` span stays on one line',
+    code: '/** ```foo``` inline text. */\nexport const x = 1;\n',
   },
   {
     name: 'an already flowed block',
@@ -98,6 +176,15 @@ export const valid = [
     code: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hhh, iiii jjjj kkkk.'),
   },
   {
+    name: 'with `hang` on, closing emphasis may not hang past the width',
+    options: narrow,
+    code: block('aaaa bbbb cccc dddd eeee ffff', 'gggg _hh._ iiii jjjj kkkk.'),
+  },
+  {
+    name: 'a block whose only problem is the gap after closing emphasis or a curly quote',
+    code: block('**Note.** Then \u201cdone.\u201d Then **note:** then more.'),
+  },
+  {
     name: 'with `widows` off, a short last line may stay',
     options: [{ width: 42, widows: 0 }],
     code: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hh i.'),
@@ -136,6 +223,23 @@ export const valid = [
   {
     name: 'a one-liner stays on one line when it fits',
     code: 'class A {\n  /** Short text.  More text. */\n  x = 1;\n}\n',
+  },
+  {
+    name: 'a `@ts-*` directive too wide to fit stays on one line',
+    code: '/** @ts-expect-error the upstream type is wrong here, and it stays wrong until the next major */\nexport const x = 1;\n',
+  },
+  {
+    name: 'a `@ts-*` directive too wide for a narrow width stays on one line',
+    options: narrow,
+    code: 'class A {\n  /** @ts-ignore one reason, then some more of it. */\n  x = 1;\n}\n',
+  },
+  {
+    name: "a wide `@ts-*` directive's spacing is left to the spacing rules",
+    code: '/** @ts-expect-error the upstream type is wrong. It  stays wrong until the next major one */\nexport const x = 1;\n',
+  },
+  {
+    name: "a `@ts-*` directive's extra whitespace is left to the edge rules",
+    code: '/**     @ts-ignore a reason  */\nexport const x = 1;\n',
   },
   {
     name: "a block whose only problems are its lines' edges is left to the edge rules",
@@ -188,6 +292,99 @@ export const valid = [
 ];
 
 export const invalid = [
+  {
+    name: 'closing emphasis and a closing curly quote get two spaces when joined',
+    errors: [{ messageId: 'join' }],
+    code: block(
+      'It is **done.**',
+      'Then \u201cdone.\u201d',
+      'Then **note:**',
+      'then.',
+    ),
+    output: block(
+      'It is **done.**  Then \u201cdone.\u201d  Then **note:**  then.',
+    ),
+  },
+  {
+    name: 'the abbreviations that stay inside a sentence get one space when joined',
+    errors: [{ messageId: 'join' }],
+    code: block(
+      'The U.S.',
+      'Government, approx.',
+      '5, no.',
+      '6, Foo Inc.',
+      'in 2020, Foo Jr.',
+      'said.',
+    ),
+    output: block(
+      'The U.S. Government, approx. 5, no. 6, Foo Inc. in 2020, Foo Jr. said.',
+    ),
+  },
+  {
+    name: 'the abbreviations that end a sentence get two spaces when joined',
+    errors: [{ messageId: 'join' }],
+    code: block(
+      'The answer is no.',
+      'Then Foo Inc.',
+      'Then Foo Jr.',
+      'Then more.',
+    ),
+    output: block('The answer is no.  Then Foo Inc.  Then Foo Jr.  Then more.'),
+  },
+  {
+    name: 'a closing curly quote ends a sentence, so a line may break after it',
+    options: narrow,
+    code: block(
+      'aaaa bbbb cccc dddd eeee \u201cdone.\u201d Then more words here.',
+    ),
+    output: block(
+      'aaaa bbbb cccc dddd eeee \u201cdone.\u201d',
+      'Then more words here.',
+    ),
+  },
+  {
+    name: 'closing emphasis ends a sentence, so a line may break after it',
+    options: narrow,
+    code: block('aaaa bbbb cccc dddd eeee _done._ Then more words here now.'),
+    output: block(
+      'aaaa bbbb cccc dddd eeee _done._',
+      'Then more words here now.',
+    ),
+  },
+  {
+    name: 'a word with a comma and a closing curly quote is a clause, as with a straight one',
+    options: narrow,
+    code: block(
+      'aaaa bbbb cccc dddd eeee, \u201cfff,\u201d gggg hhhh iiii jjjj kkkk.',
+    ),
+    output: block(
+      'aaaa bbbb cccc dddd eeee, \u201cfff,\u201d',
+      'gggg hhhh iiii jjjj kkkk.',
+    ),
+  },
+  {
+    name: 'a dotted initialism with two spaces stays with the next word',
+    options: narrow,
+    code: block('aaaa bbbb cccc dddd eeee ffff gg U.S.  Then more words.'),
+    output: block('aaaa bbbb cccc dddd eeee ffff', 'gg U.S.  Then more words.'),
+  },
+  {
+    name: 'a new abbreviation with two spaces stays with the next word',
+    options: narrow,
+    code: block('aaaa bbbb cccc dddd eeee ffff gg Inc.  in more words.'),
+    output: block('aaaa bbbb cccc dddd eeee ffff', 'gg Inc.  in more words.'),
+  },
+  {
+    name: 'a dotted initialism with one space may end a line',
+    options: narrow,
+    code: block(
+      'aaaa bbbb cccc dddd eeee ffff gg U.S. Government more words here.',
+    ),
+    output: block(
+      'aaaa bbbb cccc dddd eeee ffff gg U.S.',
+      'Government more words here.',
+    ),
+  },
   {
     name: 'a bracket in a code span never pairs with a bracket outside it',
     options: narrow,
@@ -754,6 +951,80 @@ export const invalid = [
     output: block('aaaa bbbb cccc dddd `a code span`', 'eeee ffff.'),
   },
   {
+    name: 'a code span of two backticks is unbreakable',
+    options: narrow,
+    code: block('aaaa bbbb cccc dddd ``a code span`` eeee ffff.'),
+    output: block('aaaa bbbb cccc dddd ``a code span``', 'eeee ffff.'),
+  },
+  {
+    name: 'a code span of three backticks holds fewer, and is unbreakable',
+    options: narrow,
+    code: block('aaaa bbbb cccc ddd ``` a `` b ` c ``` eeee ffff.'),
+    output: block('aaaa bbbb cccc ddd ``` a `` b ` c ```', 'eeee ffff.'),
+  },
+  {
+    name: 'the text after a code span holding a backtick flows',
+    options: narrow,
+    code: block(
+      'aaaa ``` ` ``` bbbb cccc dddd eeee ffff `gggg` hhhh iiii `jjjj` kkkk.',
+    ),
+    output: block(
+      'aaaa ``` ` ``` bbbb cccc dddd eeee',
+      'ffff `gggg` hhhh iiii `jjjj` kkkk.',
+    ),
+  },
+  {
+    name: 'a real comment with a code span holding a backtick flows',
+    code: block(
+      'Determines whether an opening parenthesis `(`, bracket `[` or backtick ``` ` ``` needs to be preceded by a semicolon.',
+      'This opening parenthesis or bracket should be at the start of an `ExpressionStatement`, a `MethodDefinition` or at',
+      'the start of the body of an `ArrowFunctionExpression`.',
+      '@param {SourceCode} sourceCode The source code object.',
+    ),
+    output: block(
+      'Determines whether an opening parenthesis `(`, bracket `[` or backtick',
+      '``` ` ``` needs to be preceded by a semicolon.  This opening parenthesis or',
+      'bracket should be at the start of an `ExpressionStatement`,',
+      'a `MethodDefinition` or at the start of the body of',
+      'an `ArrowFunctionExpression`.',
+      '@param {SourceCode} sourceCode The source code object.',
+    ),
+  },
+  {
+    name: 'a run of backticks is closed only by a run just as long',
+    options: narrow,
+    code: block('aaaa ``` bbbb `` cccc dddd eeee ffff gggg hhhh ` iiii.'),
+    output: block('aaaa ``` bbbb `` cccc dddd eeee ffff', 'gggg hhhh ` iiii.'),
+  },
+  {
+    name: 'a run of backticks that nothing closes is plain text',
+    options: narrow,
+    code: block('aaaa `` bbbb cccc dddd eeee ffff gggg hhhh `iiii` jjjj.'),
+    output: block('aaaa `` bbbb cccc dddd eeee ffff gggg', 'hhhh `iiii` jjjj.'),
+  },
+  {
+    name: 'a code span of two backticks may cross lines',
+    errors: [{ messageId: 'join' }],
+    options: narrow,
+    code: block('aaaa ``x  y', 'z`` bbbb cccc.'),
+    output: block('aaaa ``x  y z`` bbbb cccc.'),
+  },
+  {
+    name: 'a bracket in a multi-backtick code span never pairs with one outside it',
+    options: narrow,
+    code: block('aaaa ``[`` bbbb cccc dddd eeee ffff gggg hhhh ``]`` iiii.'),
+    output: block(
+      'aaaa ``[`` bbbb cccc dddd eeee ffff',
+      'gggg hhhh ``]`` iiii.',
+    ),
+  },
+  {
+    name: 'a brace in a multi-backtick code span never closes the `{...}` around it',
+    options: narrow,
+    code: block('aaaa bbbb cccc dddd {@link ``}`` Foo bar} eeee.'),
+    output: block('aaaa bbbb cccc dddd', '{@link ``}`` Foo bar} eeee.'),
+  },
+  {
     name: 'links and `{...}` are unbreakable',
     options: narrow,
     code: block(
@@ -846,6 +1117,13 @@ export const invalid = [
       'foo(  a,  b );  // a long comment that goes past forty',
       '@returns the result',
     ),
+  },
+  {
+    name: 'a description before a `@ts-*` tag expands when it does not fit',
+    options: narrow,
+    code: '/** A reason that is too long to fit. @ts-ignore */\nexport const x = 1;\n',
+    output: block('A reason that is too long', 'to fit.  @ts-ignore'),
+    errors,
   },
   {
     name: "a one-liner expands when it doesn't fit",
@@ -947,6 +1225,61 @@ export const invalid = [
       { messageId: 'join', line: 2, column: 29, endLine: 3, endColumn: 8 },
       { messageId: 'join', line: 5, column: 9, endLine: 6, endColumn: 8 },
     ],
+  },
+  {
+    name: 'the text after a multi-line `{Type}` is flowed',
+    errors: [{ messageId: 'join' }],
+    code: block(
+      '@param {{',
+      '  a: string',
+      '}} name - the name,',
+      '          which goes on',
+    ),
+    output: block(
+      '@param {{',
+      '  a: string',
+      '}} name - the name, which goes on',
+    ),
+  },
+  {
+    name: 'the text after a multi-line `{Type}` wraps under its description',
+    code: block(
+      '@typedef {{',
+      '  a: string',
+      '}} Name - the name, which is long enough that it has to wrap onto another line',
+    ),
+    output: block(
+      '@typedef {{',
+      '  a: string',
+      '}} Name - the name, which is long enough that it has to wrap onto',
+      '          another line',
+    ),
+  },
+  {
+    name: 'a wide head after a multi-line `{Type}` puts its description below',
+    code: block(
+      '@param {{',
+      '  a: string',
+      '}[] | null} aVeryLongNameThatGoesOnAndOnAndOnAndOn - the name, which has to wrap',
+    ),
+    output: block(
+      '@param {{',
+      '  a: string',
+      '}[] | null} aVeryLongNameThatGoesOnAndOnAndOnAndOn -',
+      '  the name, which has to wrap',
+    ),
+  },
+  {
+    name: "a `{` that doesn't close before the next tag is flowed as text",
+    errors: [{ messageId: 'join' }],
+    code: block('@param {name - the', '  name', '@param other - } the other'),
+    output: block('@param {name - the name', '@param other - } the other'),
+  },
+  {
+    name: 'a `{@link ...}` across lines is no type, and is joined',
+    errors: [{ messageId: 'join' }],
+    code: block('@see {@link Foo', '  bar} and more'),
+    output: block('@see {@link Foo bar} and more'),
   },
 ].map((c) => ({ errors, ...c }));
 
