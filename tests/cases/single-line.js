@@ -136,6 +136,24 @@ export const singleSettled = [
   },
 ];
 
+// Comments that open with more than two stars, which aren't JSDoc blocks, so
+// every rule leaves them as they are, on one line or several.
+export const extraStars = [
+  ['one line', '/*** Saves */'],
+  ['one line with messy spacing', '/***  Saves. Two  words  */'],
+  ['one line with a tag', '/*** @param  name - the name */'],
+  ['a one-line banner', '/***** Banner *****/'],
+  ['no text', '/*** */'],
+  ['only stars', '/****/'],
+  ['several lines', '/***\n * Saves. Two  words  \n *   @param  x - y\n */'],
+  ['several lines with text after the stars', '/*** Saves. Two\n * words\n */'],
+  ['a banner on several lines', '/*****\n * Banner. Two  words\n *****/'],
+  ['nested in a class', 'class A {\n  /*** Saves */\n  x = 1;\n}'],
+].map(([name, comment]) => ({
+  name: `more than two stars:  ${name}`,
+  code: `${comment}\nexport const x = 1;\n`,
+}));
+
 export const singleValid = [
   {
     name: 'a block on three lines',
@@ -154,11 +172,15 @@ export const singleValid = [
       '/** */',
       '/***/',
       '/**   */',
+      '/*** */',
+      '/****/',
+      '/*****/',
       'foo(/** @type {Foo} */ (bar));',
       '/** Code after the block. */ foo();',
       '',
     ].join('\n'),
   },
+  ...extraStars,
   ...singleSettled.map(
     ({ name, code, options, filename, languageOptions }) => ({
       name,

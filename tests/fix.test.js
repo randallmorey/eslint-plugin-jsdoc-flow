@@ -35,6 +35,7 @@ import { exoticInvalid, exoticMixed, exoticValid } from './cases/whitespace.js';
 import { alignInvalid, alignValid } from './cases/tag-align.js';
 import { bulletAlignInvalid, bulletAlignValid } from './cases/bullet-align.js';
 import {
+  extraStars,
   singleInvalid,
   singleSettled,
   singleValid,
@@ -194,9 +195,9 @@ for (const c of [
   });
 }
 
-// A multi-line `{Type}` or a Markdown block survives `--fix` with all the rules
-// as it is.
-for (const c of [...typeValid, ...blockValid]) {
+// A multi-line `{Type}`, a Markdown block or a comment with more than two stars
+// survives `--fix` with all the rules as it is.
+for (const c of [...typeValid, ...blockValid, ...extraStars]) {
   test(`all rules keep:  ${c.name}`, () => {
     assert.equal(fixWith(c, RULES, c.code), c.code);
   });

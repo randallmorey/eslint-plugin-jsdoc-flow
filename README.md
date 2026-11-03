@@ -103,7 +103,9 @@ file ESLint can parse: JavaScript, TypeScript (with `typescript-eslint`'s
 parser), and Ember `.gjs`/`.gts` files (with `eslint-plugin-ember`'s parser,
 which leaves comments inside `<template>` alone). Ordinary `/* */` and `//`
 comments aren't touched, and neither are the blocks you've
-[asked them to leave alone](#leaving-a-block-alone).
+[asked them to leave alone](#leaving-a-block-alone). A comment that opens with
+more than two stars, such as `/*** ... */` or a `/*****` banner, isn't a JSDoc
+block, just as the JSDoc tool itself ignores it, so it isn't touched either.
 
 ## Leaving a block alone
 
