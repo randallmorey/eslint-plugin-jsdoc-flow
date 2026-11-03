@@ -452,8 +452,9 @@ means:
 
 - A word never moves to the start of a line where it would read as a tag or
   a Markdown block. That goes for a word starting with `@`, `*`, `|`, `>`,
-  ` ``` `, `~~~`, `<!--`, an HTML block's tag such as `<pre>` or `</div>`, or a
-  link reference's `[ref]:`, and for a word that's only up to six `#`, a list
+  ` ``` ` with no more backticks after those, `~~~`, `<!--`, an HTML block's tag
+  such as `<pre>` or `</div>`, or a link reference's `[ref]:`, and for a word
+  that's only up to six `#`, a list
   marker (`-`, `+`, or a number and `.` or `)`), a run of `=` or `_`, the `^`
   and `~` of a pointer line, or the `-`, `:` and `|` of a thematic break, an
   underline or a table's delimiter row, such as `---` or `--|--`. A description
@@ -461,8 +462,8 @@ means:
   head. The lines of a multi-line `{Type}` stay as they are, so a union's `|` may
   start one there.
 - A word that would read as a thematic break, an underline, a link reference
-  definition or a pointer line if a paragraph's first line ended there, as `---`
-  would in `--- then more`, stays with the word after it.
+  definition, a pointer line or a fence's opening if a paragraph's first line
+  ended there, as `---` would in `--- then more`, stays with the word after it.
 - A word that ends in a hard break (`<br>` or a backslash) and isn't at the end
   of its line stays with the word after it, so wrapping never adds a hard break.
 - Code spans, Markdown links, `{@link ...}`, `{Type}` and `[optional]` names
@@ -570,7 +571,9 @@ their lines, and nothing flows into them:
   title, alone on a line. `[ref]: more than one word` is ordinary text;
 - fenced code, opened by ` ``` ` or `~~~`. A `~~~` fence closes only on a `~~~`
   at least as long, alone on its line. Either kind runs to the end of the block
-  if nothing closes it, across blank lines and tags;
+  if nothing closes it, across blank lines and tags. As in Markdown, a line with
+  more backticks after its opening ` ``` `, such as ` ```foo``` text `,
+  doesn't open a fence, and is ordinary text with a code span;
 - HTML blocks. `<pre>`, `<script>`, `<style>`, `<textarea>` and an `<!--` comment
   run through the line that closes them, across blank lines and tags, like a
   fence. If nothing closes them, they end at the next blank line or tag, so a

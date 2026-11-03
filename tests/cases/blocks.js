@@ -114,6 +114,14 @@ export const blockValid = [
     ),
   },
   {
+    name: 'a `~~~` fence may have backticks in its info string',
+    code: block('~~~js `x`', 'a  b', '~~~', 'Text after it.'),
+  },
+  {
+    name: 'a fence with an info string, and text after it',
+    code: block('```js title', 'a  b', '```', 'Text after it.'),
+  },
+  {
     name: "a ``` fence isn't closed by a `~~~`",
     code: block('```', 'a  b', '~~~', 'c  d', '```', 'Text after it.'),
   },
@@ -574,6 +582,85 @@ export const blockInvalid = [
     output: block('aaaa bbbb cccc dddd eeee ffff', 'gggg\\ hhhh iiii.'),
   },
   {
+    name: 'a line starting with an inline ``` span is read as text',
+    errors: join,
+    code: block('```foo``` inline text.', 'More text.'),
+    output: block('```foo``` inline text.  More text.'),
+  },
+  {
+    name: 'a line starting with an inline ```` span is read as text',
+    errors: join,
+    code: block('````foo```` inline text.', 'More text.'),
+    output: block('````foo```` inline text.  More text.'),
+  },
+  {
+    name: 'a line with a span later in it is read as text, whatever opens it',
+    errors: join,
+    code: block('```js `x` inline text.', 'More text.'),
+    output: block('```js `x` inline text.  More text.'),
+  },
+  {
+    name: 'an inline ``` span on its own line is read as text, and joins the line above',
+    errors: join,
+    code: block('Some text.', '```foo```', 'More text.'),
+    output: block('Some text.  ```foo``` More text.'),
+  },
+  {
+    name: 'an inline ``` span at the start of a line wraps, and later tags still flow',
+    errors: [{ messageId: 'break' }, { messageId: 'join' }],
+    options: narrow,
+    code: block(
+      '```foo``` aaaa bbbb cccc dddd eeee ffff gggg hhhh.',
+      '',
+      '@param name - aaaa bbbb',
+      '              cccc dddd.',
+    ),
+    output: block(
+      '```foo``` aaaa bbbb cccc dddd eeee',
+      'ffff gggg hhhh.',
+      '',
+      '@param name - aaaa bbbb cccc dddd.',
+    ),
+  },
+  {
+    name: 'an inline ``` span may start a wrapped line',
+    errors: breaks,
+    options: narrow,
+    code: block('aaaa bbbb cccc dddd eeee ffff gggg ```foo``` hhhh iiii.'),
+    output: block('aaaa bbbb cccc dddd eeee ffff gggg', '```foo``` hhhh iiii.'),
+  },
+  {
+    name: "a wrap keeps a paragraph's first line from reading as a fence",
+    errors: breaks,
+    options: narrow,
+    code: block('```js aaaa bbbb cccc dddd eeee ffff gggg hhhh` iiii jjjj.'),
+    output: block(
+      '```js aaaa bbbb cccc dddd eeee ffff gggg hhhh`',
+      'iiii jjjj.',
+    ),
+  },
+  {
+    name: "a wrap keeps a paragraph's first line from reading as a bare fence",
+    errors: breaks,
+    options: narrow,
+    code: block('``` `aaaa` bbbb cccc dddd eeee ffff gggg hhhh iiii.'),
+    output: block('``` `aaaa` bbbb cccc dddd eeee ffff', 'gggg hhhh iiii.'),
+  },
+  {
+    name: 'a wrap keeps the first line after a hard break from reading as a fence',
+    errors: breaks,
+    options: narrow,
+    code: block(
+      'aaaa\\',
+      '```js bbbb cccc dddd eeee ffff gggg hhhh` iiii jjjj.',
+    ),
+    output: block(
+      'aaaa\\',
+      '```js bbbb cccc dddd eeee ffff gggg hhhh`',
+      'iiii jjjj.',
+    ),
+  },
+  {
     name: "a wrap keeps a paragraph's first line from reading as a thematic break",
     options: [{ width: 12, orphans: { sentence: false }, shortWords: false }],
     errors: breaks,
@@ -665,6 +752,8 @@ export const noStart = [
   '***',
   '```',
   '```js',
+  '````',
+  '````js',
   '~~~',
   '~~~js',
   '<pre>',
@@ -688,6 +777,10 @@ export const noStart = [
   '^~~',
 ];
 
+// The tokens that may start a line because more backticks follow their first
+// run, so no such line opens a fence.
+export const inlineStart = ['```foo```', '````foo````', '``` ` ```', '```foo`'];
+
 // The tokens that may start a line, which only look like a construct.
 export const mayStart = [
   '#foo',
@@ -698,6 +791,7 @@ export const mayStart = [
   '[ref]',
   '^foo',
   '~foo',
+  ...inlineStart,
 ];
 
 // A token that ends in a hard break, which a wrap must never leave at the end of

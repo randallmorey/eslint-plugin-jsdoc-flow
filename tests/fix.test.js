@@ -9,6 +9,7 @@ import {
   blockValid,
   guardBlocks,
   convergeWidths,
+  inlineStart,
   noEnd,
   noStart,
 } from './cases/blocks.js';
@@ -132,7 +133,7 @@ const converging = [
   ...verbatimCases,
   ...preformattedCases,
   ...unguardedCases,
-  ...[...noStart, ...noEnd].flatMap((token) =>
+  ...[...noStart, ...noEnd, ...inlineStart].flatMap((token) =>
     guardBlocks(token).flatMap((code, k) =>
       convergeWidths.map((width) => ({
         name: `\`${token}\` in a wrap, block ${k + 1} at ${width}`,

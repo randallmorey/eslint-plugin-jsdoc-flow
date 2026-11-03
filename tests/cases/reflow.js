@@ -90,6 +90,10 @@ export const valid = [
     code: block('Matches ``-  x`` and ```a   b```, but not `` c  ` d ``.'),
   },
   {
+    name: 'a one-liner starting with an inline ``` span stays on one line',
+    code: '/** ```foo``` inline text. */\nexport const x = 1;\n',
+  },
+  {
     name: 'an already flowed block',
     code: block(
       'Reflows a paragraph.  Two spaces follow a sentence end and',
@@ -978,9 +982,9 @@ export const invalid = [
       '@param {SourceCode} sourceCode The source code object.',
     ),
     output: block(
-      'Determines whether an opening parenthesis `(`, bracket `[` or',
-      'backtick ``` ` ``` needs to be preceded by a semicolon.  This opening',
-      'parenthesis or bracket should be at the start of an `ExpressionStatement`,',
+      'Determines whether an opening parenthesis `(`, bracket `[` or backtick',
+      '``` ` ``` needs to be preceded by a semicolon.  This opening parenthesis or',
+      'bracket should be at the start of an `ExpressionStatement`,',
       'a `MethodDefinition` or at the start of the body of',
       'an `ArrowFunctionExpression`.',
       '@param {SourceCode} sourceCode The source code object.',

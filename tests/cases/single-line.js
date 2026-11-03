@@ -177,6 +177,11 @@ export const singleInvalid = [
     output: block('Short text.'),
   },
   {
+    name: 'a one-liner starting with an inline ``` span',
+    code: '/** ```foo``` inline text. */\nexport const x = 1;\n',
+    output: block('```foo``` inline text.'),
+  },
+  {
     name: 'a tag on one line',
     code: '/** @type {Foo} */\nexport const x = 1;\n',
     output: block('@type {Foo}'),

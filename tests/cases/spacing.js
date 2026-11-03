@@ -483,6 +483,18 @@ export const sentenceInvalid = [
     errors: errors('sentence', 'sentence'),
   },
   {
+    name: 'on a line starting with an inline ``` span, and in the tag below it',
+    code: block(
+      '```foo``` inline. Then more.',
+      '@param {string} name - the description. More.',
+    ),
+    output: block(
+      '```foo``` inline.  Then more.',
+      '@param {string} name - the description.  More.',
+    ),
+    errors: errors('sentence', 'sentence'),
+  },
+  {
     name: "a tag's description",
     code: block('@param {string} name - the description. More.'),
     output: block('@param {string} name - the description.  More.'),

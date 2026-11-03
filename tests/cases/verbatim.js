@@ -186,6 +186,10 @@ const forms = [
     code: block('```', 'foo();', '```', '@license', MESSY),
   },
   {
+    name: 'a tag after a line starting with an inline ``` span',
+    code: block('```foo``` text', '@license', MESSY),
+  },
+  {
     name: 'a tag after `@example`, which it ends',
     code: block('@example', 'foo();', '@license', MESSY),
   },
