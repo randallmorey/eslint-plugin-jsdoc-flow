@@ -1,0 +1,82 @@
+name: Reject workflow changes from forks
+
+# Public repositories must allow pull_request_target in their Actions event policy.
+# Inspect Git metadata only; never check out or execute pull request code.
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, edited]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: fork-workflow-guard-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  check-workflows:
+    if: github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Close fork pull requests that change GitHub workflows
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            const repo = context.repo;
+            const pull_number = context.payload.pull_request.number;
+            const { data: pr } = await github.rest.pulls.get({ ...repo, pull_number });
+            if (pr.state !== 'open' || !pr.head.repo || pr.head.repo.id === pr.base.repo.id) {
+              return;
+            }
+
+            const [{ data: comparison }, { data: head }] = await Promise.all([
+              github.rest.repos.compareCommits({
+                ...repo,
+                base: pr.base.sha,
+                head: pr.head.sha,
+                per_page: 1,
+              }),
+              github.rest.git.getCommit({ ...repo, commit_sha: pr.head.sha }),
+            ]);
+            const readTree = async (tree_sha) => {
+              const { data } = await github.rest.git.getTree({ ...repo, tree_sha });
+              if (data.truncated) throw new Error('Cannot inspect an incomplete Git tree.');
+              return data.tree;
+            };
+            const workflowsAt = async (tree_sha) => {
+              // Walk only this directory, avoiding the PR files API's 3,000-file limit.
+              for (const directory of ['.github', 'workflows']) {
+                const entries = await readTree(tree_sha);
+                const entry = entries.find((item) => item.path === directory && item.type === 'tree');
+                if (!entry) return new Map();
+                tree_sha = entry.sha;
+              }
+              const entries = await readTree(tree_sha);
+              return new Map(entries
+                .filter((entry) => entry.type === 'blob' && /\.ya?ml$/.test(entry.path))
+                .map((entry) => [entry.path, `${entry.mode}:${entry.sha}`]));
+            };
+            // Compare against the merge base to exclude unrelated target-branch changes.
+            const [before, after] = await Promise.all([
+              workflowsAt(comparison.merge_base_commit.commit.tree.sha),
+              workflowsAt(head.tree.sha),
+            ]);
+            const changed = before.size !== after.size ||
+              [...before].some(([path, value]) => after.get(path) !== value);
+            if (!changed) return;
+
+            // A newer push or retargeting event will check any changed PR state.
+            const { data: current } = await github.rest.pulls.get({ ...repo, pull_number });
+            if (current.state !== 'open' || current.head.sha !== pr.head.sha ||
+                current.base.ref !== pr.base.ref) {
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              ...repo,
+              issue_number: pull_number,
+              body: 'Pull request denied:  you are not authorized to modify GitHub workflows in this repository.  Reason:  new GitHub workflows were added or existing workflows were modified.  Please open a new pull request without this change.',
+            });
+            await github.rest.pulls.update({ ...repo, pull_number, state: 'closed' });

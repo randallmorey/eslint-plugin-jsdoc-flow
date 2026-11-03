@@ -1,0 +1,75 @@
+name: Reject version changes from forks
+
+# Public repositories must allow pull_request_target in their Actions event policy.
+# Read fork contents only as data; never check out or execute pull request code.
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, edited]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: fork-version-guard-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  check-version:
+    if: github.event.pull_request.head.repo.id != github.event.pull_request.base.repo.id
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Close fork pull requests that change the package version
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            const repo = context.repo;
+            const pull_number = context.payload.pull_request.number;
+            const { data: pr } = await github.rest.pulls.get({ ...repo, pull_number });
+            if (pr.state !== 'open' || !pr.head.repo || pr.head.repo.id === pr.base.repo.id) {
+              return;
+            }
+
+            // Compare the contribution, not unrelated changes made to the base branch.
+            const { data: comparison } = await github.rest.repos.compareCommits({
+              ...repo,
+              base: pr.base.sha,
+              head: pr.head.sha,
+            });
+            const versionAt = async (ref) => {
+              let data;
+              try {
+                ({ data } = await github.rest.repos.getContent({
+                  ...repo,
+                  path: 'package.json',
+                  ref,
+                }));
+              } catch (error) {
+                if (error.status === 404) return undefined;
+                throw error;
+              }
+              if (data.type !== 'file' || data.encoding !== 'base64') {
+                throw new Error('Expected package.json to be a readable JSON file.');
+              }
+              return JSON.parse(Buffer.from(data.content, 'base64').toString('utf8')).version;
+            };
+            const [before, after] = await Promise.all([
+              versionAt(comparison.merge_base_commit.sha),
+              versionAt(pr.head.sha),
+            ]);
+            if (before === after) return;
+
+            // A newer push or retargeting event will check any changed PR state.
+            const { data: current } = await github.rest.pulls.get({ ...repo, pull_number });
+            if (current.state !== 'open' || current.head.sha !== pr.head.sha ||
+                current.base.ref !== pr.base.ref) {
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              ...repo,
+              issue_number: pull_number,
+              body: 'Pull request denied:  you are not authorized to release from this repository.  Reason:  the `version` field of `package.json` has changed, which would otherwise trigger an automated release upon merge to the default branch.  Please open a new pull request without this change.',
+            });
+            await github.rest.pulls.update({ ...repo, pull_number, state: 'closed' });
