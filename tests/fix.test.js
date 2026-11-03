@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import { Linter } from 'eslint';
 
 import plugin from '../lib/index.js';
+import { wordsOf } from '../lib/flow.js';
 import {
   blockInvalid,
   blockValid,
@@ -39,6 +40,15 @@ import {
 } from './cases/single-line.js';
 import { verbatimCases } from './cases/verbatim.js';
 import { preformattedCases, unguardedCases } from './cases/preformatted.js';
+import {
+  oneSpaceColonInvalid,
+  oneSpaceReflowInvalid,
+  oneSpaceReflowValid,
+  oneSpaceSentenceInvalid,
+  oneSpaceValid,
+  oneSpaceWordInvalid,
+  spacesMixed,
+} from './cases/spaces.js';
 
 // All the rules together:  `--fix` with all of them, or with any one and then
 // the rest, settles on the same text, which no rule reports (except the
@@ -82,7 +92,17 @@ const fixWith = (c, rules, code) =>
     filename: c.filename ?? 'x.js',
   }).output;
 
-for (const c of [
+// A case as it is with one space after a sentence end or a colon, keeping its
+// other settings.
+const withOneSpace = (c) => ({
+  ...c,
+  settings: {
+    ...c.settings,
+    'jsdoc-flow': { ...c.settings?.['jsdoc-flow'], spaces: 1 },
+  },
+});
+
+const converging = [
   ...valid,
   ...invalid,
   ...spacingValid,
@@ -121,21 +141,55 @@ for (const c of [
       })),
     ),
   ),
-]) {
+];
+
+const settlesInAnyOrder = (c) => {
+  const all = fixWith(c, RULES, c.code);
+  for (const rule of RULES) {
+    const rest = RULES.filter((r) => r !== rule);
+    const first = fixWith(c, rest, fixWith(c, [rule], c.code));
+    assert.equal(first, all, `${rule} first`);
+  }
+  const left = linter.verify(all, configFor(c, RULES), {
+    filename: c.filename ?? 'x.js',
+  });
+  assert.deepEqual(
+    left.filter((m) => m.messageId !== 'unsafe').map((m) => m.message),
+    [],
+  );
+  return all;
+};
+
+for (const c of converging) {
   test(`all rules converge:  ${c.name}`, () => {
-    const all = fixWith(c, RULES, c.code);
-    for (const rule of RULES) {
-      const rest = RULES.filter((r) => r !== rule);
-      const first = fixWith(c, rest, fixWith(c, [rule], c.code));
-      assert.equal(first, all, `${rule} first`);
-    }
-    const left = linter.verify(all, configFor(c, RULES), {
-      filename: c.filename ?? 'x.js',
-    });
-    assert.deepEqual(
-      left.filter((m) => m.messageId !== 'unsafe').map((m) => m.message),
-      [],
-    );
+    settlesInAnyOrder(c);
+  });
+}
+
+// The same cases with one space, which also keep the same words as with two.
+for (const c of converging) {
+  test(`all rules converge with one space:  ${c.name}`, () => {
+    const all = settlesInAnyOrder(withOneSpace(c));
+    assert.equal(fixWith(withOneSpace(c), RULES, all), all);
+    assert.deepEqual(wordsOf(all), wordsOf(fixWith(c, RULES, c.code)));
+  });
+}
+
+// The one-space cases, in both modes.
+for (const c of [
+  ...oneSpaceValid,
+  ...oneSpaceSentenceInvalid,
+  ...oneSpaceColonInvalid,
+  ...oneSpaceWordInvalid,
+  ...oneSpaceReflowValid,
+  ...oneSpaceReflowInvalid,
+  ...spacesMixed,
+]) {
+  test(`all rules converge, one-space case with two:  ${c.name}`, () => {
+    settlesInAnyOrder({ ...c, settings: undefined });
+  });
+  test(`all rules converge, one-space case with one:  ${c.name}`, () => {
+    settlesInAnyOrder(withOneSpace(c));
   });
 }
 
@@ -144,6 +198,9 @@ for (const c of [
 for (const c of [...typeValid, ...blockValid]) {
   test(`all rules keep:  ${c.name}`, () => {
     assert.equal(fixWith(c, RULES, c.code), c.code);
+  });
+  test(`all rules keep with one space:  ${c.name}`, () => {
+    assert.equal(fixWith(withOneSpace(c), RULES, c.code), c.code);
   });
 }
 
@@ -160,5 +217,15 @@ for (const c of [
 ]) {
   test(`all rules settle:  ${c.name}`, () => {
     assert.equal(fixWith(c, RULES, c.code), c.output ?? c.code);
+  });
+  // With one space, they settle on the same text with its sentence and colon
+  // gaps narrowed.  In this case, those gaps are all on lines the guard keeps.
+  const kept = c.name === 'code after a label in the middle of a paragraph';
+  test(`all rules settle with one space:  ${c.name}`, () => {
+    const settled = c.output ?? c.code;
+    assert.equal(
+      fixWith(withOneSpace(c), RULES, c.code),
+      kept ? settled : settled.replace(/([.!?:]["')\]]*) {2,}(?=\S)/g, '$1 '),
+    );
   });
 }

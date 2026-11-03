@@ -150,21 +150,21 @@ test('`reflowComment` takes `preformatted` as an option', () => {
   assert.equal(reflowComment(text, '', 80, { preformatted: false }), flowed);
 });
 
-test('the other exported functions take `preformatted` last', () => {
+test('the other exported functions take `preformatted` as an option', () => {
   assert.equal(fixSpacing(text, ''), text);
   assert.equal(
-    fixSpacing(text, '', false),
+    fixSpacing(text, '', { preformatted: false }),
     '/**\n * Some.  Text,\n *   kept as it is.\n */',
   );
   assert.equal(fixEdges(text, ''), text);
   assert.equal(
-    fixEdges(text, '', false),
+    fixEdges(text, '', { preformatted: false }),
     '/**\n * Some.  Text,\n * kept  as it is.\n */',
   );
   const tag = '/**\n * @param a - b\n *  ^^^\n */';
   assert.equal(alignTags(tag, ''), tag);
   assert.equal(
-    alignTags(tag, '', false),
+    alignTags(tag, '', { preformatted: false }),
     '/**\n * @param a - b\n *            ^^^\n */',
   );
 });

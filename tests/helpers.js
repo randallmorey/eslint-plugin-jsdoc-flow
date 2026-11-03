@@ -29,11 +29,12 @@ export const block = (...lines) =>
 // A case's code or output as a valid case, named with a prefix.
 const asValid =
   (prefix, key = 'code') =>
-  ({ name, filename, languageOptions, ...c }) => ({
+  ({ name, filename, languageOptions, settings, ...c }) => ({
     name: `${prefix}:  ${name}`,
     code: c[key],
     ...(filename && { filename }),
     ...(languageOptions && { languageOptions }),
+    ...(settings && { settings }),
   });
 
 // Runs rules that each report one kind of finding, given each rule's invalid

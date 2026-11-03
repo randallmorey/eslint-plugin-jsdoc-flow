@@ -3,7 +3,9 @@
 ESLint rules that flow the text of JSDoc comments, the way Prettier flows
 code: consistent sentence spacing, line breaks that never strand a word,
 tag descriptions that line up, and no single-line blocks. All rules
-are autofixable, and they only change whitespace or line prefixes.
+are autofixable, and they only change whitespace or line prefixes. Sentences and
+colons get two spaces after them by default, as below, or
+[one with a setting](#one-space-or-two).
 
 ```js
 // Before
@@ -292,13 +294,74 @@ as they are. To flow it again, remove the indentation:
 - short lines of prose after a label, with no sentence end among them;
 - a line after a label that's indented by accident.
 
+## One space or two
+
+By default, two spaces follow a sentence end or a colon when more text follows
+on the same line. To have one instead, set `spaces` in ESLint's shared settings,
+which every rule reads:
+
+```js
+// eslint.config.js
+import jsdocFlow from 'eslint-plugin-jsdoc-flow';
+
+export default [
+  jsdocFlow.configs.recommended,
+  {
+    settings: {
+      'jsdoc-flow': {
+        spaces: 1,
+      },
+    },
+  },
+];
+```
+
+```js
+// With `spaces: 2`, or with it unset
+/**
+ * Saves the note.  It throws if:  the store is read-only.
+ */
+
+// With `spaces: 1`
+/**
+ * Saves the note. It throws if: the store is read-only.
+ */
+```
+
+- It's `1` or `2`, and defaults to `2`. Any other value throws an error, since
+  ESLint doesn't validate `settings`.
+- `sentence-spacing` and `colon-spacing` report and fix toward it, and `reflow`
+  writes it whenever it rewrites a paragraph. `tag-align` counts it too, since a
+  gap in a tag's head moves the column of its description.
+- It's a setting rather than a rule's option because these rules have to agree
+  on every gap, or `--fix` would never settle.
+- A line holds more with one space, so `reflow` may break lines elsewhere than
+  it does with two. Either way, `--fix` settles on the same text whichever rule
+  fixes first.
+
+With one space, a gap's width no longer means anything. With two, two spaces
+after an abbreviation show that a sentence ended there, as in `Elm St.  Then`.
+That can't work with one, since the fix would erase the evidence. So whether a
+gap follows a sentence end depends only on the words beside it. `Elm St.  Then`
+isn't a sentence end then, and `word-spacing` narrows its gap, not
+`sentence-spacing`. The same goes for `He met Paul.  St. Paul` and for two spaces
+after an abbreviation before a lowercase word, such as `e.g.  this`.
+
+A two-space gap after a sentence end or a colon is still `sentence-spacing`'s or
+`colon-spacing`'s, so with those two off it stays, and `word-spacing` doesn't
+report it, unless `reflow` rewrites its paragraph for some other reason.
+
+The lines the rules keep as they are keep their gaps too, whichever you choose.
+That includes a list item's own line, though not its wrapped lines, as well as
+code and the [other lines left as they are](#jsdoc-flowreflow).
+
 ## Rules
 
 | Rule                                    | Description                                            | Fixable |
 | --------------------------------------- | ------------------------------------------------------ | ------- |
 | `jsdoc-flow/reflow`                     | Flow JSDoc text with consistent line breaks            | ✓       |
-| `jsdoc-flow/sentence-spacing`           | Two spaces after a sentence end                        | ✓       |
-| `jsdoc-flow/colon-spacing`              | Two spaces after a colon                               | ✓       |
+| `jsdoc-flow/sentence-spacing`           | Two spaces, or `spaces`, after a sentence end          | ✓       |
+| `jsdoc-flow/colon-spacing`              | Two spaces, or `spaces`, after a colon                 | ✓       |
 | `jsdoc-flow/word-spacing`               | One space between other words                          | ✓       |
 | `jsdoc-flow/no-extra-punctuation-space` | No space before `, . ; : ) ]` or after `( [`           | ✓       |
 | `jsdoc-flow/tag-spacing`                | One space on either side of a tag's `-`                | ✓       |
@@ -405,7 +468,8 @@ means:
 - A line never breaks before `,`, `.`, `;`, `:`, `)` or `]`, or after `(` or
   `[`, and no space is put there either (see `no-extra-punctuation-space`).
 - An abbreviation that two spaces make a sentence end (`Elm St.  Then`) stays
-  with the next word, since a line break there would lose the two spaces.
+  with the next word, since a line break there would lose the two spaces. With
+  [`spaces: 1`](#one-space-or-two), two spaces don't make one.
 
 For example, on a block with ragged edges:
 
@@ -538,11 +602,12 @@ rule reports it without a fix.
 
 Six rules check the gaps between words, each one kind of gap:
 
-- `jsdoc-flow/sentence-spacing`: two spaces follow a sentence-ending `.`,
-  `!`, or `?` when more text follows on the same line. Note that `e.g.`,
-  `i.e.`, and `etc.` don't end a sentence.
-- `jsdoc-flow/colon-spacing`: two spaces follow a colon when more text
-  follows on the same line.
+- `jsdoc-flow/sentence-spacing`: two spaces, or one with
+  [`spaces: 1`](#one-space-or-two), follow a sentence-ending `.`, `!`, or `?`
+  when more text follows on the same line. Note that `e.g.`, `i.e.`, and `etc.`
+  don't end a sentence.
+- `jsdoc-flow/colon-spacing`: two spaces, or one with `spaces: 1`, follow a
+  colon when more text follows on the same line.
 - `jsdoc-flow/word-spacing`: one space separates any other two words.
 - `jsdoc-flow/no-extra-punctuation-space`: no space comes before `,`, `.`,
   `;`, `:`, `)` or `]`, or after `(` or `[`, so `( see above ) ,` becomes
@@ -568,11 +633,13 @@ reports and fixes only its own kind of gap. They check only how wide a gap
 is, so a tab or a no-break space where one space belongs is left to
 `no-exotic-whitespace`.
 
-Why two spaces? Traditional typesetting set a wider space between sentences
-than between words. Typewriters, limited to fixed-width characters, copied the
-practice by typing two spaces, and the habit carries well into monospaced
-text such as code comments. The wider gap also makes sentences easier to
-scan, since each sentence start stands out from the words around it.
+Why two spaces by default? Traditional typesetting set a wider space between
+sentences than between words. Typewriters, limited to fixed-width characters,
+copied the practice by typing two spaces, and the habit carries well into
+monospaced text such as code comments. The wider gap also makes sentences easier
+to scan, since each sentence start stands out from the words around it. Many
+teams use one space all the same, which is what
+[`spaces: 1`](#one-space-or-two) is for.
 
 ### Edges: `star-align`, `text-indent` and `no-trailing-space`
 
@@ -756,22 +823,27 @@ fixEdges('/**  One.   */', ''); // '/** One. */'
 - `reflowComment(text, indent, width = 80, options = {})` returns the
   reflowed block, or `null` if its form isn't one it handles. `options` takes
   `orphans`, `names`, `shortWords`, `hang` and `widows`, as the `reflow` rule
-  does, and `preformatted`.
-- `fixSpacing(text, indent, preformatted = true)` returns the block with the
-  gaps between its words spaced.
-- `fixEdges(text, indent, preformatted = true)` returns the block with the
-  whitespace at its lines' edges fixed.
-- `alignTags(text, indent, preformatted = true)` returns the block with its tag
+  does, and `preformatted` and `spaces`.
+- `fixSpacing(text, indent, options = {})` returns the block with the gaps
+  between its words spaced.
+- `fixEdges(text, indent, options = {})` returns the block with the whitespace
+  at its lines' edges fixed.
+- `alignTags(text, indent, options = {})` returns the block with its tag
   continuation lines aligned.
 
 `text` is the block from its `/**` to its `*/`, and `indent` is the
-whitespace before it on its line.
+whitespace before it on its line. `options` takes `preformatted`, which is `true`
+unless it's set, and `spaces`, which is `2` unless it's set, as the settings of
+those names do, so `fixSpacing('/** One.  Two. */', '', { spaces: 1 })` returns
+`'/** One. Two. */'`. `fixEdges` spaces no such gap, so `spaces` makes no
+difference to it. Unlike the settings, these options aren't validated.
 
 These functions format whatever block they're given. They don't read ESLint's
 settings, so `verbatimTags` and the ignore comment apply only to the rules, and
 a caller that wants a block kept as it is shouldn't pass it to them. The guard on
 [unfenced code](#unfenced-code-and-diagrams) is on unless `preformatted` is
-`false`, whatever the settings say.
+`false`, and two spaces follow a sentence end or a colon unless `spaces` is `1`,
+whatever the settings say.
 
 ## License
 
