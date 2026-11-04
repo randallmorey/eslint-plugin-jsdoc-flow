@@ -34,7 +34,7 @@
   "scripts": {
     "lint": "eslint . && prettier . --check && tsc -p tsconfig.json",
     "lint:fix": "eslint . --fix && prettier . --write",
-    "test": "node --test"
+    "test": "node --test --test-reporter=./tests/reporter.js"
   },
   "peerDependencies": {
     "eslint": ">= 9"
