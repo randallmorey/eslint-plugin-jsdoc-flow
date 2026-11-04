@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
+import { beforeEach, test } from 'node:test';
+import { setImmediate } from 'node:timers/promises';
 import { Linter } from 'eslint';
 
 import plugin from '../lib/index.js';
@@ -51,6 +52,10 @@ import {
   oneSpaceWordInvalid,
   spacesMixed,
 } from './cases/spaces.js';
+
+// These tests are synchronous and slow enough in total that, without a turn of
+// the event loop between them, their results are only reported at the end.
+beforeEach(() => setImmediate());
 
 // All the rules together:  `--fix` with all of them, or with any one and then
 // the rest, settles on the same text, which no rule reports (except the
