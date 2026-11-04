@@ -10,9 +10,10 @@ const ruleTester = new RuleTester();
 // Idempotency:  every fixed output is itself valid, so fixing it again
 // changes nothing.
 const alignFixedAgain = alignInvalid.map(
-  ({ name, output, filename, languageOptions }) => ({
+  ({ name, output, settings, filename, languageOptions }) => ({
     name: `idempotent:  ${name}`,
     code: output,
+    ...(settings && { settings }),
     ...(filename && { filename }),
     ...(languageOptions && { languageOptions }),
   }),

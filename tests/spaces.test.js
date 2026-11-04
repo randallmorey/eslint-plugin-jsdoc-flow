@@ -46,8 +46,8 @@ const configFor = (rules, settings, options = []) => [
     ...(settings && { settings }),
   },
 ];
-const fixWith = (rules, code, settings, options) =>
-  linter.verifyAndFix(code, configFor(rules, settings, options)).output;
+const fixWith = (rules, code, settings) =>
+  linter.verifyAndFix(code, configFor(rules, settings)).output;
 const two = { 'jsdoc-flow': { spaces: 2 } };
 const textOf = (code) => code.slice(0, code.indexOf('*/') + 2);
 
@@ -112,8 +112,11 @@ for (const c of [
   ...invalid,
 ]) {
   test(`\`spaces: 2\` is the same as unset:  ${c.name}`, () => {
-    const reports = (settings) =>
-      linter
+    // The case's own settings stay, such as its `width`.
+    const reports = (own) => {
+      const base = c.settings?.['jsdoc-flow'];
+      const settings = (own || base) && { 'jsdoc-flow': { ...base, ...own } };
+      return linter
         .verify(
           c.code,
           [
@@ -125,8 +128,9 @@ for (const c of [
           { filename: c.filename ?? 'x.js' },
         )
         .map((m) => [m.ruleId, m.line, m.column, m.message, m.fix]);
-    assert.deepEqual(reports(two), reports());
-    assert.deepEqual(reports({ 'jsdoc-flow': {} }), reports());
+    };
+    assert.deepEqual(reports(two['jsdoc-flow']), reports());
+    assert.deepEqual(reports({}), reports());
   });
 }
 
@@ -282,19 +286,14 @@ for (const [k, code] of flowed.entries()) {
 
   test(`a one-space reflow settles at any width:  block ${k + 1}`, () => {
     for (const width of [20, 30, 40, 50, 60, 70, 80, 90, 100]) {
-      const options = [{ width }];
-      const all = fixWith(RULES, code, oneSpace, options);
+      const settings = { 'jsdoc-flow': { spaces: 1, width } };
+      const all = fixWith(RULES, code, settings);
       for (const rule of RULES) {
         const rest = RULES.filter((r) => r !== rule);
-        const first = fixWith(
-          rest,
-          fixWith([rule], code, oneSpace, options),
-          oneSpace,
-          options,
-        );
+        const first = fixWith(rest, fixWith([rule], code, settings), settings);
         assert.equal(first, all, `${rule} first at ${width}`);
       }
-      assert.equal(fixWith(RULES, all, oneSpace, options), all, `at ${width}`);
+      assert.equal(fixWith(RULES, all, settings), all, `at ${width}`);
     }
   });
 }
@@ -314,9 +313,9 @@ test('a line holds more with one space than with two', () => {
 });
 
 test("a tag's head is narrower with one space, so its description stays", () => {
-  // Its head is 46 columns with two spaces, past the limit of 45, and 45 with
+  // Its head is 45 columns with two spaces, past the limit of 44, and 44 with
   // one, so the description starts on its line only with one space.
-  const name = 'n'.repeat(31);
+  const name = 'n'.repeat(30);
   const words = 'aaaa bbbb cccc dddd eeee ffff gggg hhhh iiii jjjj';
   const text = `/**\n * @param {T} ${name}x: ${words}\n */`;
   assert.equal(
@@ -326,7 +325,7 @@ test("a tag's head is narrower with one space, so its description stays", () => 
   assert.equal(
     reflowComment(text, '', 80, { spaces: 1 }),
     `/**\n * @param {T} ${name}x: aaaa bbbb cccc dddd eeee ffff\n *` +
-      `${' '.repeat(45 + 1)}gggg hhhh iiii jjjj\n */`,
+      `${' '.repeat(44 + 1)}gggg hhhh iiii jjjj\n */`,
   );
 });
 

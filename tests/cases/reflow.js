@@ -6,7 +6,7 @@ import ember from 'eslint-plugin-ember/recommended';
 import { block } from '../helpers.js';
 
 // A narrow width keeps the inputs short:  ` * ` leaves 37 columns of text.
-const narrow = [{ width: 42 }];
+const narrow = { 'jsdoc-flow': { width: 42 } };
 
 const errors = [{ messageId: 'break' }];
 
@@ -116,6 +116,15 @@ export const valid = [
     ),
   },
   {
+    // Reflow leaves this to `tag-align`, at the same limit as its own, 55.
+    name: "a head under the limit at its `width` isn't reported if it's only misaligned",
+    settings: { 'jsdoc-flow': { width: 100 } },
+    code: block(
+      `@param {string} ${'n'.repeat(31)} - the description, which is long enough`,
+      '  that it has to wrap',
+    ),
+  },
+  {
     name: 'a wide head stays on one line with its description when it fits',
     code: block(
       '@param {string} abcdefghijklmnopqrstuvwxyzz - aaaaaaaaa bbbbbbbbb ccccccccc',
@@ -134,32 +143,34 @@ export const valid = [
   },
   {
     name: 'a line may break around `St.` between lowercase words',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ff on St.', 'and so on.'),
   },
   {
     name: 'with `shortWords` off, `a` may end a line',
-    options: [{ width: 42, shortWords: false }],
+    settings: narrow,
+    options: [{ shortWords: false }],
     code: block('aaaa bbbb cccc dddd eeee ffff gggg a', 'note and more.'),
   },
   {
     name: 'with `shortWords` on, a short word with punctuation may end a line',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ff plan B,', 'gggg hhhh iiii.'),
   },
   {
     name: 'with `shortWords` on, a short word in a code span may end a line',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gg `a`', 'hhhh iiii jjjj.'),
   },
   {
     name: 'with `hang` off, a comma may not hang past the width',
-    options: [{ width: 42, hang: false }],
+    settings: narrow,
+    options: [{ hang: false }],
     code: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hh, iiii jjjj kkkk.'),
   },
   {
     name: 'with `hang` on, a closing quote hangs one column past the width',
-    options: narrow,
+    settings: narrow,
     code: block(
       'aaaa bbbb cccc dddd eeee ffff gggg \u201ch\u201d',
       'iiii jjjj kkkk.',
@@ -167,17 +178,17 @@ export const valid = [
   },
   {
     name: 'with `hang` on, a letter may not hang past the width',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hhh iiii jjjj kkkk.'),
   },
   {
     name: 'with `hang` on, only one column may hang past the width',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hhh, iiii jjjj kkkk.'),
   },
   {
     name: 'with `hang` on, closing emphasis may not hang past the width',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff', 'gggg _hh._ iiii jjjj kkkk.'),
   },
   {
@@ -186,22 +197,26 @@ export const valid = [
   },
   {
     name: 'with `widows` off, a short last line may stay',
-    options: [{ width: 42, widows: 0 }],
+    settings: narrow,
+    options: [{ widows: 0 }],
     code: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hh i.'),
   },
   {
     name: 'with `widows` on, a last line that is long enough stays',
-    options: [{ width: 42, widows: 0.25 }],
+    settings: narrow,
+    options: [{ widows: 0.25 }],
     code: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hhhh iiii.'),
   },
   {
     name: 'with `widows` on, a one-line paragraph stays',
-    options: [{ width: 42, widows: 1 }],
+    settings: narrow,
+    options: [{ widows: 1 }],
     code: block('Short one.'),
   },
   {
     name: "with `widows` on, a tag's last line may not end right of the line before it",
-    options: [{ width: 42, widows: 0.5 }],
+    settings: narrow,
+    options: [{ widows: 0.5 }],
     code: block(
       '@param name - aaaa bbbb cccc dddd',
       '              eeee ffff.',
@@ -209,7 +224,7 @@ export const valid = [
   },
   {
     name: 'indented code is kept as it is',
-    options: narrow,
+    settings: narrow,
     code: block(
       'Usage:',
       '',
@@ -230,7 +245,7 @@ export const valid = [
   },
   {
     name: 'a `@ts-*` directive too wide for a narrow width stays on one line',
-    options: narrow,
+    settings: narrow,
     code: 'class A {\n  /** @ts-ignore one reason, then some more of it. */\n  x = 1;\n}\n',
   },
   {
@@ -333,7 +348,7 @@ export const invalid = [
   },
   {
     name: 'a closing curly quote ends a sentence, so a line may break after it',
-    options: narrow,
+    settings: narrow,
     code: block(
       'aaaa bbbb cccc dddd eeee \u201cdone.\u201d Then more words here.',
     ),
@@ -344,7 +359,7 @@ export const invalid = [
   },
   {
     name: 'closing emphasis ends a sentence, so a line may break after it',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee _done._ Then more words here now.'),
     output: block(
       'aaaa bbbb cccc dddd eeee _done._',
@@ -353,7 +368,7 @@ export const invalid = [
   },
   {
     name: 'a word with a comma and a closing curly quote is a clause, as with a straight one',
-    options: narrow,
+    settings: narrow,
     code: block(
       'aaaa bbbb cccc dddd eeee, \u201cfff,\u201d gggg hhhh iiii jjjj kkkk.',
     ),
@@ -364,19 +379,19 @@ export const invalid = [
   },
   {
     name: 'a dotted initialism with two spaces stays with the next word',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gg U.S.  Then more words.'),
     output: block('aaaa bbbb cccc dddd eeee ffff', 'gg U.S.  Then more words.'),
   },
   {
     name: 'a new abbreviation with two spaces stays with the next word',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gg Inc.  in more words.'),
     output: block('aaaa bbbb cccc dddd eeee ffff', 'gg Inc.  in more words.'),
   },
   {
     name: 'a dotted initialism with one space may end a line',
-    options: narrow,
+    settings: narrow,
     code: block(
       'aaaa bbbb cccc dddd eeee ffff gg U.S. Government more words here.',
     ),
@@ -387,39 +402,41 @@ export const invalid = [
   },
   {
     name: 'a bracket in a code span never pairs with a bracket outside it',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa `[` bbbb cccc dddd eeee ffff gggg hhhh `]` iiii.'),
     output: block('aaaa `[` bbbb cccc dddd eeee ffff', 'gggg hhhh `]` iiii.'),
   },
   {
     name: 'a bracket in a code span never closes the `[...]` around it',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd [see `]` here and there] eeee.'),
     output: block('aaaa bbbb cccc dddd', '[see `]` here and there] eeee.'),
   },
   {
     name: "a code span's spaces are kept when its paragraph is reflowed",
     errors: [{ messageId: 'join' }],
-    options: narrow,
+    settings: narrow,
     code: block('aaaa `x  y`', 'bbbb cccc.'),
     output: block('aaaa `x  y` bbbb cccc.'),
   },
   {
     name: "a code span's tab is kept when its paragraph is reflowed",
     errors: [{ messageId: 'join' }],
-    options: narrow,
+    settings: narrow,
     code: block('aaaa `x\ty`', 'bbbb cccc.'),
     output: block('aaaa `x\ty` bbbb cccc.'),
   },
   {
     name: 'a number and `.` never moves to the start of a line, where it would read as a list item',
-    options: [{ width: 42, orphans: { sentence: false }, widows: 0 }],
+    settings: narrow,
+    options: [{ orphans: { sentence: false }, widows: 0 }],
     code: block('aaaa bbbb cccc dddd eeee ffff since 2022.  Then more.'),
     output: block('aaaa bbbb cccc dddd eeee ffff', 'since 2022.  Then more.'),
   },
   {
     name: 'a word starting with `|` never moves to the start of a line, where it would read as a table row',
-    options: [{ width: 42, orphans: { sentence: false }, widows: 0 }],
+    settings: narrow,
+    options: [{ orphans: { sentence: false }, widows: 0 }],
     code: block('aaaa bbbb cccc dddd eeee ffff ggggg || hhhh.'),
     output: block('aaaa bbbb cccc dddd eeee ffff', 'ggggg || hhhh.'),
   },
@@ -439,19 +456,19 @@ export const invalid = [
   {
     name: 'lines are filled greedily',
     errors: [{ messageId: 'join' }],
-    options: narrow,
+    settings: narrow,
     code: block('aaaa', 'bbbb cccc', 'dddd.'),
     output: block('aaaa bbbb cccc dddd.'),
   },
   {
     name: 'glue:  the first two words of a sentence',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee fff. Gg hhhh iiii jjjj.'),
     output: block('aaaa bbbb cccc dddd eeee fff.', 'Gg hhhh iiii jjjj.'),
   },
   {
     name: 'glue:  the last two words of a sentence',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gggg hhhh.'),
     output: block('aaaa bbbb cccc dddd eeee ffff', 'gggg hhhh.'),
   },
@@ -459,7 +476,7 @@ export const invalid = [
     // The head and the first two words overflow together.
     name: 'glue:  a tag head with the start of its description',
     errors: [{ messageId: 'join' }],
-    options: narrow,
+    settings: narrow,
     code: block('@param name -', 'xxxxxxxxxxxxxxxxxxxx yyyy zzzz wwww.'),
     output: block(
       '@param name - xxxxxxxxxxxxxxxxxxxx yyyy',
@@ -468,7 +485,7 @@ export const invalid = [
   },
   {
     name: 'glue:  the first word inside `(` with the next',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff (gggg hhhh iiii) jjjj kkkk.'),
     output: block(
       'aaaa bbbb cccc dddd eeee ffff',
@@ -477,19 +494,19 @@ export const invalid = [
   },
   {
     name: 'glue:  the last word before `)` with the one before it',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb (cccc dddd eeee ffff gggg hhhh) iiii jjjj.'),
     output: block('aaaa bbbb (cccc dddd eeee ffff', 'gggg hhhh) iiii jjjj.'),
   },
   {
     name: 'glue:  the word after a comma with the next',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff, gggg hhhh iiii jjjj.'),
     output: block('aaaa bbbb cccc dddd eeee ffff,', 'gggg hhhh iiii jjjj.'),
   },
   {
     name: 'no glue:  a word after a comma that ends in a comma or semicolon',
-    options: narrow,
+    settings: narrow,
     code: block(
       'aaaa bbbb cccc dddd eeee ffff, gggg, hhhh iiii.',
       '',
@@ -506,7 +523,7 @@ export const invalid = [
   },
   {
     name: 'glue:  a word ending in a comma, after a semicolon or colon',
-    options: narrow,
+    settings: narrow,
     code: block(
       'aaaa bbbb cccc dddd eeee ffff; gggg, hhhh iiii.',
       '',
@@ -523,19 +540,19 @@ export const invalid = [
   },
   {
     name: 'glue:  a token starting with `@` with the one before it',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gggg @foo hhhh iiii.'),
     output: block('aaaa bbbb cccc dddd eeee ffff', 'gggg @foo hhhh iiii.'),
   },
   {
     name: 'glue:  a token starting with `*` with the one before it',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gggg *em* hhhh iiii.'),
     output: block('aaaa bbbb cccc dddd eeee ffff', 'gggg *em* hhhh iiii.'),
   },
   {
     name: 'glue:  a lone `-` with the token before it',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gggg - hhhh iiii.'),
     output: block('aaaa bbbb cccc dddd eeee ffff gggg -', 'hhhh iiii.'),
   },
@@ -547,31 +564,32 @@ export const invalid = [
   },
   {
     name: 'words with no space between them are measured and kept as one',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff ( gg ) hh ii.'),
     output: block('aaaa bbbb cccc dddd eeee ffff (gg)', 'hh ii.'),
   },
   {
     name: 'no glue across a sentence end',
-    options: [{ width: 42, widows: 0 }],
+    settings: narrow,
+    options: [{ widows: 0 }],
     code: block('aaaa bbbb cccc dddd eeee ffff gggg. Ok.'),
     output: block('aaaa bbbb cccc dddd eeee ffff gggg.', 'Ok.'),
   },
   {
     name: 'glue:  an abbreviation that two spaces make a sentence end, with the next word',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff e.g.  gg hh.'),
     output: block('aaaa bbbb cccc dddd eeee', 'ffff e.g.  gg hh.'),
   },
   {
     name: 'glue:  an abbreviation beside a name, with the next word',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gg Mr. Smith hh.'),
     output: block('aaaa bbbb cccc dddd eeee ffff gg', 'Mr. Smith hh.'),
   },
   {
     name: 'glue:  `St.` with a capitalized word before it',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gg Elm St. and more words.'),
     output: block(
       'aaaa bbbb cccc dddd eeee ffff gg',
@@ -580,46 +598,49 @@ export const invalid = [
   },
   {
     name: 'glue:  `St.` with a capitalized word after it',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gg St. Paul hh.'),
     output: block('aaaa bbbb cccc dddd eeee ffff gg', 'St. Paul hh.'),
   },
   {
     name: 'glue:  the `et` and `al.` of `et al.`',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gg et al. and hh.'),
     output: block('aaaa bbbb cccc dddd eeee ffff gg', 'et al. and hh.'),
   },
   {
     name: 'glue:  a period that one space and `St.` follow, with `St.`',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff Paul. St. Paul is here.'),
     output: block('aaaa bbbb cccc dddd eeee ffff', 'Paul. St. Paul is here.'),
   },
   {
     name: 'glue:  a period that two spaces and `St.` follow, with `St.`',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee Paul.  St. Paul here.'),
     output: block('aaaa bbbb cccc dddd', 'eeee Paul.  St. Paul here.'),
   },
   {
     name: 'with `orphans.sentence` off, no glue keeps a sentence end together',
     errors: [{ messageId: 'join' }],
-    options: [{ width: 42, orphans: { sentence: false }, widows: 0 }],
+    settings: narrow,
+    options: [{ orphans: { sentence: false }, widows: 0 }],
     code: block('aaaa bbbb cccc dddd eeee ffff', 'gggg hhhh.'),
     output: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hhhh.'),
   },
   {
     name: 'with `orphans.clause` off, a single word may follow a comma',
     errors: [{ messageId: 'join' }],
-    options: [{ width: 42, orphans: { clause: false } }],
+    settings: narrow,
+    options: [{ orphans: { clause: false } }],
     code: block('aaaa bbbb cccc dddd eeee ffff,', 'gggg hhhh iiii jjjj.'),
     output: block('aaaa bbbb cccc dddd eeee ffff, gggg', 'hhhh iiii jjjj.'),
   },
   {
     name: 'with `orphans.paren` off, the first word inside `(` may end a line',
     errors: [{ messageId: 'join' }],
-    options: [{ width: 42, orphans: { paren: false } }],
+    settings: narrow,
+    options: [{ orphans: { paren: false } }],
     code: block('aaaa bbbb cccc dddd eeee ffff', '(gggg hhhh iiii) jjjj kkkk.'),
     output: block(
       'aaaa bbbb cccc dddd eeee ffff (gggg',
@@ -629,19 +650,20 @@ export const invalid = [
   {
     name: 'with `names` off, a line may break between `Mr.` and a name',
     errors: [{ messageId: 'join' }],
-    options: [{ width: 42, names: false }],
+    settings: narrow,
+    options: [{ names: false }],
     code: block('aaaa bbbb cccc dddd eeee ffff gg', 'Mr. Smith hh.'),
     output: block('aaaa bbbb cccc dddd eeee ffff gg Mr.', 'Smith hh.'),
   },
   {
     name: 'with `shortWords` on, `a` moves to the next line with its word',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gggg a', 'note and more.'),
     output: block('aaaa bbbb cccc dddd eeee ffff gggg', 'a note and more.'),
   },
   {
     name: 'with `shortWords` on, `an` and `I` never end a line',
-    options: narrow,
+    settings: narrow,
     code: block(
       'aaaa bbbb cccc dddd eeee ffff gg an ox, hhhh iiii jjjj kkkk llll I',
       'said mmmm nnnn.',
@@ -654,13 +676,13 @@ export const invalid = [
   },
   {
     name: 'with `shortWords` on, a run of short words stays with the next word',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gg x a b note.'),
     output: block('aaaa bbbb cccc dddd eeee ffff gg', 'x a b note.'),
   },
   {
     name: 'with `shortWords` on, a short word with a long word after it overflows',
-    options: narrow,
+    settings: narrow,
     code: block(
       'aaaa bbbb a',
       'cccccccccccccccccccccccccccccccccccccc dddd eeee ffff.',
@@ -673,7 +695,7 @@ export const invalid = [
   },
   {
     name: "with `shortWords` on, a tag's wrapped lines keep short words with the next word",
-    options: narrow,
+    settings: narrow,
     code: block(
       '@param name - aaaa bbbb cccc dddd the',
       '              eeee ffff.',
@@ -685,14 +707,14 @@ export const invalid = [
   },
   {
     name: 'with `hang` on, a word ending in a comma moves up to hang past the width',
-    options: narrow,
+    settings: narrow,
     errors: [{ messageId: 'join' }],
     code: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hh, iiii jjjj kkkk.'),
     output: block('aaaa bbbb cccc dddd eeee ffff gggg hh,', 'iiii jjjj kkkk.'),
   },
   {
     name: "with `hang` on, a tag's description may hang past the width",
-    options: narrow,
+    settings: narrow,
     errors: [{ messageId: 'join' }],
     code: block(
       '@param name - aaaa bbbb cccc dddd',
@@ -705,7 +727,7 @@ export const invalid = [
   },
   {
     name: "with `hang` on, a list item's wrapped lines may hang past the width",
-    options: narrow,
+    settings: narrow,
     errors: [{ messageId: 'join' }],
     code: block(
       'Text:',
@@ -724,27 +746,30 @@ export const invalid = [
   },
   {
     name: 'with `hang` on, a one-liner still expands when its `*/` is past the width',
-    options: narrow,
+    settings: narrow,
     code: '/** aaaa bbbb cccc dddd eeee ffff ggg. */\nexport const x = 1;\n',
     output: block('aaaa bbbb cccc dddd eeee ffff ggg.'),
   },
   {
     name: 'with `widows` on, words move down until the last line is long enough',
-    options: [{ width: 42, widows: 0.5 }],
+    settings: narrow,
+    options: [{ widows: 0.5 }],
     errors,
     code: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hhhh iiii.'),
     output: block('aaaa bbbb cccc dddd eeee', 'ffff gggg hhhh iiii.'),
   },
   {
     name: 'with `widows` on, the last line may not end right of the line before it',
-    options: [{ width: 42, widows: 1 }],
+    settings: narrow,
+    options: [{ widows: 1 }],
     errors,
     code: block('aaaa bbbb cccc dddd eeee ffff gggg', 'hhhh iiii.'),
     output: block('aaaa bbbb cccc dddd eeee', 'ffff gggg hhhh iiii.'),
   },
   {
     name: 'with `widows` on, only the last two lines change',
-    options: [{ width: 42, widows: 0.5 }],
+    settings: narrow,
+    options: [{ widows: 0.5 }],
     errors,
     code: block(
       'aaaa bbbb cccc dddd eeee ffff gggg',
@@ -759,7 +784,8 @@ export const invalid = [
   },
   {
     name: "with `widows` on, a list item's last wrapped line is long enough",
-    options: [{ width: 42, widows: 0.5 }],
+    settings: narrow,
+    options: [{ widows: 0.5 }],
     errors,
     code: block(
       'Text:',
@@ -795,7 +821,7 @@ export const invalid = [
   },
   {
     name: 'C2:  no single word on the line after a comma',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gggg, hhhh.'),
     output: block('aaaa bbbb cccc dddd eeee ffff', 'gggg, hhhh.'),
   },
@@ -803,7 +829,7 @@ export const invalid = [
     // The code span can't share a line, so the line after `dddd,` is a single
     // word whatever the layout, and the other rules are kept where they can be.
     name: 'C2:  a single word after a comma when no layout avoids it',
-    options: narrow,
+    settings: narrow,
     code: block(
       'aaaa bbbb cccc dddd, `eeee ffff gggg hhhh iiii jjjj kkkk llll`, mmmm nnnn.',
     ),
@@ -815,7 +841,7 @@ export const invalid = [
   },
   {
     name: 'tag continuation lines are filled from the description column',
-    options: narrow,
+    settings: narrow,
     code: block(
       'Does a thing.',
       '',
@@ -831,7 +857,7 @@ export const invalid = [
   },
   {
     name: 'a `{Type}` head moves the description column',
-    options: narrow,
+    settings: narrow,
     code: block('@param {string} s - aaaa bbbb cccc dddd eeee.'),
     output: block(
       '@param {string} s - aaaa bbbb cccc',
@@ -841,7 +867,7 @@ export const invalid = [
   {
     name: '`@returns` lines hang under the description, with or without a type',
     errors: Array(2).fill({ messageId: 'break' }),
-    options: narrow,
+    settings: narrow,
     code: block(
       '@returns aaaa bbbb cccc dddd eeee ffff gggg.',
       '@returns {Foo} aaaa bbbb cccc dddd eeee ffff.',
@@ -854,18 +880,85 @@ export const invalid = [
     ),
   },
   {
-    // `MAX_HEAD` is 45:  `@param {string} ` is 16, the name 26 or 27, ` - ` 3.
-    name: 'a head of 45 columns keeps its description beside it, a wider one not',
+    // The limit is 0.55 of 80, or 44:  `@param {string} ` is 16, the name 25 or
+    // 26, ` - ` 3.
+    name: 'a head of 44 columns keeps its description beside it, a wider one not',
     errors: Array(2).fill({ messageId: 'break' }),
     code: block(
+      '@param {string} abcdefghijklmnopqrstuvwxy - the description, which is long enough to wrap',
       '@param {string} abcdefghijklmnopqrstuvwxyz - the description, which is long enough to wrap',
+    ),
+    output: block(
+      '@param {string} abcdefghijklmnopqrstuvwxy - the description, which is long',
+      '                                            enough to wrap',
+      '@param {string} abcdefghijklmnopqrstuvwxyz -',
+      '  the description, which is long enough to wrap',
+    ),
+  },
+  {
+    // The limit is 0.55 of 100, or 55.
+    name: "a head's limit scales with `width`",
+    errors: Array(2).fill({ messageId: 'break' }),
+    settings: { 'jsdoc-flow': { width: 100 } },
+    code: block(
+      `@param {string} ${'n'.repeat(36)} - the description, which is long enough that it has to wrap somewhere along here`,
+      `@param {string} ${'n'.repeat(37)} - the description, which is long enough that it has to wrap somewhere along here`,
+    ),
+    output: block(
+      `@param {string} ${'n'.repeat(36)} - the description, which is long enough`,
+      `${' '.repeat(55)}that it has to wrap somewhere along here`,
+      `@param {string} ${'n'.repeat(37)} -`,
+      '  the description, which is long enough that it has to wrap somewhere along here',
+    ),
+  },
+  {
+    // The limit is 0.25 of 80, or 20.
+    name: 'a lower `maxHead` moves a description below a narrower head',
+    errors: Array(2).fill({ messageId: 'break' }),
+    settings: { 'jsdoc-flow': { maxHead: 0.25 } },
+    code: block(
+      '@param {string} name - the description, which is long enough to need a wrap somewhere',
+      '@param name - the description, which is long enough to need a wrap somewhere',
+    ),
+    output: block(
+      '@param {string} name -',
+      '  the description, which is long enough to need a wrap somewhere',
+      '@param name - the description, which is long enough to need',
+      '              a wrap somewhere',
+    ),
+  },
+  {
+    name: 'a higher `maxHead` keeps a description beside a wider head',
+    settings: { 'jsdoc-flow': { maxHead: 1 } },
+    code: block(
       '@param {string} abcdefghijklmnopqrstuvwxyzz - the description, which is long enough to wrap',
     ),
     output: block(
-      '@param {string} abcdefghijklmnopqrstuvwxyz - the description, which is long',
-      '                                             enough to wrap',
-      '@param {string} abcdefghijklmnopqrstuvwxyzz -',
-      '  the description, which is long enough to wrap',
+      '@param {string} abcdefghijklmnopqrstuvwxyzz - the description, which is',
+      '                                              long enough to wrap',
+    ),
+  },
+  {
+    name: 'with `maxHead` at 0, every head is wide',
+    settings: { 'jsdoc-flow': { maxHead: 0 } },
+    code: block(
+      '@returns the result, which is long enough that it has to wrap somewhere along here',
+    ),
+    output: block(
+      '@returns',
+      '  the result, which is long enough that it has to wrap somewhere along here',
+    ),
+  },
+  {
+    // 0.57 * 100 is just under 57, which mustn't make a head of 57 wide.
+    name: "a head's limit is a whole column",
+    settings: { 'jsdoc-flow': { width: 100, maxHead: 0.57 } },
+    code: block(
+      `@param {string} ${'n'.repeat(38)} - the description, which is long enough that it has to wrap`,
+    ),
+    output: block(
+      `@param {string} ${'n'.repeat(38)} - the description, which is long enough`,
+      `${' '.repeat(57)}that it has to wrap`,
     ),
   },
   {
@@ -897,11 +990,11 @@ export const invalid = [
   {
     name: 'a `{Type}` with braces inside is one token of the head',
     code: block(
-      '@returns {{ a: string, b: number }[] | null} the result, which is long enough to wrap',
+      '@returns {{ a: string, b: Date }[] | null} the result, which is long enough to wrap',
     ),
     output: block(
-      '@returns {{ a: string, b: number }[] | null} the result, which is long',
-      '                                             enough to wrap',
+      '@returns {{ a: string, b: Date }[] | null} the result, which is long',
+      '                                           enough to wrap',
     ),
   },
   {
@@ -937,7 +1030,7 @@ export const invalid = [
   {
     name: 'a misaligned block that also needs reflowing is reflowed',
     errors: [{ messageId: 'join' }],
-    options: narrow,
+    settings: narrow,
     code: block('@param name - aaaa bbbb', '  cccc dddd eeee ffff gggg.'),
     output: block(
       '@param name - aaaa bbbb cccc dddd',
@@ -946,25 +1039,25 @@ export const invalid = [
   },
   {
     name: 'a code span is unbreakable',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd `a code span` eeee ffff.'),
     output: block('aaaa bbbb cccc dddd `a code span`', 'eeee ffff.'),
   },
   {
     name: 'a code span of two backticks is unbreakable',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd ``a code span`` eeee ffff.'),
     output: block('aaaa bbbb cccc dddd ``a code span``', 'eeee ffff.'),
   },
   {
     name: 'a code span of three backticks holds fewer, and is unbreakable',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc ddd ``` a `` b ` c ``` eeee ffff.'),
     output: block('aaaa bbbb cccc ddd ``` a `` b ` c ```', 'eeee ffff.'),
   },
   {
     name: 'the text after a code span holding a backtick flows',
-    options: narrow,
+    settings: narrow,
     code: block(
       'aaaa ``` ` ``` bbbb cccc dddd eeee ffff `gggg` hhhh iiii `jjjj` kkkk.',
     ),
@@ -992,26 +1085,26 @@ export const invalid = [
   },
   {
     name: 'a run of backticks is closed only by a run just as long',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa ``` bbbb `` cccc dddd eeee ffff gggg hhhh ` iiii.'),
     output: block('aaaa ``` bbbb `` cccc dddd eeee ffff', 'gggg hhhh ` iiii.'),
   },
   {
     name: 'a run of backticks that nothing closes is plain text',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa `` bbbb cccc dddd eeee ffff gggg hhhh `iiii` jjjj.'),
     output: block('aaaa `` bbbb cccc dddd eeee ffff gggg', 'hhhh `iiii` jjjj.'),
   },
   {
     name: 'a code span of two backticks may cross lines',
     errors: [{ messageId: 'join' }],
-    options: narrow,
+    settings: narrow,
     code: block('aaaa ``x  y', 'z`` bbbb cccc.'),
     output: block('aaaa ``x  y z`` bbbb cccc.'),
   },
   {
     name: 'a bracket in a multi-backtick code span never pairs with one outside it',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa ``[`` bbbb cccc dddd eeee ffff gggg hhhh ``]`` iiii.'),
     output: block(
       'aaaa ``[`` bbbb cccc dddd eeee ffff',
@@ -1020,13 +1113,13 @@ export const invalid = [
   },
   {
     name: 'a brace in a multi-backtick code span never closes the `{...}` around it',
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd {@link ``}`` Foo bar} eeee.'),
     output: block('aaaa bbbb cccc dddd', '{@link ``}`` Foo bar} eeee.'),
   },
   {
     name: 'links and `{...}` are unbreakable',
-    options: narrow,
+    settings: narrow,
     code: block(
       'aaaa bbbb cccc see [the docs](https://x.y) and {@link Foo bar}.',
     ),
@@ -1039,7 +1132,7 @@ export const invalid = [
   {
     name: 'bullets, numbered lists and tables are kept as they are',
     errors: [{ messageId: 'join' }],
-    options: narrow,
+    settings: narrow,
     code: block(
       'aaaa bbbb',
       'cccc dddd:',
@@ -1061,7 +1154,7 @@ export const invalid = [
   {
     name: "a list item's wrapped lines are flowed under its text",
     errors: [{ messageId: 'join' }],
-    options: narrow,
+    settings: narrow,
     code: block(
       '- an item',
       'whose wrapped lines run on',
@@ -1080,7 +1173,7 @@ export const invalid = [
   {
     name: 'fenced code is kept as it is',
     errors: [{ messageId: 'join' }],
-    options: narrow,
+    settings: narrow,
     code: block(
       'aaaa',
       'bbbb.',
@@ -1100,7 +1193,7 @@ export const invalid = [
   {
     name: '`@example` is kept as it is, up to the next tag',
     errors: Array(2).fill({ messageId: 'join' }),
-    options: narrow,
+    settings: narrow,
     code: block(
       'aaaa',
       'bbbb.',
@@ -1120,7 +1213,7 @@ export const invalid = [
   },
   {
     name: 'a description before a `@ts-*` tag expands when it does not fit',
-    options: narrow,
+    settings: narrow,
     code: '/** A reason that is too long to fit. @ts-ignore */\nexport const x = 1;\n',
     output: block('A reason that is too long', 'to fit.  @ts-ignore'),
     errors,
@@ -1193,7 +1286,7 @@ export const invalid = [
   },
   {
     name: 'the two words around a break that goes wrong are reported',
-    options: narrow,
+    settings: narrow,
     code: block(
       'aaaa',
       'bbbb cccc dddd eeee ffff gggg hhhh iiii',
@@ -1207,7 +1300,7 @@ export const invalid = [
   },
   {
     name: 'once the breaks meet again, the next that goes wrong is reported',
-    options: narrow,
+    settings: narrow,
     code: block(
       'aaaa bbbb cccc dddd eeee ffff',
       'gggg hhhh iiii jjjj kkkk llll mmmm nnnn',

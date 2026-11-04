@@ -94,9 +94,14 @@ and `//` comments, and banners beginning with more than two stars such as
 Override or disable recommended rules after the preset, or register the plugin yourself
 under `plugins: { 'jsdoc-flow': jsdocFlow }` to enable individual rules.
 
-To use one space after sentences and colons, set `settings['jsdoc-flow'].spaces`
-to `1`, as below. It accepts only `1` or `2`, defaults to `2`, and applies
-consistently across all rules.
+These settings apply across all rules, so they always agree. Set them under
+`settings['jsdoc-flow']`, as below.
+
+| Setting   | Default | Purpose                                                                                                 |
+| --------- | ------- | ------------------------------------------------------------------------------------------------------- |
+| `spaces`  | `2`     | Spaces after sentences and colons: `1` or `2`.                                                          |
+| `width`   | `80`    | Target maximum line width, including indentation and the `*` prefix. Unbreakable content may exceed it. |
+| `maxHead` | `0.55`  | Widest a tag's head may be and keep its description beside it, as a fraction of the width.              |
 
 ```js
 import jsdocFlow from 'eslint-plugin-jsdoc-flow';
@@ -106,21 +111,20 @@ export default [
   {
     files: ['src/**/*.{js,ts}'],
     settings: {
-      'jsdoc-flow': { spaces: 1 },
+      'jsdoc-flow': { spaces: 1, width: 100 },
     },
     rules: {
-      'jsdoc-flow/reflow': ['warn', { width: 100 }],
+      'jsdoc-flow/reflow': ['warn', { hang: false }],
       'jsdoc-flow/single-line': ['warn', { allowTags: ['type', 'typedef'] }],
     },
   },
 ];
 ```
 
-`reflow` supports these options. Width includes indentation and the `*` prefix.
+`reflow` supports these options:
 
 | Option       | Default                                         | Purpose                                                                                                 |
 | ------------ | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `width`      | `80`                                            | Target maximum line width. Unbreakable content may exceed it.                                           |
 | `orphans`    | `{ sentence: true, clause: true, paren: true }` | Avoid isolated words at sentence, clause and parenthetical boundaries. Disable each limit individually. |
 | `names`      | `true`                                          | Keep abbreviations with adjacent names, such as `Mr. Smith`.                                            |
 | `shortWords` | `true`                                          | Keep articles and one-letter words with the following word.                                             |
