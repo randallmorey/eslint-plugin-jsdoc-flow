@@ -252,26 +252,62 @@ export const alignInvalid = [
     errors: alignErrors(3),
   },
   {
-    name: 'a head of 45 columns sets the column, and a wider one two spaces',
+    name: 'a head of 44 columns sets the column, and a wider one two spaces',
     code: block(
-      '@param {string} abcdefghijklmnopqrstuvwxyz - the description,',
+      '@param {string} abcdefghijklmnopqrstuvwxy - the description,',
       '  continued',
-      '@param {string} abcdefghijklmnopqrstuvwxyzz -',
-      '                                              the description,',
-      '                                              continued',
-      '@param {string} abcdefghijklmnopqrstuvwxyzz - the description,',
-      '                                              continued',
-    ),
-    output: block(
+      '@param {string} abcdefghijklmnopqrstuvwxyz -',
+      '                                             the description,',
+      '                                             continued',
       '@param {string} abcdefghijklmnopqrstuvwxyz - the description,',
       '                                             continued',
-      '@param {string} abcdefghijklmnopqrstuvwxyzz -',
+    ),
+    output: block(
+      '@param {string} abcdefghijklmnopqrstuvwxy - the description,',
+      '                                            continued',
+      '@param {string} abcdefghijklmnopqrstuvwxyz -',
       '  the description,',
       '  continued',
-      '@param {string} abcdefghijklmnopqrstuvwxyzz - the description,',
+      '@param {string} abcdefghijklmnopqrstuvwxyz - the description,',
       '  continued',
     ),
     errors: alignErrors(4),
+  },
+  {
+    // The limit is 0.55 of 100, or 55.
+    name: "a head's limit scales with `width`",
+    settings: { 'jsdoc-flow': { width: 100 } },
+    code: block(
+      `@param {string} ${'n'.repeat(36)} - the description,`,
+      '  continued',
+      `@param {string} ${'n'.repeat(37)} -`,
+      `${' '.repeat(56)}the description,`,
+    ),
+    output: block(
+      `@param {string} ${'n'.repeat(36)} - the description,`,
+      `${' '.repeat(55)}continued`,
+      `@param {string} ${'n'.repeat(37)} -`,
+      '  the description,',
+    ),
+    errors: alignErrors(2),
+  },
+  {
+    // The limit is 0.25 of 80, or 20.
+    name: "a head's limit follows `maxHead`",
+    settings: { 'jsdoc-flow': { maxHead: 0.25 } },
+    code: block(
+      '@param {string} name -',
+      '                       the description,',
+      '@param name - the description,',
+      '  continued',
+    ),
+    output: block(
+      '@param {string} name -',
+      '  the description,',
+      '@param name - the description,',
+      '              continued',
+    ),
+    errors: alignErrors(2),
   },
   {
     name: 'a head that ends its line sets the column after itself',

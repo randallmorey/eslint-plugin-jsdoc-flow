@@ -23,10 +23,11 @@ const ruleTester = new RuleTester();
 // changes nothing.
 const fixedAgain = [...invalid, ...blockInvalid]
   .filter((c) => c.output)
-  .map(({ name, output, options, filename, languageOptions }) => ({
+  .map(({ name, output, options, settings, filename, languageOptions }) => ({
     name: `idempotent:  ${name}`,
     code: output,
     ...(options && { options }),
+    ...(settings && { settings }),
     ...(filename && { filename }),
     ...(languageOptions && { languageOptions }),
   }));

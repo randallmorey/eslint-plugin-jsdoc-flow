@@ -138,7 +138,7 @@ const converging = [
     guardBlocks(token).flatMap((code, k) =>
       convergeWidths.map((width) => ({
         name: `\`${token}\` in a wrap, block ${k + 1} at ${width}`,
-        options: [{ width }],
+        settings: { 'jsdoc-flow': { width } },
         code,
       })),
     ),

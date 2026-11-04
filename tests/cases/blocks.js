@@ -4,7 +4,7 @@
 import { block } from '../helpers.js';
 
 // A narrow width keeps the inputs short:  ` * ` leaves 37 columns of text.
-const narrow = [{ width: 42 }];
+const narrow = { 'jsdoc-flow': { width: 42 } };
 
 const join = [{ messageId: 'join' }];
 
@@ -446,7 +446,7 @@ export const blockInvalid = [
   {
     name: 'text before a hard break wraps, and the break stays at its end',
     errors: breaks,
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gggg hhhh iiii.<br>', 'jjjj.'),
     output: block(
       'aaaa bbbb cccc dddd eeee ffff gggg',
@@ -482,7 +482,7 @@ export const blockInvalid = [
   {
     name: "a hard break in a wide head's description below it",
     errors: breaks,
-    options: narrow,
+    settings: narrow,
     code: block(
       '@param {{ aaaaaaaaaaaaaaaaaaaaaaaaaaa: number }} name - c d<br>',
       'e',
@@ -570,14 +570,14 @@ export const blockInvalid = [
   {
     name: 'a wrap keeps a `<br>` from ending a line it was inside of',
     errors: breaks,
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gggg<br> hhhh iiii.'),
     output: block('aaaa bbbb cccc dddd eeee ffff', 'gggg<br> hhhh iiii.'),
   },
   {
     name: 'a wrap keeps a backslash from ending a line it was inside of',
     errors: breaks,
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gggg\\ hhhh iiii.'),
     output: block('aaaa bbbb cccc dddd eeee ffff', 'gggg\\ hhhh iiii.'),
   },
@@ -608,7 +608,7 @@ export const blockInvalid = [
   {
     name: 'an inline ``` span at the start of a line wraps, and later tags still flow',
     errors: [{ messageId: 'break' }, { messageId: 'join' }],
-    options: narrow,
+    settings: narrow,
     code: block(
       '```foo``` aaaa bbbb cccc dddd eeee ffff gggg hhhh.',
       '',
@@ -625,14 +625,14 @@ export const blockInvalid = [
   {
     name: 'an inline ``` span may start a wrapped line',
     errors: breaks,
-    options: narrow,
+    settings: narrow,
     code: block('aaaa bbbb cccc dddd eeee ffff gggg ```foo``` hhhh iiii.'),
     output: block('aaaa bbbb cccc dddd eeee ffff gggg', '```foo``` hhhh iiii.'),
   },
   {
     name: "a wrap keeps a paragraph's first line from reading as a fence",
     errors: breaks,
-    options: narrow,
+    settings: narrow,
     code: block('```js aaaa bbbb cccc dddd eeee ffff gggg hhhh` iiii jjjj.'),
     output: block(
       '```js aaaa bbbb cccc dddd eeee ffff gggg hhhh`',
@@ -642,14 +642,14 @@ export const blockInvalid = [
   {
     name: "a wrap keeps a paragraph's first line from reading as a bare fence",
     errors: breaks,
-    options: narrow,
+    settings: narrow,
     code: block('``` `aaaa` bbbb cccc dddd eeee ffff gggg hhhh iiii.'),
     output: block('``` `aaaa` bbbb cccc dddd eeee ffff', 'gggg hhhh iiii.'),
   },
   {
     name: 'a wrap keeps the first line after a hard break from reading as a fence',
     errors: breaks,
-    options: narrow,
+    settings: narrow,
     code: block(
       'aaaa\\',
       '```js bbbb cccc dddd eeee ffff gggg hhhh` iiii jjjj.',
@@ -662,14 +662,16 @@ export const blockInvalid = [
   },
   {
     name: "a wrap keeps a paragraph's first line from reading as a thematic break",
-    options: [{ width: 12, orphans: { sentence: false }, shortWords: false }],
+    settings: { 'jsdoc-flow': { width: 12 } },
+    options: [{ orphans: { sentence: false }, shortWords: false }],
     errors: breaks,
     code: block('--- aaaa bbbb.'),
     output: block('--- aaaa', 'bbbb.'),
   },
   {
     name: "a wrap keeps a paragraph's first line from reading as a definition",
-    options: [{ width: 42, orphans: { sentence: false } }],
+    settings: narrow,
+    options: [{ orphans: { sentence: false } }],
     errors: breaks,
     code: block('[ref]: https://example.com/aaaaaaaa bbbb cccc.'),
     output: block('[ref]:  https://example.com/aaaaaaaa bbbb', 'cccc.'),
@@ -677,7 +679,7 @@ export const blockInvalid = [
   {
     name: 'a description that would read as a construct stays on a wide head',
     errors: breaks,
-    options: narrow,
+    settings: narrow,
     code: block(
       '@param {{ aaaaaaaaaaaaaaaaaaaaaaaaaaa: number }} name - > five is the limit',
     ),
@@ -711,7 +713,7 @@ const glueInvalid = [
   ].map((token) => [token, true]),
 ].map(([token, down]) => ({
   name: `glue:  \`${token}\` with the token before it`,
-  options: narrow,
+  settings: narrow,
   errors: breaks,
   code: block(`aaaa bbbb cccc dddd eeee ffff gggg ${token} hhhh iiii.`),
   output: down
@@ -720,7 +722,7 @@ const glueInvalid = [
 }));
 blockInvalid.push(...glueInvalid, {
   name: 'glue:  `[ref]:` with the token before it',
-  options: narrow,
+  settings: narrow,
   errors: breaks,
   code: block('aaaa bbbb cccc dddd eeee ffff gggg [ref]: hhhh iiii.'),
   output: block('aaaa bbbb cccc dddd eeee ffff', 'gggg [ref]:  hhhh iiii.'),

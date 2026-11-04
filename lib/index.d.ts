@@ -46,8 +46,9 @@ export interface BlockOptions {
 /**
  * The limits on where a line may break that `reflowComment` and the `reflow`
  * rule can turn on or off.  Each is on unless set to `false`, except
- * `widows`, which is `0.15` unless set, and off at `0`.  `reflowComment` also
- * takes the `BlockOptions`.
+ * `widows`, which is `0.15` unless set, and off at `0`, and `maxHead`, which
+ * is `0.55` unless set, and which the rule takes from the shared settings.
+ * `reflowComment` also takes the `BlockOptions`.
  */
 export interface ReflowOptions extends BlockOptions {
   /**
@@ -77,6 +78,30 @@ export interface ReflowOptions extends BlockOptions {
    * long enough, but never so far that it ends right of that line.
    */
   widows?: number;
+  /**
+   * The widest a tag's head may be and still have its description begin beside
+   * it, as a fraction of the width from `0` to `1`.  A wider head takes a line
+   * of its own, unless the whole tag fits on one.
+   */
+  maxHead?: number;
+}
+
+/**
+ * How `alignTags` reads and spaces a block, and which heads are wide, which
+ * must match what `reflowComment` is given for the two to agree.  The rules
+ * take these from the shared settings, so that they always do.
+ */
+export interface AlignOptions extends BlockOptions {
+  /**
+   * The width that `maxHead` is a fraction of, `80` unless set.
+   */
+  width?: number;
+  /**
+   * The widest a tag's head may be and still have its later lines hang under
+   * its description, as a fraction of the width from `0` to `1`, `0.55` unless
+   * set.
+   */
+  maxHead?: number;
 }
 
 /**
@@ -99,13 +124,13 @@ export function reflowComment(
 /**
  * @param text - the block, from its `/**` to its `*\/`
  * @param indent - the whitespace before the block on its line
- * @param options - how to read and space the block
+ * @param options - how to read and space the block, and which heads are wide
  * @returns the block, with its tag continuation lines aligned
  */
 export function alignTags(
   text: string,
   indent: string,
-  options?: BlockOptions,
+  options?: AlignOptions,
 ): string;
 
 /**
