@@ -122,6 +122,9 @@ export default [
 ];
 ```
 
+An unknown setting is an error. In a TypeScript config, the exported `Settings`
+and `Rules` types catch typos too, as in `{ width: 100 } satisfies Settings`.
+
 `reflow` supports these options:
 
 | Option       | Default                                         | Purpose                                                                                                 |
