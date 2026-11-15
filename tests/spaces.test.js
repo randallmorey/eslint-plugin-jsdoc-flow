@@ -6,12 +6,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { Linter, RuleTester } from 'eslint';
 
-import plugin, {
-  alignTags,
-  fixEdges,
-  fixSpacing,
-  reflowComment,
-} from '../lib/index.js';
+import plugin from '../lib/index.js';
+import { alignTags, fixEdges, fixSpacing, reflowComment } from '../lib/flow.js';
 import { block, testFindingRules } from './helpers.js';
 import { invalid, valid } from './cases/reflow.js';
 import {

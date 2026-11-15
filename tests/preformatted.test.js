@@ -5,12 +5,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { Linter } from 'eslint';
 
-import plugin, {
-  alignTags,
-  fixEdges,
-  fixSpacing,
-  reflowComment,
-} from '../lib/index.js';
+import plugin from '../lib/index.js';
+import { alignTags, fixEdges, fixSpacing, reflowComment } from '../lib/flow.js';
 import { block } from './helpers.js';
 import { messyGuarded, preformattedCases } from './cases/preformatted.js';
 

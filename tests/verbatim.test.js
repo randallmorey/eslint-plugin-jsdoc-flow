@@ -5,12 +5,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { Linter, RuleTester } from 'eslint';
 
-import plugin, {
-  alignTags,
-  fixEdges,
-  fixSpacing,
-  reflowComment,
-} from '../lib/index.js';
+import plugin from '../lib/index.js';
+import { alignTags, fixEdges, fixSpacing, reflowComment } from '../lib/flow.js';
 import './helpers.js';
 import { messyBlocks } from './cases/verbatim.js';
 
