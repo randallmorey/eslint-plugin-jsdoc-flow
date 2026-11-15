@@ -46,7 +46,8 @@ are autofixable, and they only change whitespace or line prefixes.
 npm install --save-dev eslint-plugin-jsdoc-flow
 ```
 
-Requires ESLint 9 or later (flat config) and Node.js 20.19 or later.
+Requires ESLint 9.15+ or 10 (flat config) and Node.js 20.19 or later. The
+package is ESM-only.
 
 ## Usage
 
@@ -120,6 +121,9 @@ export default [
   },
 ];
 ```
+
+An unknown setting is an error. In a TypeScript config, the exported `Settings`
+and `Rules` types catch typos too, as in `{ width: 100 } satisfies Settings`.
 
 `reflow` supports these options:
 

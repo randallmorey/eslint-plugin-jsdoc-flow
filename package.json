@@ -4,7 +4,7 @@
   "description": "ESLint rules that flow JSDoc text: consistent sentence spacing, line breaks that never strand a word, and aligned tag descriptions. Autofixable.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/randallmorey/eslint-plugin-jsdoc-flow.git"
+    "url": "git+https://github.com/randallmorey/eslint-plugin-jsdoc-flow.git"
   },
   "keywords": [
     "eslint",
@@ -16,7 +16,7 @@
     "formatting"
   ],
   "license": "MIT",
-  "author": "",
+  "author": "Randall Morey",
   "type": "module",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -32,14 +32,18 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "lint": "eslint . && prettier . --check && tsc -p tsconfig.json",
+    "lint": "eslint . && prettier . --check && tsc -p tsconfig.json && npm run lint:types && npm run lint:package",
     "lint:fix": "eslint . --fix && prettier . --write",
-    "test": "node --import ./tests/setup.js --test --test-reporter=./tests/reporter.js"
+    "lint:package": "publint --strict && attw --pack --profile esm-only",
+    "lint:types": "tsc -p tests/types/tsconfig.nodenext.json && tsc -p tests/types/tsconfig.bundler.json",
+    "test": "node --import ./tests/setup.js --test --test-reporter=./tests/reporter.js",
+    "types": "node scripts/types.js"
   },
   "peerDependencies": {
-    "eslint": ">= 9"
+    "eslint": "^9.15.0 || ^10.0.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@eslint/js": "^9.39.5",
     "@types/node": "^20.19.43",
     "eslint": "^9.39.5",
@@ -49,6 +53,7 @@
     "eslint-plugin-n": "^17.24.0",
     "globals": "^16.5.0",
     "prettier": "^3.9.6",
+    "publint": "^0.3.25",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.66.0"
   },

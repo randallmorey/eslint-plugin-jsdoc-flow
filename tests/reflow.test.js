@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { RuleTester } from 'eslint';
 
-import plugin, { reflowComment } from '../lib/index.js';
+import plugin from '../lib/index.js';
+import { reflowComment } from '../lib/flow.js';
 import './helpers.js';
 import {
   blockInvalid,

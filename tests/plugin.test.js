@@ -4,12 +4,9 @@ import { createRequire } from 'node:module';
 import { test } from 'node:test';
 import { Linter } from 'eslint';
 
-import plugin, {
-  alignTags,
-  fixEdges,
-  fixSpacing,
-  reflowComment,
-} from '../lib/index.js';
+import * as entry from '../lib/index.js';
+import plugin from '../lib/index.js';
+import { alignTags, fixEdges, fixSpacing, reflowComment } from '../lib/flow.js';
 import { block } from './helpers.js';
 
 const pkg = createRequire(import.meta.url)('../package.json');
@@ -71,7 +68,12 @@ test('the recommended config warns with all fourteen rules', () => {
   );
 });
 
-test('reflowComment, fixSpacing, fixEdges and alignTags are exported', () => {
+test('the plugin is the only export', () => {
+  assert.deepEqual(Object.keys(entry), ['default']);
+});
+
+// The engine is internal, so its tests import it from `flow.js`.
+test('reflowComment, fixSpacing, fixEdges and alignTags work on their own', () => {
   assert.equal(reflowComment('/** One. Two. */', ''), '/** One.  Two. */');
   assert.equal(
     fixSpacing('/** One. Two  three. */', ''),

@@ -65,3 +65,23 @@ for (const allowTags of [['@type'], [''], ['a b'], 'type', [1], ['a', 'a']]) {
     assert.throws(() => verifyWith({ allowTags }), /jsdoc-flow\/single-line/);
   });
 }
+
+// ESLint before 9.15 ignores `defaultOptions`, so the rule mustn't need them.
+test('allowTags defaults to none without defaultOptions', () => {
+  const rule = plugin.rules['single-line'];
+  const { defaultOptions, ...meta } = rule.meta;
+  assert.deepEqual(defaultOptions, [{ allowTags: [] }]);
+  const messages = new Linter().verify('/** @type {Foo} */\n', [
+    {
+      files: ['**/*.*'],
+      plugins: {
+        'jsdoc-flow': { rules: { 'single-line': { ...rule, meta } } },
+      },
+      rules: { 'jsdoc-flow/single-line': 'warn' },
+    },
+  ]);
+  assert.deepEqual(
+    messages.map((m) => m.messageId),
+    ['single'],
+  );
+});
