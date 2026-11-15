@@ -39,6 +39,7 @@ import {
   extraStars,
   singleInvalid,
   singleSettled,
+  singleUnfixed,
   singleValid,
 } from './cases/single-line.js';
 import { verbatimCases } from './cases/verbatim.js';
@@ -134,6 +135,7 @@ const converging = [
   ...bulletAlignInvalid,
   ...singleValid,
   ...singleInvalid,
+  ...singleUnfixed,
   ...blockValid,
   ...blockInvalid,
   ...verbatimCases,
@@ -182,6 +184,17 @@ for (const c of converging) {
   });
 }
 
+// The same cases with CRLF line endings, which settle on the same text with
+// CRLF ones, and none of another kind.
+const crlf = (s) => s.replace(/\r?\n/g, '\r\n');
+for (const c of converging) {
+  test(`all rules converge with CRLF:  ${c.name}`, () => {
+    const all = settlesInAnyOrder({ ...c, code: crlf(c.code) });
+    assert.equal(all, crlf(fixWith(c, RULES, c.code)));
+    assert.doesNotMatch(all, /\r(?!\n)|(?<!\r)\n/);
+  });
+}
+
 // The one-space cases, in both modes.
 for (const c of [
   ...oneSpaceValid,
@@ -212,12 +225,14 @@ for (const c of [...typeValid, ...blockValid, ...extraStars]) {
 }
 
 // A one-liner that `single-line` exempts survives `--fix` with all the rules:
-// on one line, unless `reflow` has its own reason to expand it.  A block with
+// on one line, unless `reflow` has its own reason to expand it, as it does one
+// that looks like code, which `single-line` can't fix.  A block with
 // an ignore comment or a verbatim tag survives it as it is, and one with only
 // what looks like them is fixed as usual.  So does a block that the guard on
 // unfenced code keeps, in part or whole.
 for (const c of [
   ...singleSettled,
+  ...singleUnfixed,
   ...verbatimCases,
   ...preformattedCases,
   ...unguardedCases,
