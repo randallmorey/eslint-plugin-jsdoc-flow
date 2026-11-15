@@ -184,6 +184,17 @@ for (const c of converging) {
   });
 }
 
+// The same cases with CRLF line endings, which settle on the same text with
+// CRLF ones, and none of another kind.
+const crlf = (s) => s.replace(/\r?\n/g, '\r\n');
+for (const c of converging) {
+  test(`all rules converge with CRLF:  ${c.name}`, () => {
+    const all = settlesInAnyOrder({ ...c, code: crlf(c.code) });
+    assert.equal(all, crlf(fixWith(c, RULES, c.code)));
+    assert.doesNotMatch(all, /\r(?!\n)|(?<!\r)\n/);
+  });
+}
+
 // The one-space cases, in both modes.
 for (const c of [
   ...oneSpaceValid,
