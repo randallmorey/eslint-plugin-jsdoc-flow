@@ -39,6 +39,7 @@ import {
   extraStars,
   singleInvalid,
   singleSettled,
+  singleUnfixed,
   singleValid,
 } from './cases/single-line.js';
 import { verbatimCases } from './cases/verbatim.js';
@@ -134,6 +135,7 @@ const converging = [
   ...bulletAlignInvalid,
   ...singleValid,
   ...singleInvalid,
+  ...singleUnfixed,
   ...blockValid,
   ...blockInvalid,
   ...verbatimCases,
@@ -212,12 +214,14 @@ for (const c of [...typeValid, ...blockValid, ...extraStars]) {
 }
 
 // A one-liner that `single-line` exempts survives `--fix` with all the rules:
-// on one line, unless `reflow` has its own reason to expand it.  A block with
+// on one line, unless `reflow` has its own reason to expand it, as it does one
+// that looks like code, which `single-line` can't fix.  A block with
 // an ignore comment or a verbatim tag survives it as it is, and one with only
 // what looks like them is fixed as usual.  So does a block that the guard on
 // unfenced code keeps, in part or whole.
 for (const c of [
   ...singleSettled,
+  ...singleUnfixed,
   ...verbatimCases,
   ...preformattedCases,
   ...unguardedCases,

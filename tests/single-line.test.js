@@ -5,7 +5,11 @@ import { Linter, RuleTester } from 'eslint';
 
 import plugin from '../lib/index.js';
 import './helpers.js';
-import { singleInvalid, singleValid } from './cases/single-line.js';
+import {
+  singleInvalid,
+  singleUnfixed,
+  singleValid,
+} from './cases/single-line.js';
 
 const ruleTester = new RuleTester();
 
@@ -30,7 +34,15 @@ ruleTester.run('jsdoc-flow/single-line', plugin.rules['single-line'], {
       code: '/** \u200b@ts-ignore */\nexport const x = 1;\n',
     },
   ],
-  invalid: singleInvalid,
+  invalid: [
+    ...singleInvalid,
+    ...singleUnfixed.map(({ name, code }) => ({
+      name,
+      code,
+      output: null,
+      errors: [{ messageId: 'single' }],
+    })),
+  ],
 });
 
 // `allowTags` takes tag names, so a leading `@` or a blank name is a config

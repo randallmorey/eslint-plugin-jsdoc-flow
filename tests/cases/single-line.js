@@ -136,6 +136,18 @@ export const singleSettled = [
   },
 ];
 
+// One-liners whose text looks like indented code, which `reflow` keeps as it
+// is, so `single-line` reports them without a fix rather than trim it, and
+// `reflow` expands them (`output`).
+export const singleUnfixed = [
+  ['text', 'Some text'],
+  ['code', 'a = 1;'],
+].map(([name, body]) => ({
+  name: `${name} after enough spaces to look like indented code`,
+  code: `/**     ${body} */\nexport const x = 1;\n`,
+  output: block(`    ${body}`),
+}));
+
 // Comments that open with more than two stars, which aren't JSDoc blocks, so
 // every rule leaves them as they are, on one line or several.
 export const extraStars = [
