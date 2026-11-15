@@ -89,6 +89,18 @@ for (const token of mayStart) {
   });
 }
 
+// A zero-width space is whitespace, so a wrap never starts a line with one,
+// which the next run would read as indentation.
+test('a zero-width space between words reflows to itself', () => {
+  const text = '/**\n * a [x] http://example.com/a.b \u200b {@link Foo}\n */';
+  const fixed = reflowComment(text, '', 40, { spaces: 1 });
+  assert.equal(
+    fixed,
+    '/**\n * a [x]\n * http://example.com/a.b {@link Foo}\n */',
+  );
+  assert.equal(reflowComment(fixed, '', 40, { spaces: 1 }), fixed);
+});
+
 // Lines are laid out in loops, not a recursion per line, so a paragraph that
 // wraps onto thousands of lines, or has thousands of hard breaks, can't
 // overflow the stack.

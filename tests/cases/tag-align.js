@@ -58,17 +58,6 @@ export const alignValid = [
     code: block('Some text,', '    indented, but not a tag.'),
   },
   {
-    name: "a tag line whose prefix isn't ` * ` is left to reflow",
-    code: [
-      '/**',
-      ' *  @param name - the description,',
-      ' *   continued',
-      ' */',
-      'export const x = 1;',
-      '',
-    ].join('\n'),
-  },
-  {
     name: '`@example`, fenced code, indented code and bullets are skipped',
     code: block(
       '    indented   code',
@@ -151,6 +140,26 @@ export const alignValid = [
 ];
 
 export const alignInvalid = [
+  {
+    // `text-indent` moves the tag's line, and the column with it.
+    name: "a tag line whose prefix isn't ` * `",
+    code: [
+      '/**',
+      ' *  @param name - the description,',
+      ' *   continued',
+      ' */',
+      'export const x = 1;',
+      '',
+    ].join('\n'),
+    output: [
+      '/**',
+      ' *  @param name - the description,',
+      ' *               continued',
+      ' */',
+      'export const x = 1;',
+      '',
+    ].join('\n'),
+  },
   {
     // Text that starts before its column is highlighted from its start.
     name: '`@param name -`',
