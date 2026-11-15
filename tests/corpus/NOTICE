@@ -1,0 +1,6 @@
+Real JSDoc-heavy files, copied unmodified, for the corpus check
+(tests/corpus.js).  Each directory keeps its project's license.
+
+typescript/  TypeScript 6.0.3 lib declarations, Apache-2.0 (LICENSE.txt)
+node/        @types/node 20.19.43 declarations, MIT (LICENSE)
+eslint/      ESLint 9.39.5 sources, MIT (LICENSE)

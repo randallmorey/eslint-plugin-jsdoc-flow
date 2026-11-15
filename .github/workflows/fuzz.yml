@@ -1,0 +1,43 @@
+name: Fuzz
+
+# The property tests with many more runs than `npm test` makes, and a new seed
+# each time.  A failure prints its seed and shrunk counterexample, which
+# `FUZZ_SEED=<seed> npm run test:fuzz` reproduces.
+on:
+  schedule:
+    - cron: '23 5 * * *'
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: 'Runs per property'
+        default: '50000'
+      seed:
+        description: 'Seed (random if empty)'
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  fuzz:
+    name: 'Fuzz'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run the Property Tests
+        env:
+          FUZZ_RUNS: ${{ inputs.runs || '50000' }}
+          SEED: ${{ inputs.seed }}
+        run: |
+          export FUZZ_SEED="${SEED:-$((RANDOM * 32768 + RANDOM))}"
+          echo "FUZZ_SEED=$FUZZ_SEED, FUZZ_RUNS=$FUZZ_RUNS"
+          npm run test:fuzz

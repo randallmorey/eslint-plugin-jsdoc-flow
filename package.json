@@ -32,11 +32,15 @@
     "CHANGELOG.md"
   ],
   "scripts": {
+    "corpus:update": "node --import ./tests/setup.js tests/corpus.js --update",
     "lint": "eslint . && prettier . --check && tsc -p tsconfig.json && npm run lint:types && npm run lint:package",
     "lint:fix": "eslint . --fix && prettier . --write",
     "lint:package": "publint --strict && attw --pack --profile esm-only",
     "lint:types": "tsc -p tests/types/tsconfig.nodenext.json && tsc -p tests/types/tsconfig.bundler.json",
     "test": "node --import ./tests/setup.js --test --test-reporter=./tests/reporter.js",
+    "test:corpus": "node --import ./tests/setup.js --test --test-reporter=./tests/reporter.js tests/corpus.js",
+    "test:coverage": "node --import ./tests/setup.js --test --experimental-test-coverage --test-coverage-include=lib/** --test-coverage-lines=99.8 --test-coverage-branches=99.3 --test-coverage-functions=98.9 --test-reporter=./tests/reporter.js",
+    "test:fuzz": "node --import ./tests/setup.js --test --test-reporter=./tests/reporter.js tests/properties.test.js",
     "types": "node scripts/types.js"
   },
   "peerDependencies": {
@@ -51,6 +55,7 @@
     "eslint-plugin-ember": "^12.7.5",
     "eslint-plugin-jsdoc": "^63.3.3",
     "eslint-plugin-n": "^17.24.0",
+    "fast-check": "^4.10.2",
     "globals": "^16.5.0",
     "prettier": "^3.9.6",
     "publint": "^0.3.25",

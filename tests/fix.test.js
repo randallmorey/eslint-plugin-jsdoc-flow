@@ -43,6 +43,7 @@ import {
   singleValid,
 } from './cases/single-line.js';
 import { verbatimCases } from './cases/verbatim.js';
+import { orderCases } from './cases/order.js';
 import { preformattedCases, unguardedCases } from './cases/preformatted.js';
 import {
   oneSpaceColonInvalid,
@@ -141,6 +142,7 @@ const converging = [
   ...verbatimCases,
   ...preformattedCases,
   ...unguardedCases,
+  ...orderCases,
   ...[...noStart, ...noEnd, ...inlineStart].flatMap((token) =>
     guardBlocks(token).flatMap((code, k) =>
       convergeWidths.map((width) => ({
@@ -172,6 +174,12 @@ const settlesInAnyOrder = (c) => {
 for (const c of converging) {
   test(`all rules converge:  ${c.name}`, () => {
     settlesInAnyOrder(c);
+  });
+}
+
+for (const c of orderCases) {
+  test(`all rules settle in any order:  ${c.name}`, () => {
+    assert.equal(settlesInAnyOrder(c), c.output);
   });
 }
 

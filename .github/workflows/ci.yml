@@ -50,6 +50,41 @@ jobs:
       - name: Run Tests
         run: npm test
 
+  corpus:
+    name: 'Corpus'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install Dependencies
+        run: npm ci
+      - name: Fix the Corpus
+        run: npm run test:corpus
+
+  coverage:
+    name: 'Coverage'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install Node
+        uses: actions/setup-node@v6
+        with:
+          # The thresholds are measured with Node 22's coverage.
+          node-version: 22
+          cache: npm
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run Tests with Coverage
+        run: npm run test:coverage
+
   eslint:
     name: 'Test (ESLint ${{ matrix.eslint }})'
     runs-on: ubuntu-latest

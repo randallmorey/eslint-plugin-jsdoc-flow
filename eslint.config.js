@@ -1,6 +1,6 @@
 import globals from 'globals';
 import js from '@eslint/js';
-import { defineConfig } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import n from 'eslint-plugin-n';
 import jsdoc from 'eslint-plugin-jsdoc';
@@ -8,6 +8,8 @@ import jsdoc from 'eslint-plugin-jsdoc';
 import jsdocFlow from './lib/index.js';
 
 export default defineConfig([
+  // Real files, vendored as they are, for the corpus check.
+  globalIgnores(['tests/corpus/']),
   js.configs.recommended,
   n.configs['flat/recommended-module'],
   {

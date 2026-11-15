@@ -1,0 +1,383 @@
+{
+  "eslint/ast-utils.js": {
+    "blocks": 91,
+    "changed": 41,
+    "rules": {
+      "colon-spacing": 1,
+      "reflow": 40,
+      "sentence-spacing": 14,
+      "tag-align": 9,
+      "text-indent": 1,
+      "word-spacing": 1
+    },
+    "sha256": "2b77b342a2072ef865ae17825eed5fb7c3ab6eb61ffed69b178f296a7cea1e29"
+  },
+  "eslint/linter.js": {
+    "blocks": 75,
+    "changed": 48,
+    "rules": {
+      "colon-spacing": 1,
+      "reflow": 36,
+      "sentence-spacing": 7,
+      "single-line": 14,
+      "tag-align": 9
+    },
+    "sha256": "2435c3d1abbecd910b56a1ea93aad2372af259200e808118af3c316c958181de"
+  },
+  "eslint/rule-tester.js": {
+    "blocks": 34,
+    "changed": 23,
+    "rules": {
+      "colon-spacing": 1,
+      "reflow": 17,
+      "sentence-spacing": 5,
+      "single-line": 4,
+      "tag-align": 1,
+      "word-spacing": 1
+    },
+    "sha256": "83929546fba098e5ee5fc4b8c4142972789de84a30ef6d8ff3940a8b24b94077"
+  },
+  "eslint/source-code.js": {
+    "blocks": 53,
+    "changed": 30,
+    "rules": {
+      "reflow": 23,
+      "sentence-spacing": 7,
+      "single-line": 5,
+      "tag-align": 12
+    },
+    "sha256": "632560907e809e6ad50c25a2a36eb814a6287aa5649b9f98ed55c6b7890afd59"
+  },
+  "node/assert.d.ts": {
+    "blocks": 42,
+    "changed": 38,
+    "rules": {
+      "reflow": 30,
+      "sentence-spacing": 20,
+      "single-line": 10
+    },
+    "sha256": "7a4f1cbd0605758dc2e862168b2587a4eda42c108c4d37c0d54245f11d66ddf7"
+  },
+  "node/buffer.d.ts": {
+    "blocks": 108,
+    "changed": 84,
+    "rules": {
+      "bullet-align": 1,
+      "colon-spacing": 11,
+      "reflow": 82,
+      "sentence-spacing": 63,
+      "single-line": 2
+    },
+    "sha256": "9f8d9a03d32952975c0596c791d6c3bf8c03185653ec236f1a7814cc79cf8243"
+  },
+  "node/child_process.d.ts": {
+    "blocks": 37,
+    "changed": 33,
+    "rules": {
+      "bullet-align": 1,
+      "colon-spacing": 2,
+      "reflow": 32,
+      "sentence-spacing": 24,
+      "single-line": 1,
+      "word-spacing": 1
+    },
+    "sha256": "6ad39215ceb597ac6aa4024bd83297419aabeab4146052d64eeb3f58bcc55e79"
+  },
+  "node/crypto.d.ts": {
+    "blocks": 247,
+    "changed": 183,
+    "rules": {
+      "bullet-align": 9,
+      "colon-spacing": 15,
+      "reflow": 154,
+      "sentence-spacing": 96,
+      "single-line": 38,
+      "tag-align": 5,
+      "word-spacing": 1
+    },
+    "sha256": "2194077af6e44e8b4e9655fa01020790221c2abc322a8162e288ecf2ec272d14"
+  },
+  "node/events.d.ts": {
+    "blocks": 53,
+    "changed": 44,
+    "rules": {
+      "colon-spacing": 3,
+      "reflow": 43,
+      "sentence-spacing": 24,
+      "tag-align": 2
+    },
+    "sha256": "c93a9e22fd8d10678834f797d8b6aae9cc58892912560b290b68404605afdc35"
+  },
+  "node/fs.d.ts": {
+    "blocks": 327,
+    "changed": 294,
+    "rules": {
+      "bullet-align": 3,
+      "colon-spacing": 20,
+      "reflow": 282,
+      "sentence-spacing": 237,
+      "single-line": 50,
+      "tag-align": 28,
+      "text-indent": 2
+    },
+    "sha256": "bee1f75d4b7d9a628a98419dcd0ac0754a16bbc9f51ad1ef13b8c60717bda2c4"
+  },
+  "node/http.d.ts": {
+    "blocks": 115,
+    "changed": 96,
+    "rules": {
+      "bullet-align": 2,
+      "colon-spacing": 5,
+      "reflow": 94,
+      "sentence-spacing": 63
+    },
+    "sha256": "7988c856c0b05e19cc7e7c847bb0197eb015628c6bf0569516dd3d2a98e2f95a"
+  },
+  "node/http2.d.ts": {
+    "blocks": 113,
+    "changed": 92,
+    "rules": {
+      "colon-spacing": 2,
+      "reflow": 92,
+      "sentence-spacing": 49,
+      "tag-align": 3
+    },
+    "sha256": "d4c142d70613acf82faec4ac3fa6b1e40ae97a3cc914cea7ad34feffd40dd20b"
+  },
+  "node/net.d.ts": {
+    "blocks": 82,
+    "changed": 53,
+    "rules": {
+      "colon-spacing": 2,
+      "reflow": 53,
+      "sentence-spacing": 30,
+      "tag-align": 1
+    },
+    "sha256": "c1df4a9b2bcfbec71a10852f4d627c71a1e19aa2662f96b80f1e2297bfaed632"
+  },
+  "node/process.d.ts": {
+    "blocks": 95,
+    "changed": 85,
+    "rules": {
+      "bullet-align": 1,
+      "colon-spacing": 1,
+      "reflow": 85,
+      "sentence-spacing": 42,
+      "tag-align": 2
+    },
+    "sha256": "81aad68c6713e261d57b7cf7063543a0759d7df1c4b9c9667f7bb6103180a4d8"
+  },
+  "node/readline.d.ts": {
+    "blocks": 34,
+    "changed": 29,
+    "rules": {
+      "colon-spacing": 3,
+      "reflow": 27,
+      "sentence-spacing": 8
+    },
+    "sha256": "b9ebdba7dbdd4bbab0e28f0b792971a9c06e46a0ce1ba6b98f3e0e1a58e8cdd1"
+  },
+  "node/stream.d.ts": {
+    "blocks": 85,
+    "changed": 70,
+    "rules": {
+      "bullet-spacing": 1,
+      "colon-spacing": 3,
+      "reflow": 69,
+      "sentence-spacing": 38,
+      "single-line": 1,
+      "tag-align": 8
+    },
+    "sha256": "e905b8a5ee8193571d680d812d3b8acf8c04fb99649642b678f225a3b09d3241"
+  },
+  "node/test.d.ts": {
+    "blocks": 181,
+    "changed": 92,
+    "rules": {
+      "bullet-align": 1,
+      "colon-spacing": 7,
+      "reflow": 92,
+      "sentence-spacing": 52,
+      "tag-align": 9
+    },
+    "sha256": "c7585e25565fcf7ed13d33bbb7f60666fdfc515bdec3116079bf3f1d2efc198e"
+  },
+  "node/tls.d.ts": {
+    "blocks": 120,
+    "changed": 75,
+    "rules": {
+      "colon-spacing": 13,
+      "reflow": 72,
+      "sentence-spacing": 49,
+      "tag-align": 7,
+      "text-indent": 2
+    },
+    "sha256": "0b3655010f0e647c516707f02e5dc48e831af7e7e2954e89b6aba275e93a5065"
+  },
+  "node/url.d.ts": {
+    "blocks": 50,
+    "changed": 44,
+    "rules": {
+      "bullet-align": 2,
+      "reflow": 44,
+      "sentence-spacing": 28,
+      "tag-align": 3
+    },
+    "sha256": "9e4fbc4cd33c140676f1141edb5c0199ad7906abdcd235d737182c5e37af8d33"
+  },
+  "node/util.d.ts": {
+    "blocks": 134,
+    "changed": 103,
+    "rules": {
+      "colon-spacing": 3,
+      "reflow": 102,
+      "sentence-spacing": 44
+    },
+    "sha256": "a968e21f67fef47ccfa3793600158dcc52fb7c9f421a08250930b59a8b3434d7"
+  },
+  "node/vm.d.ts": {
+    "blocks": 62,
+    "changed": 55,
+    "rules": {
+      "bullet-align": 1,
+      "colon-spacing": 1,
+      "reflow": 52,
+      "sentence-spacing": 26,
+      "single-line": 3,
+      "tag-align": 3,
+      "word-spacing": 1
+    },
+    "sha256": "5abb73e09fff4803213191001e04275cd282870eaf87bc58809cdb7a295b586b"
+  },
+  "node/worker_threads.d.ts": {
+    "blocks": 44,
+    "changed": 36,
+    "rules": {
+      "bullet-align": 2,
+      "colon-spacing": 1,
+      "reflow": 36,
+      "sentence-spacing": 23,
+      "single-line": 1,
+      "tag-align": 3,
+      "word-spacing": 1
+    },
+    "sha256": "6fe4496827f4da6a7b35ca234f6d82e374953316475af5a7e8806fea6e064c24"
+  },
+  "node/zlib.d.ts": {
+    "blocks": 83,
+    "changed": 40,
+    "rules": {
+      "no-trailing-space": 1,
+      "reflow": 5,
+      "sentence-spacing": 2,
+      "single-line": 35
+    },
+    "sha256": "60d9b804bc31ce1419d18c70fa2d2623b7b994f0b416dc76cccb346c51dd2851"
+  },
+  "typescript/lib.decorators.d.ts": {
+    "blocks": 60,
+    "changed": 47,
+    "rules": {
+      "reflow": 30,
+      "sentence-spacing": 7,
+      "single-line": 27,
+      "tag-align": 5
+    },
+    "sha256": "7199d617375e2f371adb4ba781f0a73c9733583e952ab869ece8a6a8d8b9d275"
+  },
+  "typescript/lib.es2015.core.d.ts": {
+    "blocks": 70,
+    "changed": 44,
+    "rules": {
+      "colon-spacing": 2,
+      "reflow": 44,
+      "sentence-spacing": 22,
+      "tag-align": 10
+    },
+    "sha256": "9368857611c281d5cb507a34be65390d91305577d6d85df9cd24f684be7995a0"
+  },
+  "typescript/lib.es2015.iterable.d.ts": {
+    "blocks": 79,
+    "changed": 13,
+    "rules": {
+      "reflow": 5,
+      "sentence-spacing": 1,
+      "single-line": 8
+    },
+    "sha256": "087d357020e832a9a06649c678f940553cb386cecc0eb85995cb768bc6e43187"
+  },
+  "typescript/lib.es2015.promise.d.ts": {
+    "blocks": 8,
+    "changed": 3,
+    "rules": {
+      "reflow": 3,
+      "sentence-spacing": 1,
+      "tag-align": 1
+    },
+    "sha256": "5e8aa5f8d216472184a004c5ac427976a4439fa6b5a75d69396b8ba30c5cfb77"
+  },
+  "typescript/lib.es2015.proxy.d.ts": {
+    "blocks": 15,
+    "changed": 4,
+    "rules": {
+      "reflow": 4,
+      "sentence-spacing": 1
+    },
+    "sha256": "7d21c5f345fd5b42a4e1e35a60255c37097b7719575db51ebd76eb0c1e3af989"
+  },
+  "typescript/lib.es2015.reflect.d.ts": {
+    "blocks": 13,
+    "changed": 10,
+    "rules": {
+      "reflow": 10,
+      "sentence-spacing": 2,
+      "tag-align": 3
+    },
+    "sha256": "91d84ebf3a99773a9d0c22d90a71eb15a69f016270a9b6789029de5bd2966177"
+  },
+  "typescript/lib.es2015.symbol.wellknown.d.ts": {
+    "blocks": 28,
+    "changed": 22,
+    "rules": {
+      "reflow": 22,
+      "sentence-spacing": 6,
+      "tag-align": 1
+    },
+    "sha256": "d6eb973eb58962be5c63228e4fe597c7ca12e89a0a8e70ba64f7a3f95b74e5d3"
+  },
+  "typescript/lib.es2020.intl.d.ts": {
+    "blocks": 40,
+    "changed": 35,
+    "rules": {
+      "colon-spacing": 1,
+      "reflow": 27,
+      "sentence-spacing": 4,
+      "single-line": 18,
+      "tag-align": 5,
+      "tag-spacing": 1,
+      "text-indent": 1
+    },
+    "sha256": "3b086943aedf84f50dcfc9fe118a8281ec5db67c31428274977ca2eda1b73d10"
+  },
+  "typescript/lib.es2023.array.d.ts": {
+    "blocks": 69,
+    "changed": 68,
+    "rules": {
+      "reflow": 57,
+      "sentence-spacing": 53,
+      "tag-align": 52
+    },
+    "sha256": "490d247dafe7ab3ac1807310650f11fa220a83c616a020f001d34ad0f167e8c5"
+  },
+  "typescript/lib.es5.d.ts": {
+    "blocks": 613,
+    "changed": 436,
+    "rules": {
+      "reflow": 371,
+      "sentence-spacing": 262,
+      "single-line": 94,
+      "tag-align": 167
+    },
+    "sha256": "40b69d1233ec5f21e99e8439e86eca226ecec2dc43233ec759331a2158d1c9f7"
+  }
+}

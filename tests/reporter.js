@@ -26,6 +26,7 @@ const NUMBER_WIDTH = 5;
 export default async function* reporter(source) {
   const failures = [];
   const summary = {};
+  const coverage = [];
   let number = 0;
 
   for await (const event of source) {
@@ -39,6 +40,20 @@ export default async function* reporter(source) {
       const duration = blue(`(${round(data.details.duration_ms)}ms)`);
       yield `${index} ${mark} ${data.name} ${duration}\n`;
       if (!passed) failures.push(data);
+    } else if (type === 'test:coverage') {
+      // With `--experimental-test-coverage`:  each file's line, branch and
+      // function coverage, then all of them together.
+      const { files, totals, workingDirectory } = data.summary;
+      const row = (t, name) => {
+        const percents = ['Line', 'Branch', 'Function'].map((k) =>
+          `${t[`covered${k}Percent`].toFixed(2)}%`.padStart(10),
+        );
+        return `# ${percents.join('')}  ${name}`;
+      };
+      for (const file of files) {
+        coverage.push(row(file, file.path.slice(workingDirectory.length + 1)));
+      }
+      coverage.push(row(totals, 'all files'));
     } else if (type === 'test:stdout' || type === 'test:stderr') {
       yield data.message;
     } else if (type === 'test:diagnostic') {
@@ -58,6 +73,11 @@ export default async function* reporter(source) {
   }
 
   yield '\n';
+  if (coverage.length) {
+    const head = ['lines', 'branches', 'functions'].map((k) => k.padStart(10));
+    yield `# ${head.join('')}  ${white('coverage')}\n`;
+    yield `${coverage.join('\n')}\n\n`;
+  }
   summary.duration_s = round(summary.duration_ms / 1000);
   const labelWidth = Math.max(...Object.keys(summary).map((k) => k.length));
   for (const [key, value] of Object.entries(summary)) {
