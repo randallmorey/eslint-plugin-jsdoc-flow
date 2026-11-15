@@ -37,7 +37,7 @@
     "test": "node --import ./tests/setup.js --test --test-reporter=./tests/reporter.js"
   },
   "peerDependencies": {
-    "eslint": ">= 9"
+    "eslint": "^9.15.0 || ^10.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

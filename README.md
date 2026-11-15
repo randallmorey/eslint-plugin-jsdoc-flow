@@ -46,7 +46,8 @@ are autofixable, and they only change whitespace or line prefixes.
 npm install --save-dev eslint-plugin-jsdoc-flow
 ```
 
-Requires ESLint 9 or later (flat config) and Node.js 20.19 or later.
+Requires ESLint 9.15+ or 10 (flat config) and Node.js 20.19 or later. The
+package is ESM-only.
 
 ## Usage
 
