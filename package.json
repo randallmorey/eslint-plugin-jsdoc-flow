@@ -51,6 +51,7 @@
     "eslint-plugin-ember": "^12.7.5",
     "eslint-plugin-jsdoc": "^63.3.3",
     "eslint-plugin-n": "^17.24.0",
+    "fast-check": "^4.10.2",
     "globals": "^16.5.0",
     "prettier": "^3.9.6",
     "publint": "^0.3.25",
