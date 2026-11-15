@@ -32,10 +32,10 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "lint": "eslint . && prettier . --check && npm run lint:types && npm run lint:package",
+    "lint": "eslint . && prettier . --check && tsc -p tsconfig.json && npm run lint:types && npm run lint:package",
     "lint:fix": "eslint . --fix && prettier . --write",
     "lint:package": "publint --strict && attw --pack --profile esm-only",
-    "lint:types": "tsc -p tsconfig.json && tsc -p tests/types/tsconfig.nodenext.json && tsc -p tests/types/tsconfig.bundler.json",
+    "lint:types": "tsc -p tests/types/tsconfig.nodenext.json && tsc -p tests/types/tsconfig.bundler.json",
     "test": "node --import ./tests/setup.js --test --test-reporter=./tests/reporter.js",
     "types": "node scripts/types.js"
   },
