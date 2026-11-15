@@ -1,11 +1,13 @@
-// Tests for what keeps a bad block from failing a whole run:  each block is
-// checked on its own, and one that throws is reported without a fix.
+// Tests for what keeps autofix safe:  the guards that drop a fix that would
+// change more than whitespace, or any code, and the isolation that reports
+// a block that throws without failing the whole run.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { Linter } from 'eslint';
 
 import plugin from '../lib/index.js';
-import { blockRule, fixOf } from '../lib/rules/block.js';
+import { onlyWhitespace, reflowComment, safeReflow } from '../lib/flow.js';
+import { blockRule, fixesOf } from '../lib/rules/block.js';
 import { block } from './helpers.js';
 
 // A rule that throws on a block holding `boom`, and on one holding `late`
@@ -16,9 +18,10 @@ const flaky = blockRule(
     if (text.includes('boom')) throw new Error('boom');
     const seen = { loc: comment.loc, messageId: 'seen' };
     if (!text.includes('late')) return [seen];
-    // An edit past the block's last line, which `fixOf` can't place.
+    // An edit past the block's last line, which `fixesOf` can't place.
     const edit = { at: 99, start: 0, end: 0, text: ' ' };
-    return [seen, { ...seen, fix: fixOf(context.sourceCode, comment, edit) }];
+    const [fix] = fixesOf(context.sourceCode, comment, text, '', {}, [edit]);
+    return [seen, { ...seen, fix }];
   },
 );
 
@@ -96,4 +99,122 @@ test('with JSDOC_FLOW_STRICT=1, a block that throws fails the run', () => {
   withStrict('1', () => {
     assert.throws(() => lint(three('One.', 'boom', 'Three.')), /boom/);
   });
+});
+
+// A rule that reports each of some edits to every block, fixed by `fixesOf`.
+const editing = (edits) =>
+  blockRule(
+    { messages: { edit: 'Edit.' } },
+    (context) => (comment, text, indent, options) => {
+      const { sourceCode } = context;
+      const fixes = fixesOf(sourceCode, comment, text, indent, options, edits);
+      return fixes.map((fix) => ({ loc: comment.loc, messageId: 'edit', fix }));
+    },
+  );
+// Which of the edits get a fix, in a block of text and fenced code.
+const fixed = (...edits) =>
+  linter
+    .verify(
+      block('One two.', '```', '  code', '```'),
+      {
+        files: ['**/*.js'],
+        plugins: { test: { rules: { editing: editing(edits) } } },
+        rules: { 'test/editing': 'warn' },
+      },
+      { filename: 'x.js' },
+    )
+    .map((m) => !!m.fix);
+
+// Line 1 is ` * One two.`, and line 3, ` *   code`, is code.
+test('an edit that changes only whitespace is fixed', () => {
+  assert.deepEqual(fixed({ at: 1, start: 6, end: 7, text: '  ' }), [true]);
+});
+
+test("an edit that moves a line's `*` is fixed, as `tag-align`'s do", () => {
+  assert.deepEqual(fixed({ at: 1, start: 0, end: 3, text: '  *  ' }), [true]);
+  assert.deepEqual(fixed({ at: 3, start: 0, end: 1, text: '  ' }), [true]);
+});
+
+test('an edit that changes more than whitespace gets no fix', () => {
+  for (const edit of [
+    { at: 1, start: 6, end: 7, text: '_' },
+    { at: 1, start: 3, end: 6, text: ' ' },
+    { at: 1, start: 0, end: 3, text: ' ' },
+  ])
+    assert.deepEqual(fixed(edit), [false], JSON.stringify(edit));
+});
+
+test('an edit across a line break gets no fix', () => {
+  for (const edit of [
+    { at: 1, start: 11, end: 13, text: ' ' },
+    { at: 1, start: 6, end: 6, text: '\n' },
+  ])
+    assert.deepEqual(fixed(edit), [false], JSON.stringify(edit));
+});
+
+test("edits that change code's whitespace get no fix, nor do the others", () => {
+  assert.deepEqual(fixed({ at: 3, start: 3, end: 4, text: '' }), [false]);
+  assert.deepEqual(fixed({ at: 3, start: 3, end: 3, text: ' ' }), [false]);
+  assert.deepEqual(
+    fixed(
+      { at: 1, start: 6, end: 7, text: '  ' },
+      { at: 3, start: 2, end: 3, text: '  ' },
+    ),
+    [false, false],
+  );
+});
+
+// A block's text, as `reflow` sees it.
+const text = (...lines) => block(...lines).split('\nexport')[0];
+
+test('a reflow that changes only whitespace is safe', () => {
+  const was = text('One. Two', 'three.', '', '```', '  a  =  1;', '```');
+  const now = reflowComment(was, '');
+  assert.notEqual(now, was);
+  assert.ok(safeReflow(was, now, ''));
+  assert.ok(onlyWhitespace('/** One. */', text('One.')));
+});
+
+test('a reflow that changes, joins or splits a word is not safe', () => {
+  const was = text('One two.');
+  for (const now of [
+    text('One too.'),
+    text('One two'),
+    text('Onetwo.'),
+    text('O ne two.'),
+    text('One two.', '*'),
+  ])
+    assert.equal(safeReflow(was, now, ''), false, now);
+});
+
+test("a reflow that isn't a well-formed block is not safe", () => {
+  const was = text('One two.');
+  for (const now of [
+    '/**\n * One two.\n *',
+    '/**\n * One two.\n */ */',
+    '/**\n * One */ two.\n */',
+    '/**\n One two.\n */',
+    '/*\n * One two.\n **/',
+    '/**\n * One two.\n */\n',
+  ])
+    assert.equal(safeReflow(was, now, ''), false, now);
+});
+
+test('a reflow that changes code, even its whitespace, is not safe', () => {
+  const was = text('One.', '', '```', '  a  =  1;', '```');
+  for (const now of [
+    text('One.', '', '```', 'a = 1;', '```'),
+    text('One.', '', '```', '  a  =  1;  ', '```'),
+    text('One.', '', '```', '  a  =  1;', '', '```'),
+    text('One.', '', '```', '  a  =', '  1;', '```'),
+  ])
+    assert.equal(safeReflow(was, now, ''), false, now);
+  // Its line's prefix may change.
+  assert.ok(safeReflow(was, was.replace(' *   a', '   *   a'), ''));
+});
+
+test('a reflow that turns text into code is not safe', () => {
+  const was = text('One two ``` three.');
+  assert.equal(safeReflow(was, text('One two ```', 'three.'), ''), true);
+  assert.equal(safeReflow(was, text('One two', '``` three.'), ''), false);
 });
