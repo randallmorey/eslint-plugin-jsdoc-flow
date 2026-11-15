@@ -178,6 +178,11 @@ const prose = [
     code: block(MESSY, '', '@example', 'One. Two.'),
     output: block(TIDY, '', '@example', 'One. Two.'),
   },
+  {
+    name: 'not verbatim:  a tag in a fence in `@example`',
+    code: block(MESSY, '', '@example', '```', '@license', '```'),
+    output: block(TIDY, '', '@example', '```', '@license', '```'),
+  },
 ];
 
 const forms = [
