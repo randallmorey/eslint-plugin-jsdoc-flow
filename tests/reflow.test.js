@@ -87,3 +87,18 @@ for (const token of mayStart) {
     assert.ok(started);
   });
 }
+
+// Lines are laid out in loops, not a recursion per line, so a paragraph that
+// wraps onto thousands of lines, or has thousands of hard breaks, can't
+// overflow the stack.
+test('a paragraph that wraps onto 12,000 lines reflows', () => {
+  const text = `/**\n * ${Array(12000).fill('ab').join(' ')}\n */`;
+  const fixed = reflowComment(text, '', 8);
+  assert.equal(fixed.split('\n').length, 12000);
+  assert.equal(reflowComment(fixed, '', 8), fixed);
+});
+
+test('a paragraph of 3,000 lines ending in `<br>` reflows', () => {
+  const text = `/**\n${Array(3000).fill(' * a b<br>').join('\n')}\n */`;
+  assert.equal(reflowComment(text, '', 80), text);
+});
