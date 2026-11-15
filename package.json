@@ -32,11 +32,13 @@
     "CHANGELOG.md"
   ],
   "scripts": {
+    "corpus:update": "node --import ./tests/setup.js tests/corpus.js --update",
     "lint": "eslint . && prettier . --check && tsc -p tsconfig.json && npm run lint:types && npm run lint:package",
     "lint:fix": "eslint . --fix && prettier . --write",
     "lint:package": "publint --strict && attw --pack --profile esm-only",
     "lint:types": "tsc -p tests/types/tsconfig.nodenext.json && tsc -p tests/types/tsconfig.bundler.json",
     "test": "node --import ./tests/setup.js --test --test-reporter=./tests/reporter.js",
+    "test:corpus": "node --import ./tests/setup.js --test --test-reporter=./tests/reporter.js tests/corpus.js",
     "types": "node scripts/types.js"
   },
   "peerDependencies": {
