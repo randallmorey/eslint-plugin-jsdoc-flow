@@ -6,6 +6,7 @@ import { Linter, RuleTester } from 'eslint';
 
 import plugin from '../lib/index.js';
 import { block } from './helpers.js';
+import { blankInvalid } from './cases/blank-lines.js';
 import { blockInvalid } from './cases/blocks.js';
 import { bulletAlignInvalid } from './cases/bullet-align.js';
 import { leadingInvalid, starInvalid, trailingInvalid } from './cases/edges.js';
@@ -40,6 +41,7 @@ const invalidByRule = {
   'no-trailing-space': trailingInvalid,
   'tag-align': alignInvalid,
   'bullet-align': bulletAlignInvalid,
+  'no-extra-blank-lines': blankInvalid,
   'single-line': singleInvalid,
 };
 const ruleTester = new RuleTester();

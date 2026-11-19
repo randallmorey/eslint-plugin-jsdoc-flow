@@ -35,6 +35,7 @@ import {
 import { exoticInvalid, exoticMixed, exoticValid } from './cases/whitespace.js';
 import { alignInvalid, alignValid } from './cases/tag-align.js';
 import { bulletAlignInvalid, bulletAlignValid } from './cases/bullet-align.js';
+import { blankInvalid, blankValid } from './cases/blank-lines.js';
 import {
   extraStars,
   singleInvalid,
@@ -76,6 +77,7 @@ const RULES = [
   'no-trailing-space',
   'tag-align',
   'bullet-align',
+  'no-extra-blank-lines',
   'single-line',
 ];
 const linter = new Linter();
@@ -134,6 +136,8 @@ const converging = [
   ...alignInvalid,
   ...bulletAlignValid,
   ...bulletAlignInvalid,
+  ...blankValid,
+  ...blankInvalid,
   ...singleValid,
   ...singleInvalid,
   ...singleUnfixed,

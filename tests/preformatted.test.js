@@ -47,9 +47,11 @@ for (const rule of RULES) {
     assert.deepEqual(linter.verify(messy, configFor([rule], on)), []);
   });
 
-  // `single-line` looks at no line of a block, and `tag-spacing` only at a
-  // tag's own line, which the guard never keeps.
-  if (rule === 'single-line' || rule === 'tag-spacing') continue;
+  // `single-line` looks at no line of a block, `tag-spacing` only at a tag's
+  // own line, and `no-extra-blank-lines` only at blank lines, none of which
+  // the guard ever keeps.
+  if (['single-line', 'tag-spacing', 'no-extra-blank-lines'].includes(rule))
+    continue;
   test(`${rule} changes those lines with the guard off`, () => {
     assert.notEqual(linter.verify(messy, configFor([rule], off)).length, 0);
     assert.notEqual(fixWith([rule], messy, off), messy);
