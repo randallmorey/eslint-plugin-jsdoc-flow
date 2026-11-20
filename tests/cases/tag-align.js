@@ -334,6 +334,25 @@ export const alignInvalid = [
     ),
   },
   {
+    // So the fix doesn't depend on whether `no-extra-punctuation-space` fixes
+    // the head first.
+    name: 'the head is measured without the space after `[` in a name',
+    code: block('@typedef {object} T[ the options,', '  continued'),
+    output: block(
+      '@typedef {object} T[ the options,',
+      '                        continued',
+    ),
+  },
+  {
+    // `(  name` is one token once its spaces go, so it's the tag's name.
+    name: 'the head is measured without the spaces after `(` in a name',
+    code: block('@param (  name - the description,', '  continued'),
+    output: block(
+      '@param (  name - the description,',
+      '               continued',
+    ),
+  },
+  {
     name: "`{...}` in the head is one token, and a line's own star is re-indented",
     errors: [
       { messageId: 'align', line: 3, column: 5, endLine: 3, endColumn: 14 },

@@ -103,4 +103,18 @@ export const orderCases = [
       '                          which it reads once',
     ),
   },
+  {
+    name: "a space in a tag's head that `no-extra-punctuation-space` removes",
+    settings: { 'jsdoc-flow': { width: 60 } },
+    code: code(
+      '/**',
+      ' * @typedef {object} T[ the the the the the Foo|bar}',
+      ' * the the',
+      ' */',
+    ),
+    output: block(
+      '@typedef {object} T[the the the the the Foo|bar}',
+      '                        the the',
+    ),
+  },
 ];
