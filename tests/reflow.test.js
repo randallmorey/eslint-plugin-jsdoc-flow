@@ -101,6 +101,41 @@ test('a zero-width space between words reflows to itself', () => {
   assert.equal(reflowComment(fixed, '', 40, { spaces: 1 }), fixed);
 });
 
+// Reflow writes what `no-trailing-space` would:  it trims the whitespace after
+// a markdown line's text, and keeps code, HTML, and a multi-line `{Type}`
+// exactly.
+test('a kept markdown line loses its trailing whitespace, and code keeps it', () => {
+  const text = [
+    '/**',
+    ' * # Heading  ',
+    ' *',
+    ' * - a bullet\t',
+    ' *',
+    ' * | a | b | ',
+    ' * | - | - |',
+    ' *',
+    ' * ```',
+    ' * fenced  ',
+    ' * ```',
+    ' * <pre>',
+    ' * html  ',
+    ' * </pre>',
+    ' * @param {{  ',
+    ' *   a: string  ',
+    ' * }} name',
+    ' */',
+  ].join('\n');
+  const fixed = reflowComment(text, '', 80, { spaces: 2 });
+  assert.equal(
+    fixed,
+    text
+      .replace('# Heading  ', '# Heading')
+      .replace('a bullet\t', 'a bullet')
+      .replace('| a | b | ', '| a | b |'),
+  );
+  assert.equal(reflowComment(fixed, '', 80, { spaces: 2 }), fixed);
+});
+
 // Lines are laid out in loops, not a recursion per line, so a paragraph that
 // wraps onto thousands of lines, or has thousands of hard breaks, can't
 // overflow the stack.
