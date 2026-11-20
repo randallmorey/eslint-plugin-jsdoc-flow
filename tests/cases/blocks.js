@@ -218,7 +218,7 @@ export const blockValid = [
   },
   {
     name: "a hard break in a list item's wrapped lines keeps them under its text",
-    code: block('- an item', '  and more<br>', '  and the rest'),
+    code: block('- an item<br>', '  and more<br>', '  and the rest'),
   },
   {
     name: 'a `<br>` inside a line is left there',
@@ -228,15 +228,15 @@ export const blockValid = [
     name: '`+` bullets and `1)` items, with hanging lines',
     code: block(
       '+ one',
-      '+ two,',
-      '  continued',
-      '  + nested,',
-      '    continued',
+      '+ two, whose text runs on far enough that it wraps past the end of its',
+      '  line, continued',
+      '  + nested, whose text runs on far enough that it wraps past the end of its',
+      '    line, continued',
       '1) one',
-      '2) two,',
-      '   continued',
-      '10) ten,',
-      '    continued',
+      '2) two, whose text runs on far enough that it wraps past the end of its',
+      '   line, continued',
+      '10) ten, whose text runs on far enough that it wraps past the end of its',
+      '    line, continued',
     ),
   },
   {
@@ -495,9 +495,9 @@ export const blockInvalid = [
   },
   {
     name: "a list item's hard break keeps the text after it under its text",
-    errors: join,
+    errors: [...join, ...join],
     code: block('- a', '  b<br>', '  c', '  d'),
-    output: block('- a', '  b<br>', '  c d'),
+    output: block('- a b<br>', '  c d'),
   },
   {
     name: 'two trailing spaces are no hard break, since `no-trailing-space` removes them',

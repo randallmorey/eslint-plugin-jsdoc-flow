@@ -29,15 +29,13 @@ const body = (...lines) =>
   ['/**', ...lines.map((l) => (l ? ` * ${l}` : ' *')), ' */'].join('\n');
 
 // `reflow` and `bullet-align` hang a moved item's wrapped lines under its text
-// where it moves to, so the three rules agree in any order.
+// where it moves to, and `reflow` moves the item too, so the three rules agree
+// in any order.
 test("a moved item's wrapped lines hang where it moves to", () => {
   const text = body('- one', ' - two,', '   continued', '   more');
   const hung = body('- one', ' - two,', '  continued', '  more');
   assert.equal(alignBullets(text, ''), hung);
-  assert.equal(
-    reflowComment(text, ''),
-    body('- one', ' - two,', '  continued more'),
-  );
+  assert.equal(reflowComment(text, ''), body('- one', '- two, continued more'));
   assert.deepEqual(
     misindented(hung, '').map(({ at, column }) => [at, column]),
     [[2, 3]],

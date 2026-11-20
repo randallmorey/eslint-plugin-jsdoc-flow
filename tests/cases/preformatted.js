@@ -55,12 +55,19 @@ const signals = [
   {
     name: 'a pointer line under a list item',
     code: block('- `foo`', ' ^^^^', '- `bar`', ' ^^^^'),
-    flowed: block('- `foo`', '  ^^^^', '- `bar`', '  ^^^^'),
+    flowed: block('- `foo` ^^^^', '- `bar` ^^^^'),
   },
   {
     name: "a pointer line among a list item's wrapped lines",
-    code: block('- `foo`', '  and `bar`', '       ^^^^^'),
-    flowed: block('- `foo`', '  and `bar` ^^^^^'),
+    code: block(
+      '- `foo`, whose text runs on far enough that it wraps past the end of its',
+      '  line, and `bar`',
+      '             ^^^^^',
+    ),
+    flowed: block(
+      '- `foo`, whose text runs on far enough that it wraps past the end of its',
+      '  line, and `bar` ^^^^^',
+    ),
   },
   {
     name: "a pointer line in a tag's description",
@@ -121,7 +128,7 @@ const signals = [
   {
     name: 'line-oriented lines end at a line kept for another reason',
     code: block('Examples:', 'x -> x', 'y -> y', '-  an item', '   wrapped'),
-    output: block('Examples:', 'x -> x', 'y -> y', '- an item', '  wrapped'),
+    output: block('Examples:', 'x -> x', 'y -> y', '- an item wrapped'),
   },
   {
     name: 'one line after a label is prose',
@@ -235,7 +242,7 @@ const runs = [
   {
     name: 'a list item back at the indent ends a run',
     code: block('Flow:', '  a -> b', '-  an item', '   wrapped'),
-    output: block('Flow:', '  a -> b', '- an item', '  wrapped'),
+    output: block('Flow:', '  a -> b', '- an item wrapped'),
   },
   {
     name: 'a list item past the indent stays in the run',
@@ -249,7 +256,7 @@ const runs = [
   {
     name: 'a list item right after a paragraph starts no run',
     code: block('Options:', '  -  a', '     wrapped'),
-    output: block('Options:', '  - a', '    wrapped'),
+    output: block('Options:', '  - a wrapped'),
   },
   {
     name: 'a run starts afresh in the paragraph after one',
@@ -328,10 +335,8 @@ const examples = [
       '/**',
       ' * Gets the location of the given function node for reporting.',
       ' *',
-      ' * - `function foo() {}`',
-      ' *   ^^^^^^^^^^^^',
-      ' * - `(function foo() {})`',
-      ' *   ^^^^^^^^^^^^',
+      ' * - `function foo() {}` ^^^^^^^^^^^^',
+      ' * - `(function foo() {})` ^^^^^^^^^^^^',
       ' */',
       'export const x = 1;',
       '',
@@ -376,8 +381,8 @@ const notTriggered = [
       ' * sees one without the other.  Returns a promise.',
       ' *',
       ' * It throws if:',
-      ' * - the note has no ID, which a new note gets only once it has been',
-      ' *   added to a notebook',
+      ' * - the note has no ID, which a new note gets only once it has been added',
+      ' *   to a notebook',
       ' * - the store is read-only',
       ' *',
       ' * @param {Note} note - the note to save',
@@ -445,12 +450,12 @@ const notTriggered = [
   {
     name: "a list item's wrapped lines, indented deeper and deeper",
     code: block('- an item', '    wrapped', '      and more'),
-    output: block('- an item', '  wrapped and more'),
+    output: block('- an item wrapped and more'),
   },
   {
     name: "a nested list item's wrapped line",
     code: block('- an item', '  - nested', '      wrapped'),
-    output: block('- an item', '  - nested', '    wrapped'),
+    output: block('- an item', '  - nested wrapped'),
   },
 ];
 

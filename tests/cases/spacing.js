@@ -188,11 +188,10 @@ export const spacingValid = [
     ].join('\n'),
   },
   {
-    name: 'bullets, tables, fenced code, `@example` and indented code are skipped',
+    name: 'tables, fenced code, `@example` and indented code are skipped',
     code: block(
       '    indented.   code',
       '',
-      '- a bullet. With  spaces',
       '| a. | table |',
       '',
       '```',
@@ -220,15 +219,8 @@ export const spacingValid = [
     code: block('It takes a word (', 'or two) and more', ', then stops.'),
   },
   {
-    name: 'bullets, tables and fenced code keep their spaces around punctuation',
-    code: block(
-      '- ( a bullet ) , here',
-      '| a , | ( b ) |',
-      '',
-      '```',
-      'f( a , b );',
-      '```',
-    ),
+    name: 'tables and fenced code keep their spaces around punctuation',
+    code: block('| a , | ( b ) |', '', '```', 'f( a , b );', '```'),
   },
   {
     name: "one space on either side of a tag's `-`, whatever is before it",
@@ -263,9 +255,9 @@ export const spacingValid = [
       '  * a nested one',
       '* another',
       '1. a numbered one',
-      '10. Then a sentence. And another',
+      '10. Then a sentence.  And another',
       '   2. nested',
-      '+ a plus. And another',
+      '+ a plus.  And another',
       '1) a parenthesized one.  And another',
       '   20) nested',
     ),
@@ -322,6 +314,12 @@ export const sentenceInvalid = [
     code: block('One sentence. Another! Then? More.'),
     output: block('One sentence.  Another!  Then?  More.'),
     errors: errors('sentence', 'sentence', 'sentence'),
+  },
+  {
+    name: "one space after a sentence end in a list item's text",
+    code: block('- One sentence. Another,', '  then. More.'),
+    output: block('- One sentence.  Another,', '  then.  More.'),
+    errors: errors('sentence', 'sentence'),
   },
   {
     name: 'too many spaces after a sentence end',
@@ -680,6 +678,12 @@ export const punctuationInvalid = [
     code: block('One , two ; three :  four .'),
     output: block('One, two; three:  four.'),
     errors: errors('punctuation', 'punctuation', 'punctuation', 'punctuation'),
+  },
+  {
+    name: "a space around punctuation in a list item's text",
+    code: block('- ( a bullet ) , here', '  1. ( nested ) .'),
+    output: block('- (a bullet), here', '  1. (nested).'),
+    errors: Array(6).fill({ messageId: 'punctuation' }),
   },
   {
     name: 'a space after `( [` and before `) ]`',

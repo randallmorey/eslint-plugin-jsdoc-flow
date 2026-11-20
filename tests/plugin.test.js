@@ -47,7 +47,8 @@ test('the recommended config warns with all seventeen rules', () => {
       '/**\n   *  Seven.  \n */\nexport const z = 3;\n' +
       '/**\n * -  Eight.\n */\nexport const w = 4;\n' +
       '/**\n * Nine\tten.\n */\nexport const v = 5;\n' +
-      '/**\n * - Eleven,\n * twelve.\n */\nexport const u = 6;\n' +
+      '/**\n * - Eleven, with text that runs on far enough that it wraps ' +
+      'past the end of\n * its line, twelve.\n */\nexport const u = 6;\n' +
       '/**\n * Twelve.\n *\n *\n * Thirteen.\n */\nexport const t = 7;\n' +
       '/** Fourteen.\n */\nexport const s = 8;\n' +
       '/**\n * - Fifteen\n *  - sixteen\n */\nexport const r = 9;\n',

@@ -29,8 +29,8 @@ are autofixable, and they only change whitespace or line prefixes.
  * never sees one without the other.  Returns a promise.
  *
  * It throws if:
- * - the note has no ID, which a new note gets only once it's been
- *   added to a notebook
+ * - the note has no ID, which a new note gets only once it's been added
+ *   to a notebook
  * - the store is read-only
  *
  * @param {Note} note - the note to save

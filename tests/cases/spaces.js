@@ -61,7 +61,6 @@ export const oneSpaceValid = [
     code: block(
       '    indented.  code:  here',
       '',
-      '- a bullet.  With:  spaces',
       '| a.  b | c:  d |',
       '',
       '```',

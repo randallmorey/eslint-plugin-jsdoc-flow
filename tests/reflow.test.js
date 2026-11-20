@@ -62,7 +62,7 @@ for (const token of noStart) {
   test(`a wrap never starts a line with \`${token}\``, () => {
     guarded(token, (lines, where) => {
       // A list item's own line is the only one that may, for a `-`.
-      for (const l of lines.filter((l) => l !== '- an item'))
+      for (const l of lines.filter((l) => !l.startsWith('- an item')))
         assert.ok(!`${l} `.startsWith(`${token} `), `${token} ${where}`);
     });
   });
