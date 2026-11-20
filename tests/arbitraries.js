@@ -59,13 +59,18 @@ export const settings = fc.record({
 
 /**
  * Builds a block from its body lines, starring them with `stars` in turn.
+ * With `open`, the first line's text goes on the `/**` line, after what
+ * follows its star, and with `close`, the `*\/` goes on the last line.
  */
-export const build = (indent, stars, lines) =>
-  [
-    `${indent}/**`,
-    ...lines.map((l, i) => indent + (l ? stars[i % stars.length] + l : ' *')),
-    `${indent} */`,
-  ].join('\n');
+export const build = (indent, stars, lines, { open, close } = {}) => {
+  const body = lines.map(
+    (l, i) => indent + (l ? stars[i % stars.length] + l : ' *'),
+  );
+  const first = open && lines[0] ? body.shift() : undefined;
+  const opener = first ? first.replace(/^\s*\*/, '/**') : `${indent}/**`;
+  const last = close && body.length ? `${body.pop()} */` : `${indent} */`;
+  return [opener, ...body, last].join('\n');
+};
 
 export const block = fc
   .tuple(
@@ -76,11 +81,12 @@ export const block = fc
       maxLength: 9,
     }),
     fc.integer({ min: 0, max: 7 }),
+    fc.record({ open: fc.boolean(), close: fc.boolean() }),
   )
-  .map(([indent, stars, lines, one]) =>
+  .map(([indent, stars, lines, one, edges]) =>
     one === 0
       ? `${indent}/** ${lines[0].join(' ')} */`
-      : build(indent, stars, lines.flat()),
+      : build(indent, stars, lines.flat(), one < 4 ? edges : {}),
   );
 
 /**

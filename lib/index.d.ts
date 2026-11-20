@@ -98,6 +98,7 @@ export interface RuleOptions {
   'tag-align': [];
   'bullet-align': [];
   'no-extra-blank-lines': [];
+  'delimiter-lines': [];
   'single-line': [SingleLineOptions?];
 }
 

@@ -15,7 +15,7 @@ test('meta comes from package.json', () => {
   assert.deepEqual(plugin.meta, { name: pkg.name, version: pkg.version });
 });
 
-test('it has all fifteen rules', () => {
+test('it has all sixteen rules', () => {
   assert.deepEqual(Object.keys(plugin.rules), [
     'reflow',
     'sentence-spacing',
@@ -31,11 +31,12 @@ test('it has all fifteen rules', () => {
     'tag-align',
     'bullet-align',
     'no-extra-blank-lines',
+    'delimiter-lines',
     'single-line',
   ]);
 });
 
-test('the recommended config warns with all fifteen rules', () => {
+test('the recommended config warns with all sixteen rules', () => {
   const { recommended } = plugin.configs;
   assert.equal(recommended.name, 'jsdoc-flow/recommended');
   assert.equal(recommended.plugins['jsdoc-flow'], plugin);
@@ -46,7 +47,8 @@ test('the recommended config warns with all fifteen rules', () => {
       '/**\n * -  Eight.\n */\nexport const w = 4;\n' +
       '/**\n * Nine\tten.\n */\nexport const v = 5;\n' +
       '/**\n * - Eleven,\n * twelve.\n */\nexport const u = 6;\n' +
-      '/**\n * Twelve.\n *\n *\n * Thirteen.\n */\nexport const t = 7;\n',
+      '/**\n * Twelve.\n *\n *\n * Thirteen.\n */\nexport const t = 7;\n' +
+      '/** Fourteen.\n */\nexport const s = 8;\n',
     [recommended],
     { filename: 'x.js' },
   );
@@ -67,6 +69,7 @@ test('the recommended config warns with all fifteen rules', () => {
       ['jsdoc-flow/no-exotic-whitespace', 1],
       ['jsdoc-flow/bullet-align', 1],
       ['jsdoc-flow/no-extra-blank-lines', 1],
+      ['jsdoc-flow/delimiter-lines', 1],
     ],
   );
 });

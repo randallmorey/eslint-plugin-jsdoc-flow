@@ -292,7 +292,7 @@ export const spacingValid = [
       '/* A plain.  block comment. Here */',
       '// A line.  comment. Here',
       '/** Text after the opener',
-      ' * on a. multi-line block. */',
+      '   on a. multi-line block, with no star. */',
       'foo(/** inline. Too  much */ 1);',
       '/** Code after the block. Ignored */ foo();',
       '',

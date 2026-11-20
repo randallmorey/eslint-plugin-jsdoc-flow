@@ -45,7 +45,7 @@ export const edgeValid = [
       '/*  A plain block comment.  */',
       '//  A line comment.  ',
       '/** Text after the opener',
-      ' *  on a multi-line block. */',
+      '    on a multi-line block, with no star. */',
       'foo(/**  inline  */ 1);',
       '/**  Code after the block.  */ foo();',
       '',

@@ -298,7 +298,7 @@ export const valid = [
       '/**/',
       '/** */',
       '/** Text after the opener',
-      ' * on a  multi-line block. */',
+      '   on a  multi-line block, with no star. */',
       'foo(/** inline.  Too  much */ 1);',
       '/** Code after the block. Ignored */ foo();',
       '',

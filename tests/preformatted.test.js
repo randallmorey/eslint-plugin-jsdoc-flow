@@ -49,8 +49,16 @@ for (const rule of RULES) {
 
   // `single-line` looks at no line of a block, `tag-spacing` only at a tag's
   // own line, and `no-extra-blank-lines` only at blank lines, none of which
-  // the guard ever keeps.
-  if (['single-line', 'tag-spacing', 'no-extra-blank-lines'].includes(rule))
+  // the guard ever keeps.  `delimiter-lines` looks only at the text beside
+  // a block's delimiters, which it moves as it is.
+  if (
+    [
+      'single-line',
+      'tag-spacing',
+      'no-extra-blank-lines',
+      'delimiter-lines',
+    ].includes(rule)
+  )
     continue;
   test(`${rule} changes those lines with the guard off`, () => {
     assert.notEqual(linter.verify(messy, configFor([rule], off)).length, 0);

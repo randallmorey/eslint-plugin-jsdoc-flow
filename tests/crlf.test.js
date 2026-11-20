@@ -8,6 +8,7 @@ import plugin from '../lib/index.js';
 import { block } from './helpers.js';
 import { blankInvalid } from './cases/blank-lines.js';
 import { blockInvalid } from './cases/blocks.js';
+import { delimiterInvalid } from './cases/delimiter-lines.js';
 import { bulletAlignInvalid } from './cases/bullet-align.js';
 import { leadingInvalid, starInvalid, trailingInvalid } from './cases/edges.js';
 import { invalid } from './cases/reflow.js';
@@ -42,6 +43,7 @@ const invalidByRule = {
   'tag-align': alignInvalid,
   'bullet-align': bulletAlignInvalid,
   'no-extra-blank-lines': blankInvalid,
+  'delimiter-lines': delimiterInvalid,
   'single-line': singleInvalid,
 };
 const ruleTester = new RuleTester();

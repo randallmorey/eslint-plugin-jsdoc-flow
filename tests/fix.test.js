@@ -37,6 +37,12 @@ import { alignInvalid, alignValid } from './cases/tag-align.js';
 import { bulletAlignInvalid, bulletAlignValid } from './cases/bullet-align.js';
 import { blankInvalid, blankValid } from './cases/blank-lines.js';
 import {
+  delimiterInvalid,
+  delimiterSettled,
+  delimiterUnhandled,
+  delimiterValid,
+} from './cases/delimiter-lines.js';
+import {
   extraStars,
   singleInvalid,
   singleSettled,
@@ -78,6 +84,7 @@ const RULES = [
   'tag-align',
   'bullet-align',
   'no-extra-blank-lines',
+  'delimiter-lines',
   'single-line',
 ];
 const linter = new Linter();
@@ -138,6 +145,10 @@ const converging = [
   ...bulletAlignInvalid,
   ...blankValid,
   ...blankInvalid,
+  ...delimiterValid,
+  ...delimiterInvalid,
+  ...delimiterUnhandled,
+  ...delimiterSettled,
   ...singleValid,
   ...singleInvalid,
   ...singleUnfixed,
