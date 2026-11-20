@@ -1,17 +1,16 @@
 {
   "eslint/ast-utils.js": {
     "blocks": 91,
-    "changed": 42,
+    "changed": 41,
     "rules": {
       "colon-spacing": 1,
-      "no-extra-punctuation-space": 1,
-      "reflow": 41,
-      "sentence-spacing": 15,
+      "reflow": 40,
+      "sentence-spacing": 14,
       "tag-align": 9,
       "text-indent": 1,
-      "word-spacing": 2
+      "word-spacing": 1
     },
-    "sha256": "207f9e342add786f51c2e6861e08cae5f306d4fa158a105ae368438c3890131d"
+    "sha256": "b412066e3d7c184fe9f929bf76f00c40c5ed9daa2c3bfa0e0024c2b0bb4042d9"
   },
   "eslint/linter.js": {
     "blocks": 75,

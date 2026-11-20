@@ -52,6 +52,32 @@ const line = fc
   )
   .map(([start, words, end]) => (start + join(words) + end).split('\n'));
 
+// A row of a list laid out in two columns, with words from a short list, so
+// two rows' gaps often end in the same place, and sometimes don't.
+const LEFT = split('a bb `c d` end. Label: ccc `{ e }`');
+const row = fc
+  .tuple(
+    fc.constantFrom('- ', '-   ', ' * ', '1. '),
+    fc.constantFrom(...LEFT),
+    fc.constantFrom(' ', '  ', '   ', '    ', '  \u00a0', ' \t '),
+    fc.constantFrom(
+      '',
+      '...',
+      '....',
+      '.....',
+      '-----',
+      '\u00b7\u00b7\u00b7\u00b7',
+    ),
+    fc.constantFrom(' ', '  ', ''),
+    fc.array(fc.tuple(gap, fc.constantFrom(...WORDS)), {
+      minLength: 1,
+      maxLength: 4,
+    }),
+  )
+  .map(([start, left, before, leader, after, words]) => [
+    start + left + before + (leader && leader + after) + join(words),
+  ]);
+
 export const settings = fc.record({
   width: fc.constantFrom(40, 60, 80, 100),
   spaces: fc.constantFrom(1, 2),
@@ -77,10 +103,17 @@ export const block = fc
   .tuple(
     fc.constantFrom(...INDENTS),
     fc.array(fc.constantFrom(...STARS), { minLength: 1, maxLength: 3 }),
-    fc.array(fc.oneof({ weight: 6, arbitrary: line }, fc.constant([''])), {
-      minLength: 1,
-      maxLength: 9,
-    }),
+    fc.array(
+      fc.oneof(
+        { weight: 6, arbitrary: line },
+        { weight: 2, arbitrary: row },
+        fc.constant(['']),
+      ),
+      {
+        minLength: 1,
+        maxLength: 9,
+      },
+    ),
     fc.integer({ min: 0, max: 7 }),
     fc.record({ open: fc.boolean(), close: fc.boolean() }),
   )

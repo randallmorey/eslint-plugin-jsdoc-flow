@@ -149,10 +149,10 @@ Prose and wrapped tag or list descriptions are reflowed. Markdown structures,
 fenced and indented code, `@example` blocks, and multi-line types retain their
 line structure. Spacing rules may still apply to some of these constructs.
 
-Unfenced code and diagrams are also preserved when detected from their layout.
-Detection is heuristic: use a code fence or an ignore marker when preserving
-layout is essential. Set `settings['jsdoc-flow'].preformatted` to `false` to
-disable this detection.
+Unfenced code, diagrams, and lists laid out in columns are also preserved when
+detected from their layout. Detection is heuristic: use a code fence or an
+ignore marker when preserving layout is essential. Set
+`settings['jsdoc-flow'].preformatted` to `false` to disable this detection.
 
 ## Leaving a block alone
 

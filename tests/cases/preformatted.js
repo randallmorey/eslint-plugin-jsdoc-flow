@@ -459,11 +459,110 @@ const notTriggered = [
   },
 ];
 
+// A list laid out by hand in two columns, as in ESLint's `ast-utils.js`,
+// whose rows end their gaps in the same place, is kept as it is.  Any other
+// list flows.
+const laidOut = [
+  {
+    name: 'a list with leaders between its columns',
+    code: block(
+      "- `function foo() {}`  .................... `function 'foo'`",
+      "- `class A { static async *foo() {} }`  ... `static async generator method 'foo'`",
+      "- `class A { foo = function bar() {}; }`  . `method 'foo'`",
+      '- `class A { #foo() {} }`  ................ `private method #foo`',
+    ),
+    flowed: block(
+      "- `function foo() {}` ....................  `function 'foo'`",
+      '- `class A { static async *foo() {} }` ...',
+      "  `static async generator method 'foo'`",
+      "- `class A { foo = function bar() {}; }`.  `method 'foo'`",
+      '- `class A { #foo() {} }` ................  `private method #foo`',
+    ),
+  },
+  {
+    name: 'a list with spaces between its columns',
+    code: block(
+      '- `width`     the widest a line may be',
+      '- `spaces`    how many spaces follow a sentence',
+      '- `maxHead`   how wide a tag head may be',
+    ),
+    flowed: block(
+      '- `width` the widest a line may be',
+      '- `spaces` how many spaces follow a sentence',
+      '- `maxHead` how wide a tag head may be',
+    ),
+  },
+  {
+    name: "a laid-out list's wrapped line",
+    code: block(
+      '- `a`      one,',
+      '           and more',
+      '- `bb`     two',
+      '- `ccc`    three',
+    ),
+    flowed: block('- `a` one, and more', '- `bb` two', '- `ccc` three'),
+  },
+  {
+    name: "a laid-out list's markers are still spaced",
+    code: block('-   `width`     the widest', '- `spaces`    how many'),
+    output: block('- `width`     the widest', '- `spaces`    how many'),
+    flowed: block('- `width` the widest', '- `spaces` how many'),
+  },
+  {
+    name: 'a blank line ends a laid-out list',
+    code: block('- `a`     one', '- `bb`    two', '', '- the  next   list'),
+    output: block('- `a`     one', '- `bb`    two', '', '- the next list'),
+    flowed: block('- `a` one', '- `bb` two', '', '- the next list'),
+  },
+  {
+    name: 'a list with sentence and colon spacing flows',
+    code: block(
+      '- Note:  the store is  read-only.  A save throws.',
+      '- Then:  the  note is closed.  It stays shut.',
+    ),
+    output: block(
+      '- Note:  the store is read-only.  A save throws.',
+      '- Then:  the note is closed.  It stays shut.',
+    ),
+  },
+  {
+    name: 'a list with one item laid out flows',
+    code: block('- `a`    ....... one', '- `bb` two'),
+    output: block('- `a` .......  one', '- `bb` two'),
+  },
+  {
+    name: 'a list whose gaps end in different places flows',
+    code: block('- `a`  ....... one', '- `bbb`  ....... two'),
+    output: block('- `a` .......  one', '- `bbb` .......  two'),
+  },
+  {
+    name: 'a list with two-space gaps flows',
+    code: block('- `a`  one', '- `b`  two'),
+    output: block('- `a` one', '- `b` two'),
+  },
+  {
+    name: 'a list with ellipses flows',
+    code: block('- a  ...  one', '- b  ...  two'),
+    output: block('- a ...  one', '- b ...  two'),
+  },
+  {
+    name: 'a list with leaders after sentence ends flows',
+    code: block('- Done.  .... one', '- Gone.  .... two'),
+    output: block('- Done.  ....  one', '- Gone.  ....  two'),
+  },
+  {
+    name: 'a list with gaps only in code spans flows',
+    code: block('- `a    b`  one', '- `c    d`  two'),
+    output: block('- `a    b` one', '- `c    d` two'),
+  },
+];
+
 export const preformattedCases = [
   ...signals,
   ...runs,
   ...examples,
   ...notTriggered,
+  ...laidOut,
 ];
 
 // The same blocks with the guard off, which all flow, as each case's `flowed`
@@ -494,4 +593,5 @@ export const messyGuarded = [
   '/**\n * @param a - a\n *  ^^^\n *  b\n */\nexport const c = 1;\n',
   '/**\n * - a\n *  ^^^\n *  b\n */\nexport const d = 1;\n',
   '/**\n * Example:\n *   a\n *   - b\n *    - c\n */\nexport const e = 1;\n',
+  '/**\n * - a    one.  Two  three ,\n * - bb   two  three\n */\nexport const f = 1;\n',
 ];
