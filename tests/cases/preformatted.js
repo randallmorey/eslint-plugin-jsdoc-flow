@@ -488,4 +488,5 @@ export const messyGuarded = [
   '/**\n * Example:\n *   a\n *    -   b\n *        c\n */\nexport const b = 1;\n',
   '/**\n * @param a - a\n *  ^^^\n *  b\n */\nexport const c = 1;\n',
   '/**\n * - a\n *  ^^^\n *  b\n */\nexport const d = 1;\n',
+  '/**\n * Example:\n *   a\n *   - b\n *    - c\n */\nexport const e = 1;\n',
 ];

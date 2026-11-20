@@ -35,6 +35,10 @@ import {
 import { exoticInvalid, exoticMixed, exoticValid } from './cases/whitespace.js';
 import { alignInvalid, alignValid } from './cases/tag-align.js';
 import { bulletAlignInvalid, bulletAlignValid } from './cases/bullet-align.js';
+import {
+  bulletIndentInvalid,
+  bulletIndentValid,
+} from './cases/bullet-indent.js';
 import { blankInvalid, blankValid } from './cases/blank-lines.js';
 import {
   delimiterInvalid,
@@ -83,6 +87,7 @@ const RULES = [
   'no-trailing-space',
   'tag-align',
   'bullet-align',
+  'bullet-indent',
   'no-extra-blank-lines',
   'delimiter-lines',
   'single-line',
@@ -143,6 +148,8 @@ const converging = [
   ...alignInvalid,
   ...bulletAlignValid,
   ...bulletAlignInvalid,
+  ...bulletIndentValid,
+  ...bulletIndentInvalid,
   ...blankValid,
   ...blankInvalid,
   ...delimiterValid,

@@ -97,6 +97,7 @@ export interface RuleOptions {
   'no-trailing-space': [];
   'tag-align': [];
   'bullet-align': [];
+  'bullet-indent': [];
   'no-extra-blank-lines': [];
   'delimiter-lines': [];
   'single-line': [SingleLineOptions?];

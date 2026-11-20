@@ -33,6 +33,7 @@ const STARTS = [
   ...Array(8).fill(''),
   ...split('- * 1. 2) # > | --- === |---|---| ^^^ ``` ```js ~~~ <pre> </pre>'),
   ...['    ', '  ', '\t', '@example', '@typedef {object} T', '@license '],
+  ...['- ', ' - ', '  - ', '   * ', '1. ', ' 10. ', '     - '],
   ...['@param x - ', '@param {string} x ', '@param {{\n a: string\n}} o - '],
   '@param {string} aVeryLongParameterNameIndeed - ',
   ...['@returns ', '@returns {number} ', '@see ', '@deprecated '],
