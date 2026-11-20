@@ -55,12 +55,19 @@ const signals = [
   {
     name: 'a pointer line under a list item',
     code: block('- `foo`', ' ^^^^', '- `bar`', ' ^^^^'),
-    flowed: block('- `foo`', '  ^^^^', '- `bar`', '  ^^^^'),
+    flowed: block('- `foo` ^^^^', '- `bar` ^^^^'),
   },
   {
     name: "a pointer line among a list item's wrapped lines",
-    code: block('- `foo`', '  and `bar`', '       ^^^^^'),
-    flowed: block('- `foo`', '  and `bar` ^^^^^'),
+    code: block(
+      '- `foo`, whose text runs on far enough that it wraps past the end of its',
+      '  line, and `bar`',
+      '             ^^^^^',
+    ),
+    flowed: block(
+      '- `foo`, whose text runs on far enough that it wraps past the end of its',
+      '  line, and `bar` ^^^^^',
+    ),
   },
   {
     name: "a pointer line in a tag's description",
@@ -121,7 +128,7 @@ const signals = [
   {
     name: 'line-oriented lines end at a line kept for another reason',
     code: block('Examples:', 'x -> x', 'y -> y', '-  an item', '   wrapped'),
-    output: block('Examples:', 'x -> x', 'y -> y', '- an item', '  wrapped'),
+    output: block('Examples:', 'x -> x', 'y -> y', '- an item wrapped'),
   },
   {
     name: 'one line after a label is prose',
@@ -235,7 +242,7 @@ const runs = [
   {
     name: 'a list item back at the indent ends a run',
     code: block('Flow:', '  a -> b', '-  an item', '   wrapped'),
-    output: block('Flow:', '  a -> b', '- an item', '  wrapped'),
+    output: block('Flow:', '  a -> b', '- an item wrapped'),
   },
   {
     name: 'a list item past the indent stays in the run',
@@ -249,7 +256,7 @@ const runs = [
   {
     name: 'a list item right after a paragraph starts no run',
     code: block('Options:', '  -  a', '     wrapped'),
-    output: block('Options:', '  - a', '    wrapped'),
+    output: block('Options:', '  - a wrapped'),
   },
   {
     name: 'a run starts afresh in the paragraph after one',
@@ -328,10 +335,8 @@ const examples = [
       '/**',
       ' * Gets the location of the given function node for reporting.',
       ' *',
-      ' * - `function foo() {}`',
-      ' *   ^^^^^^^^^^^^',
-      ' * - `(function foo() {})`',
-      ' *   ^^^^^^^^^^^^',
+      ' * - `function foo() {}` ^^^^^^^^^^^^',
+      ' * - `(function foo() {})` ^^^^^^^^^^^^',
       ' */',
       'export const x = 1;',
       '',
@@ -376,8 +381,8 @@ const notTriggered = [
       ' * sees one without the other.  Returns a promise.',
       ' *',
       ' * It throws if:',
-      ' * - the note has no ID, which a new note gets only once it has been',
-      ' *   added to a notebook',
+      ' * - the note has no ID, which a new note gets only once it has been added',
+      ' *   to a notebook',
       ' * - the store is read-only',
       ' *',
       ' * @param {Note} note - the note to save',
@@ -445,12 +450,110 @@ const notTriggered = [
   {
     name: "a list item's wrapped lines, indented deeper and deeper",
     code: block('- an item', '    wrapped', '      and more'),
-    output: block('- an item', '  wrapped and more'),
+    output: block('- an item wrapped and more'),
   },
   {
     name: "a nested list item's wrapped line",
     code: block('- an item', '  - nested', '      wrapped'),
-    output: block('- an item', '  - nested', '    wrapped'),
+    output: block('- an item', '  - nested wrapped'),
+  },
+];
+
+// A list laid out by hand in two columns, as in ESLint's `ast-utils.js`,
+// whose rows end their gaps in the same place, is kept as it is.  Any other
+// list flows.
+const laidOut = [
+  {
+    name: 'a list with leaders between its columns',
+    code: block(
+      "- `function foo() {}`  .................... `function 'foo'`",
+      "- `class A { static async *foo() {} }`  ... `static async generator method 'foo'`",
+      "- `class A { foo = function bar() {}; }`  . `method 'foo'`",
+      '- `class A { #foo() {} }`  ................ `private method #foo`',
+    ),
+    flowed: block(
+      "- `function foo() {}` ....................  `function 'foo'`",
+      '- `class A { static async *foo() {} }` ...',
+      "  `static async generator method 'foo'`",
+      "- `class A { foo = function bar() {}; }`.  `method 'foo'`",
+      '- `class A { #foo() {} }` ................  `private method #foo`',
+    ),
+  },
+  {
+    name: 'a list with spaces between its columns',
+    code: block(
+      '- `width`     the widest a line may be',
+      '- `spaces`    how many spaces follow a sentence',
+      '- `maxHead`   how wide a tag head may be',
+    ),
+    flowed: block(
+      '- `width` the widest a line may be',
+      '- `spaces` how many spaces follow a sentence',
+      '- `maxHead` how wide a tag head may be',
+    ),
+  },
+  {
+    name: "a laid-out list's wrapped line",
+    code: block(
+      '- `a`      one,',
+      '           and more',
+      '- `bb`     two',
+      '- `ccc`    three',
+    ),
+    flowed: block('- `a` one, and more', '- `bb` two', '- `ccc` three'),
+  },
+  {
+    name: "a laid-out list's markers are still spaced",
+    code: block('-   `width`     the widest', '- `spaces`    how many'),
+    output: block('- `width`     the widest', '- `spaces`    how many'),
+    flowed: block('- `width` the widest', '- `spaces` how many'),
+  },
+  {
+    name: 'a blank line ends a laid-out list',
+    code: block('- `a`     one', '- `bb`    two', '', '- the  next   list'),
+    output: block('- `a`     one', '- `bb`    two', '', '- the next list'),
+    flowed: block('- `a` one', '- `bb` two', '', '- the next list'),
+  },
+  {
+    name: 'a list with sentence and colon spacing flows',
+    code: block(
+      '- Note:  the store is  read-only.  A save throws.',
+      '- Then:  the  note is closed.  It stays shut.',
+    ),
+    output: block(
+      '- Note:  the store is read-only.  A save throws.',
+      '- Then:  the note is closed.  It stays shut.',
+    ),
+  },
+  {
+    name: 'a list with one item laid out flows',
+    code: block('- `a`    ....... one', '- `bb` two'),
+    output: block('- `a` .......  one', '- `bb` two'),
+  },
+  {
+    name: 'a list whose gaps end in different places flows',
+    code: block('- `a`  ....... one', '- `bbb`  ....... two'),
+    output: block('- `a` .......  one', '- `bbb` .......  two'),
+  },
+  {
+    name: 'a list with two-space gaps flows',
+    code: block('- `a`  one', '- `b`  two'),
+    output: block('- `a` one', '- `b` two'),
+  },
+  {
+    name: 'a list with ellipses flows',
+    code: block('- a  ...  one', '- b  ...  two'),
+    output: block('- a ...  one', '- b ...  two'),
+  },
+  {
+    name: 'a list with leaders after sentence ends flows',
+    code: block('- Done.  .... one', '- Gone.  .... two'),
+    output: block('- Done.  ....  one', '- Gone.  ....  two'),
+  },
+  {
+    name: 'a list with gaps only in code spans flows',
+    code: block('- `a    b`  one', '- `c    d`  two'),
+    output: block('- `a    b` one', '- `c    d` two'),
   },
 ];
 
@@ -459,6 +562,7 @@ export const preformattedCases = [
   ...runs,
   ...examples,
   ...notTriggered,
+  ...laidOut,
 ];
 
 // The same blocks with the guard off, which all flow, as each case's `flowed`
@@ -488,4 +592,6 @@ export const messyGuarded = [
   '/**\n * Example:\n *   a\n *    -   b\n *        c\n */\nexport const b = 1;\n',
   '/**\n * @param a - a\n *  ^^^\n *  b\n */\nexport const c = 1;\n',
   '/**\n * - a\n *  ^^^\n *  b\n */\nexport const d = 1;\n',
+  '/**\n * Example:\n *   a\n *   - b\n *    - c\n */\nexport const e = 1;\n',
+  '/**\n * - a    one.  Two  three ,\n * - bb   two  three\n */\nexport const f = 1;\n',
 ];

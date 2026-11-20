@@ -10,7 +10,7 @@
       "text-indent": 1,
       "word-spacing": 1
     },
-    "sha256": "2b77b342a2072ef865ae17825eed5fb7c3ab6eb61ffed69b178f296a7cea1e29"
+    "sha256": "b412066e3d7c184fe9f929bf76f00c40c5ed9daa2c3bfa0e0024c2b0bb4042d9"
   },
   "eslint/linter.js": {
     "blocks": 75,
@@ -41,12 +41,13 @@
     "blocks": 53,
     "changed": 30,
     "rules": {
+      "colon-spacing": 1,
       "reflow": 23,
       "sentence-spacing": 7,
       "single-line": 5,
       "tag-align": 12
     },
-    "sha256": "632560907e809e6ad50c25a2a36eb814a6287aa5649b9f98ed55c6b7890afd59"
+    "sha256": "62ba672c0a127409e1a15d70bdf6a70730c39257ca58ac7ec3d91cd48b794e0e"
   },
   "node/assert.d.ts": {
     "blocks": 42,
@@ -68,20 +69,20 @@
       "sentence-spacing": 63,
       "single-line": 2
     },
-    "sha256": "9f8d9a03d32952975c0596c791d6c3bf8c03185653ec236f1a7814cc79cf8243"
+    "sha256": "abb4b48ea6933f4f3f88a49c5af12697291adcd451bf5b5eaf3686ad8d08a000"
   },
   "node/child_process.d.ts": {
     "blocks": 37,
     "changed": 33,
     "rules": {
       "bullet-align": 1,
-      "colon-spacing": 2,
+      "colon-spacing": 3,
       "reflow": 32,
       "sentence-spacing": 24,
       "single-line": 1,
       "word-spacing": 1
     },
-    "sha256": "6ad39215ceb597ac6aa4024bd83297419aabeab4146052d64eeb3f58bcc55e79"
+    "sha256": "bf3002bde287bfd5424d77aade4cd00774164501edeb791e8f90de7e636516a2"
   },
   "node/crypto.d.ts": {
     "blocks": 247,
@@ -95,7 +96,7 @@
       "tag-align": 5,
       "word-spacing": 1
     },
-    "sha256": "2194077af6e44e8b4e9655fa01020790221c2abc322a8162e288ecf2ec272d14"
+    "sha256": "dbd9823ebdf27c9f9a0afb5045d899a1daf98603a401f0b71250c250c5396dda"
   },
   "node/events.d.ts": {
     "blocks": 53,
@@ -110,17 +111,17 @@
   },
   "node/fs.d.ts": {
     "blocks": 327,
-    "changed": 294,
+    "changed": 295,
     "rules": {
       "bullet-align": 3,
-      "colon-spacing": 20,
-      "reflow": 282,
-      "sentence-spacing": 237,
+      "colon-spacing": 22,
+      "reflow": 283,
+      "sentence-spacing": 239,
       "single-line": 50,
       "tag-align": 28,
       "text-indent": 2
     },
-    "sha256": "bee1f75d4b7d9a628a98419dcd0ac0754a16bbc9f51ad1ef13b8c60717bda2c4"
+    "sha256": "5fe96b58df6e9f1a20403b5908040ec39e750d3e86d30648d4f678646b3dc689"
   },
   "node/http.d.ts": {
     "blocks": 115,
@@ -131,7 +132,7 @@
       "reflow": 94,
       "sentence-spacing": 63
     },
-    "sha256": "7988c856c0b05e19cc7e7c847bb0197eb015628c6bf0569516dd3d2a98e2f95a"
+    "sha256": "b4ed7e1203f647ff6c5178d501b545b6bf68b3fc1e2cdd76b976f1e0354c6389"
   },
   "node/http2.d.ts": {
     "blocks": 113,
@@ -148,12 +149,12 @@
     "blocks": 82,
     "changed": 53,
     "rules": {
-      "colon-spacing": 2,
+      "colon-spacing": 3,
       "reflow": 53,
       "sentence-spacing": 30,
       "tag-align": 1
     },
-    "sha256": "c1df4a9b2bcfbec71a10852f4d627c71a1e19aa2662f96b80f1e2297bfaed632"
+    "sha256": "32e5e43267f1c8a6c5fc9c4af075bed011696f8e7df9d0a9f252eedfefc7289f"
   },
   "node/process.d.ts": {
     "blocks": 95,
@@ -165,7 +166,7 @@
       "sentence-spacing": 42,
       "tag-align": 2
     },
-    "sha256": "81aad68c6713e261d57b7cf7063543a0759d7df1c4b9c9667f7bb6103180a4d8"
+    "sha256": "a5ba4f542df3b18c765521c0ba82f84fd887f44eb1432c46e020512eba39bde1"
   },
   "node/readline.d.ts": {
     "blocks": 34,
@@ -188,7 +189,7 @@
       "single-line": 1,
       "tag-align": 8
     },
-    "sha256": "e905b8a5ee8193571d680d812d3b8acf8c04fb99649642b678f225a3b09d3241"
+    "sha256": "33a0cc73a558e1b5a18156a1ada4ee1dbc0cb5929ccea678a0935b31b3fe5bae"
   },
   "node/test.d.ts": {
     "blocks": 181,
@@ -200,7 +201,7 @@
       "sentence-spacing": 52,
       "tag-align": 9
     },
-    "sha256": "c7585e25565fcf7ed13d33bbb7f60666fdfc515bdec3116079bf3f1d2efc198e"
+    "sha256": "e5dd5ddc79a523969105ef0ba115ffa0e8313ce29430f1d27e3a0321b409ec83"
   },
   "node/tls.d.ts": {
     "blocks": 120,
@@ -223,7 +224,7 @@
       "sentence-spacing": 28,
       "tag-align": 3
     },
-    "sha256": "9e4fbc4cd33c140676f1141edb5c0199ad7906abdcd235d737182c5e37af8d33"
+    "sha256": "1af97ed876d6a68c144614952e2265c837bb60bd2340b00f0ada6217a6ea5f09"
   },
   "node/util.d.ts": {
     "blocks": 134,
@@ -240,14 +241,14 @@
     "changed": 55,
     "rules": {
       "bullet-align": 1,
-      "colon-spacing": 1,
+      "colon-spacing": 2,
       "reflow": 52,
       "sentence-spacing": 26,
       "single-line": 3,
       "tag-align": 3,
       "word-spacing": 1
     },
-    "sha256": "5abb73e09fff4803213191001e04275cd282870eaf87bc58809cdb7a295b586b"
+    "sha256": "5307e7d2b26c36a7205c2575645d993d8f534cce6d660c7895586a98c80cbca9"
   },
   "node/worker_threads.d.ts": {
     "blocks": 44,
@@ -261,7 +262,7 @@
       "tag-align": 3,
       "word-spacing": 1
     },
-    "sha256": "6fe4496827f4da6a7b35ca234f6d82e374953316475af5a7e8806fea6e064c24"
+    "sha256": "efc8dc91f7b54ba76a4c0fe6f357e1728fa98160cd437fedd16756474d416eba"
   },
   "node/zlib.d.ts": {
     "blocks": 83,
@@ -350,6 +351,7 @@
     "changed": 35,
     "rules": {
       "colon-spacing": 1,
+      "no-extra-punctuation-space": 1,
       "reflow": 27,
       "sentence-spacing": 4,
       "single-line": 18,
@@ -357,7 +359,7 @@
       "tag-spacing": 1,
       "text-indent": 1
     },
-    "sha256": "3b086943aedf84f50dcfc9fe118a8281ec5db67c31428274977ca2eda1b73d10"
+    "sha256": "0e44400180d4208a4645167892ce5e3b30019fb967eaa6be1a96e4a62a9c1a89"
   },
   "typescript/lib.es2023.array.d.ts": {
     "blocks": 69,

@@ -33,6 +33,7 @@ const STARTS = [
   ...Array(8).fill(''),
   ...split('- * 1. 2) # > | --- === |---|---| ^^^ ``` ```js ~~~ <pre> </pre>'),
   ...['    ', '  ', '\t', '@example', '@typedef {object} T', '@license '],
+  ...['- ', ' - ', '  - ', '   * ', '1. ', ' 10. ', '     - '],
   ...['@param x - ', '@param {string} x ', '@param {{\n a: string\n}} o - '],
   '@param {string} aVeryLongParameterNameIndeed - ',
   ...['@returns ', '@returns {number} ', '@see ', '@deprecated '],
@@ -51,6 +52,32 @@ const line = fc
   )
   .map(([start, words, end]) => (start + join(words) + end).split('\n'));
 
+// A row of a list laid out in two columns, with words from a short list, so
+// two rows' gaps often end in the same place, and sometimes don't.
+const LEFT = split('a bb `c d` end. Label: ccc `{ e }`');
+const row = fc
+  .tuple(
+    fc.constantFrom('- ', '-   ', ' * ', '1. '),
+    fc.constantFrom(...LEFT),
+    fc.constantFrom(' ', '  ', '   ', '    ', '  \u00a0', ' \t '),
+    fc.constantFrom(
+      '',
+      '...',
+      '....',
+      '.....',
+      '-----',
+      '\u00b7\u00b7\u00b7\u00b7',
+    ),
+    fc.constantFrom(' ', '  ', ''),
+    fc.array(fc.tuple(gap, fc.constantFrom(...WORDS)), {
+      minLength: 1,
+      maxLength: 4,
+    }),
+  )
+  .map(([start, left, before, leader, after, words]) => [
+    start + left + before + (leader && leader + after) + join(words),
+  ]);
+
 export const settings = fc.record({
   width: fc.constantFrom(40, 60, 80, 100),
   spaces: fc.constantFrom(1, 2),
@@ -59,28 +86,41 @@ export const settings = fc.record({
 
 /**
  * Builds a block from its body lines, starring them with `stars` in turn.
+ * With `open`, the first line's text goes on the `/**` line, after what
+ * follows its star, and with `close`, the `*\/` goes on the last line.
  */
-export const build = (indent, stars, lines) =>
-  [
-    `${indent}/**`,
-    ...lines.map((l, i) => indent + (l ? stars[i % stars.length] + l : ' *')),
-    `${indent} */`,
-  ].join('\n');
+export const build = (indent, stars, lines, { open, close } = {}) => {
+  const body = lines.map(
+    (l, i) => indent + (l ? stars[i % stars.length] + l : ' *'),
+  );
+  const first = open && lines[0] ? body.shift() : undefined;
+  const opener = first ? first.replace(/^\s*\*/, '/**') : `${indent}/**`;
+  const last = close && body.length ? `${body.pop()} */` : `${indent} */`;
+  return [opener, ...body, last].join('\n');
+};
 
 export const block = fc
   .tuple(
     fc.constantFrom(...INDENTS),
     fc.array(fc.constantFrom(...STARS), { minLength: 1, maxLength: 3 }),
-    fc.array(fc.oneof({ weight: 6, arbitrary: line }, fc.constant([''])), {
-      minLength: 1,
-      maxLength: 9,
-    }),
+    fc.array(
+      fc.oneof(
+        { weight: 6, arbitrary: line },
+        { weight: 2, arbitrary: row },
+        fc.constant(['']),
+      ),
+      {
+        minLength: 1,
+        maxLength: 9,
+      },
+    ),
     fc.integer({ min: 0, max: 7 }),
+    fc.record({ open: fc.boolean(), close: fc.boolean() }),
   )
-  .map(([indent, stars, lines, one]) =>
+  .map(([indent, stars, lines, one, edges]) =>
     one === 0
       ? `${indent}/** ${lines[0].join(' ')} */`
-      : build(indent, stars, lines.flat()),
+      : build(indent, stars, lines.flat(), one < 4 ? edges : {}),
   );
 
 /**

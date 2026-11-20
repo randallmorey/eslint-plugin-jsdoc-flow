@@ -14,13 +14,13 @@ import { block } from './helpers.js';
 // only once it has found a report, and otherwise reports each block.
 const flaky = blockRule(
   { messages: { seen: 'Seen.' } },
-  (context) => (comment, text) => {
+  () => (comment, text) => {
     if (text.includes('boom')) throw new Error('boom');
     const seen = { loc: comment.loc, messageId: 'seen' };
     if (!text.includes('late')) return [seen];
     // An edit past the block's last line, which `fixesOf` can't place.
     const edit = { at: 99, start: 0, end: 0, text: ' ' };
-    const [fix] = fixesOf(context.sourceCode, comment, text, '', {}, [edit]);
+    const [fix] = fixesOf(comment, text, '', {}, [edit]);
     return [seen, { ...seen, fix }];
   },
 );
@@ -105,9 +105,8 @@ test('with JSDOC_FLOW_STRICT=1, a block that throws fails the run', () => {
 const editing = (edits) =>
   blockRule(
     { messages: { edit: 'Edit.' } },
-    (context) => (comment, text, indent, options) => {
-      const { sourceCode } = context;
-      const fixes = fixesOf(sourceCode, comment, text, indent, options, edits);
+    () => (comment, text, indent, options) => {
+      const fixes = fixesOf(comment, text, indent, options, edits);
       return fixes.map((fix) => ({ loc: comment.loc, messageId: 'edit', fix }));
     },
   );

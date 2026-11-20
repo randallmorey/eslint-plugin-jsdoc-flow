@@ -15,7 +15,7 @@ test('meta comes from package.json', () => {
   assert.deepEqual(plugin.meta, { name: pkg.name, version: pkg.version });
 });
 
-test('it has all fourteen rules', () => {
+test('it has all seventeen rules', () => {
   assert.deepEqual(Object.keys(plugin.rules), [
     'reflow',
     'sentence-spacing',
@@ -30,11 +30,14 @@ test('it has all fourteen rules', () => {
     'no-trailing-space',
     'tag-align',
     'bullet-align',
+    'bullet-indent',
+    'no-extra-blank-lines',
+    'delimiter-lines',
     'single-line',
   ]);
 });
 
-test('the recommended config warns with all fourteen rules', () => {
+test('the recommended config warns with all seventeen rules', () => {
   const { recommended } = plugin.configs;
   assert.equal(recommended.name, 'jsdoc-flow/recommended');
   assert.equal(recommended.plugins['jsdoc-flow'], plugin);
@@ -44,7 +47,11 @@ test('the recommended config warns with all fourteen rules', () => {
       '/**\n   *  Seven.  \n */\nexport const z = 3;\n' +
       '/**\n * -  Eight.\n */\nexport const w = 4;\n' +
       '/**\n * Nine\tten.\n */\nexport const v = 5;\n' +
-      '/**\n * - Eleven,\n * twelve.\n */\nexport const u = 6;\n',
+      '/**\n * - Eleven, with text that runs on far enough that it wraps ' +
+      'past the end of\n * its line, twelve.\n */\nexport const u = 6;\n' +
+      '/**\n * Twelve.\n *\n *\n * Thirteen.\n */\nexport const t = 7;\n' +
+      '/** Fourteen.\n */\nexport const s = 8;\n' +
+      '/**\n * - Fifteen\n *  - sixteen\n */\nexport const r = 9;\n',
     [recommended],
     { filename: 'x.js' },
   );
@@ -64,6 +71,9 @@ test('the recommended config warns with all fourteen rules', () => {
       ['jsdoc-flow/bullet-spacing', 1],
       ['jsdoc-flow/no-exotic-whitespace', 1],
       ['jsdoc-flow/bullet-align', 1],
+      ['jsdoc-flow/no-extra-blank-lines', 1],
+      ['jsdoc-flow/delimiter-lines', 1],
+      ['jsdoc-flow/bullet-indent', 1],
     ],
   );
 });

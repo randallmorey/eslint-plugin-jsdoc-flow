@@ -13,8 +13,8 @@ export interface Settings {
    */
   verbatimTags?: string[];
   /**
-   * Whether what looks like unfenced code or a diagram is kept as it is,
-   * `true` unless set.
+   * Whether what looks like unfenced code, a diagram, or a list laid out in
+   * columns is kept as it is, `true` unless set.
    */
   preformatted?: boolean;
   /**
@@ -97,6 +97,9 @@ export interface RuleOptions {
   'no-trailing-space': [];
   'tag-align': [];
   'bullet-align': [];
+  'bullet-indent': [];
+  'no-extra-blank-lines': [];
+  'delimiter-lines': [];
   'single-line': [SingleLineOptions?];
 }
 

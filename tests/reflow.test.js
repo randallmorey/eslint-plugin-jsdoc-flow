@@ -62,7 +62,7 @@ for (const token of noStart) {
   test(`a wrap never starts a line with \`${token}\``, () => {
     guarded(token, (lines, where) => {
       // A list item's own line is the only one that may, for a `-`.
-      for (const l of lines.filter((l) => l !== '- an item'))
+      for (const l of lines.filter((l) => !l.startsWith('- an item')))
         assert.ok(!`${l} `.startsWith(`${token} `), `${token} ${where}`);
     });
   });
@@ -99,6 +99,41 @@ test('a zero-width space between words reflows to itself', () => {
     '/**\n * a [x]\n * http://example.com/a.b {@link Foo}\n */',
   );
   assert.equal(reflowComment(fixed, '', 40, { spaces: 1 }), fixed);
+});
+
+// Reflow writes what `no-trailing-space` would:  it trims the whitespace after
+// a markdown line's text, and keeps code, HTML, and a multi-line `{Type}`
+// exactly.
+test('a kept markdown line loses its trailing whitespace, and code keeps it', () => {
+  const text = [
+    '/**',
+    ' * # Heading  ',
+    ' *',
+    ' * - a bullet\t',
+    ' *',
+    ' * | a | b | ',
+    ' * | - | - |',
+    ' *',
+    ' * ```',
+    ' * fenced  ',
+    ' * ```',
+    ' * <pre>',
+    ' * html  ',
+    ' * </pre>',
+    ' * @param {{  ',
+    ' *   a: string  ',
+    ' * }} name',
+    ' */',
+  ].join('\n');
+  const fixed = reflowComment(text, '', 80, { spaces: 2 });
+  assert.equal(
+    fixed,
+    text
+      .replace('# Heading  ', '# Heading')
+      .replace('a bullet\t', 'a bullet')
+      .replace('| a | b | ', '| a | b |'),
+  );
+  assert.equal(reflowComment(fixed, '', 80, { spaces: 2 }), fixed);
 });
 
 // Lines are laid out in loops, not a recursion per line, so a paragraph that

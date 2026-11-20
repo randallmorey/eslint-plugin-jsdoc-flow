@@ -29,8 +29,8 @@ are autofixable, and they only change whitespace or line prefixes.
  * never sees one without the other.  Returns a promise.
  *
  * It throws if:
- * - the note has no ID, which a new note gets only once it's been
- *   added to a notebook
+ * - the note has no ID, which a new note gets only once it's been added
+ *   to a notebook
  * - the store is read-only
  *
  * @param {Note} note - the note to save
@@ -51,7 +51,7 @@ package is ESM-only.
 
 ## Usage
 
-Use the `recommended` config, which turns on all fourteen rules as warnings:
+Use the `recommended` config, which turns on all seventeen rules as warnings:
 
 ```js
 // eslint.config.js
@@ -73,22 +73,25 @@ and `//` comments, and banners beginning with more than two stars such as
 
 ## Rules
 
-| Rule                                    | Description                                            | Fixable |
-| --------------------------------------- | ------------------------------------------------------ | ------- |
-| `jsdoc-flow/reflow`                     | Flow JSDoc text with consistent line breaks            | ✓       |
-| `jsdoc-flow/sentence-spacing`           | Sentence spacing (default: two spaces)                 | ✓       |
-| `jsdoc-flow/colon-spacing`              | Colon spacing (default: two spaces)                    | ✓       |
-| `jsdoc-flow/word-spacing`               | One space between other words                          | ✓       |
-| `jsdoc-flow/no-extra-punctuation-space` | No space before `, . ; : ) ]` or after `( [`           | ✓       |
-| `jsdoc-flow/tag-spacing`                | One space on either side of a tag's `-`                | ✓       |
-| `jsdoc-flow/bullet-spacing`             | One space after a list item's marker                   | ✓       |
-| `jsdoc-flow/no-exotic-whitespace`       | Plain spaces, not tabs or other Unicode spaces         | ✓       |
-| `jsdoc-flow/star-align`                 | Put each line's `*` under the `/**`                    | ✓       |
-| `jsdoc-flow/text-indent`                | One space between a line's `*` and its text            | ✓       |
-| `jsdoc-flow/no-trailing-space`          | No whitespace after a line's text                      | ✓       |
-| `jsdoc-flow/tag-align`                  | Start a tag's continuation lines under its description | ✓       |
-| `jsdoc-flow/bullet-align`               | Start a list item's wrapped lines under its text       | ✓       |
-| `jsdoc-flow/single-line`                | Spread a single-line JSDoc block over three lines      | ✓       |
+| Rule                                    | Description                                              | Fixable |
+| --------------------------------------- | -------------------------------------------------------- | ------- |
+| `jsdoc-flow/reflow`                     | Flow JSDoc text with consistent line breaks              | ✓       |
+| `jsdoc-flow/sentence-spacing`           | Sentence spacing (default: two spaces)                   | ✓       |
+| `jsdoc-flow/colon-spacing`              | Colon spacing (default: two spaces)                      | ✓       |
+| `jsdoc-flow/word-spacing`               | One space between other words                            | ✓       |
+| `jsdoc-flow/no-extra-punctuation-space` | No space before `, . ; : ) ]` or after `( [`             | ✓       |
+| `jsdoc-flow/tag-spacing`                | One space on either side of a tag's `-`                  | ✓       |
+| `jsdoc-flow/bullet-spacing`             | One space after a list item's marker                     | ✓       |
+| `jsdoc-flow/no-exotic-whitespace`       | Plain spaces, not tabs or other Unicode spaces           | ✓       |
+| `jsdoc-flow/star-align`                 | Put each line's `*` under the `/**`                      | ✓       |
+| `jsdoc-flow/text-indent`                | One space between a line's `*` and its text              | ✓       |
+| `jsdoc-flow/no-trailing-space`          | No whitespace after a line's text                        | ✓       |
+| `jsdoc-flow/tag-align`                  | Start a tag's continuation lines under its description   | ✓       |
+| `jsdoc-flow/bullet-align`               | Start a list item's wrapped lines under its text         | ✓       |
+| `jsdoc-flow/bullet-indent`              | Start the items at each level of a list in line          | ✓       |
+| `jsdoc-flow/no-extra-blank-lines`       | No blank line at a block's start or end, or two in a row | ✓       |
+| `jsdoc-flow/delimiter-lines`            | No text on a multi-line block's `/**` or `*/` line       | ✓       |
+| `jsdoc-flow/single-line`                | Spread a single-line JSDoc block over three lines        | ✓       |
 
 ## Configuration
 
@@ -146,10 +149,10 @@ Prose and wrapped tag or list descriptions are reflowed. Markdown structures,
 fenced and indented code, `@example` blocks, and multi-line types retain their
 line structure. Spacing rules may still apply to some of these constructs.
 
-Unfenced code and diagrams are also preserved when detected from their layout.
-Detection is heuristic: use a code fence or an ignore marker when preserving
-layout is essential. Set `settings['jsdoc-flow'].preformatted` to `false` to
-disable this detection.
+Unfenced code, diagrams, and lists laid out in columns are also preserved when
+detected from their layout. Detection is heuristic: use a code fence or an
+ignore marker when preserving layout is essential. Set
+`settings['jsdoc-flow'].preformatted` to `false` to disable this detection.
 
 ## Leaving a block alone
 

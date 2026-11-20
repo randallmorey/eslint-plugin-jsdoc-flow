@@ -23,10 +23,33 @@ const isTest = ({ type, data }) =>
 // 10,000 tests rather than for the actual count.
 const NUMBER_WIDTH = 5;
 
+// Node reads `--test-coverage-*` thresholds as integers, so `99.3` passes at
+// 99.27%.  The reporter runs in the main process, so it can read the same
+// flags and hold the totals to them exactly.
+const THRESHOLD = /^--test-coverage-(lines|branches|functions)=(.+)$/;
+const KEYS = { lines: 'Line', branches: 'Branch', functions: 'Function' };
+const NODE_MISS = /(line|branch|function) coverage does not meet threshold/;
+
+const missedThresholds = (totals, reported) =>
+  process.execArgv.flatMap((arg) => {
+    const [, name, value] = arg.match(THRESHOLD) ?? [];
+    if (!name) return [];
+    const key = KEYS[name];
+    const actual = totals[`covered${key}Percent`];
+    const threshold = Number(value);
+    if (actual >= threshold || reported.has(key.toLowerCase())) return [];
+    return [
+      `${actual.toFixed(2)}% ${key.toLowerCase()} coverage does not meet ` +
+        `threshold of ${threshold}%.`,
+    ];
+  });
+
 export default async function* reporter(source) {
   const failures = [];
   const summary = {};
   const coverage = [];
+  const reported = new Set();
+  let totalCoverage;
   let number = 0;
 
   for await (const event of source) {
@@ -54,6 +77,7 @@ export default async function* reporter(source) {
         coverage.push(row(file, file.path.slice(workingDirectory.length + 1)));
       }
       coverage.push(row(totals, 'all files'));
+      totalCoverage = totals;
     } else if (type === 'test:stdout' || type === 'test:stderr') {
       yield data.message;
     } else if (type === 'test:diagnostic') {
@@ -61,6 +85,8 @@ export default async function* reporter(source) {
         const [key, value] = data.message.split(' ');
         summary[key] = value;
       } else {
+        const [, missed] = data.message.match(NODE_MISS) ?? [];
+        if (missed) reported.add(missed);
         yield `${data.message}\n`;
       }
     }
@@ -77,6 +103,12 @@ export default async function* reporter(source) {
     const head = ['lines', 'branches', 'functions'].map((k) => k.padStart(10));
     yield `# ${head.join('')}  ${white('coverage')}\n`;
     yield `${coverage.join('\n')}\n\n`;
+  }
+  if (totalCoverage) {
+    for (const message of missedThresholds(totalCoverage, reported)) {
+      process.exitCode = 1;
+      yield `${red(`Error: ${message}`)}\n\n`;
+    }
   }
   summary.duration_s = round(summary.duration_ms / 1000);
   const labelWidth = Math.max(...Object.keys(summary).map((k) => k.length));
