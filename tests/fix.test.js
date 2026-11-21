@@ -41,6 +41,7 @@ import {
 } from './cases/bullet-indent.js';
 import { blankInvalid, blankValid } from './cases/blank-lines.js';
 import { paddingInvalid, paddingValid } from './cases/padding-lines.js';
+import { tableInvalid, tableValid } from './cases/table-align.js';
 import {
   delimiterInvalid,
   delimiterSettled,
@@ -91,6 +92,7 @@ const RULES = [
   'bullet-indent',
   'no-extra-blank-lines',
   'padding-lines',
+  'table-align',
   'delimiter-lines',
   'single-line',
 ];
@@ -156,6 +158,8 @@ const converging = [
   ...blankInvalid,
   ...paddingValid,
   ...paddingInvalid,
+  ...tableValid,
+  ...tableInvalid,
   ...delimiterValid,
   ...delimiterInvalid,
   ...delimiterUnhandled,
@@ -249,9 +253,10 @@ for (const c of [
 
 // A multi-line `{Type}`, a Markdown block or a comment with more than two stars
 // survives `--fix` with all the rules as it is, apart from the blank lines that
-// `padding-lines` adds around a fence, a heading, or a table.
+// `padding-lines` adds around a fence, a heading, or a table, and the spaces
+// that `table-align` puts in a table's rows.
 for (const c of [...typeValid, ...blockValid, ...extraStars]) {
-  const padded = fixWith(c, ['padding-lines'], c.code);
+  const padded = fixWith(c, ['padding-lines', 'table-align'], c.code);
   test(`all rules keep:  ${c.name}`, () => {
     assert.equal(fixWith(c, RULES, c.code), padded);
   });

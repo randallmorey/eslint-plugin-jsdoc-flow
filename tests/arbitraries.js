@@ -1,6 +1,7 @@
 // Random JSDoc blocks for the property tests, built from the pieces the rules
-// care about:  prose, tags, bullets, fences, `@example`, braces, code spans,
-// abbreviations, links, odd stars, exotic whitespace, and both line endings.
+// care about:  prose, tags, bullets, tables, fences, `@example`, braces, code
+// spans, abbreviations, links, odd stars, exotic whitespace, and both line
+// endings.
 import fc from 'fast-check';
 
 const split = (s) => s.split(' ');
@@ -78,6 +79,39 @@ const row = fc
     start + left + before + (leader && leader + after) + join(words),
   ]);
 
+// A GFM table's rows, ragged or not, with or without edge pipes, and with
+// cells that are empty, escape a pipe, hold one in a code span, or are wide.
+const CELLS = [
+  ...split('a bb `c` ccc end. Label: `x\\|y` z\\| \u65e5\u672c'),
+  '',
+  'two words',
+  'a much longer cell than the others',
+];
+const DELIMITERS = split('- --- :-- --: :-: :---: ---');
+const table = fc
+  .tuple(
+    fc.integer({ min: 1, max: 3 }),
+    fc.array(fc.array(fc.constantFrom(...CELLS), { maxLength: 4 }), {
+      minLength: 1,
+      maxLength: 4,
+    }),
+    fc.array(fc.constantFrom(...DELIMITERS), { minLength: 3, maxLength: 3 }),
+    fc.boolean(),
+    fc.boolean(),
+    fc.constantFrom('', ' ', '  ', '\t', ' \u200b'),
+  )
+  .map(([n, rows, rule, lead, trail, pad]) => {
+    const lay = (cells) =>
+      (lead ? '|' + pad : '') +
+      cells.join(pad + '|' + pad) +
+      (trail ? pad + '|' : '');
+    const head = rows[0]
+      .concat(['h', 'h', 'h'])
+      .slice(0, n)
+      .map((c) => c || 'h');
+    return [lay(head), lay(rule.slice(0, n)), ...rows.slice(1).map(lay)];
+  });
+
 export const settings = fc.record({
   width: fc.constantFrom(40, 60, 80, 100),
   spaces: fc.constantFrom(1, 2),
@@ -107,6 +141,7 @@ export const block = fc
       fc.oneof(
         { weight: 6, arbitrary: line },
         { weight: 2, arbitrary: row },
+        { weight: 1, arbitrary: table },
         fc.constant(['']),
       ),
       {

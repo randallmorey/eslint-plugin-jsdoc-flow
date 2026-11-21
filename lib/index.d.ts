@@ -100,6 +100,7 @@ export interface RuleOptions {
   'bullet-indent': [];
   'no-extra-blank-lines': [];
   'padding-lines': [];
+  'table-align': [];
   'delimiter-lines': [];
   'single-line': [SingleLineOptions?];
 }

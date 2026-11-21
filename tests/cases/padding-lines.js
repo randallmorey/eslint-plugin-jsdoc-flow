@@ -61,6 +61,10 @@ export const paddingValid = [
     code: block('One.', '', '--|--', '# a', 'b'),
   },
   {
+    name: 'a delimiter row right after a table, which GFM reads as a row',
+    code: block('| a | b |', '| - | - |', '| 1 | 2 |', '--|--', '3 | 4'),
+  },
+  {
     name: 'a heading in a fence',
     code: block('```md', '# One', '```'),
   },

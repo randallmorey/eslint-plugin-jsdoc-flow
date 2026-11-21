@@ -8,6 +8,7 @@ import plugin from '../lib/index.js';
 import { block } from './helpers.js';
 import { blankInvalid } from './cases/blank-lines.js';
 import { paddingInvalid } from './cases/padding-lines.js';
+import { tableInvalid } from './cases/table-align.js';
 import { blockInvalid } from './cases/blocks.js';
 import { delimiterInvalid } from './cases/delimiter-lines.js';
 import { bulletAlignInvalid } from './cases/bullet-align.js';
@@ -47,6 +48,7 @@ const invalidByRule = {
   'bullet-indent': bulletIndentInvalid,
   'no-extra-blank-lines': blankInvalid,
   'padding-lines': paddingInvalid,
+  'table-align': tableInvalid,
   'delimiter-lines': delimiterInvalid,
   'single-line': singleInvalid,
 };
