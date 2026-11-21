@@ -303,4 +303,5 @@ export const messyBlocks = [
   block('', '@license', '', '', 'Twelve.', '').replace('const x', 'const s'),
   '/** Thirteen.\n * @license */\nexport const r = 7;\n',
   '/**\n * @license\n * - Fourteen\n *  - fifteen\n */\nexport const p = 8;\n',
+  '/**\n * @license\n * Sixteen:\n * ```js\n * a();\n * ```\n */\nexport const o = 9;\n',
 ];

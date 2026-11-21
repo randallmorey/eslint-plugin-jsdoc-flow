@@ -97,7 +97,7 @@ const signals = [
   {
     name: 'three `~` open a fence, not a pointer line',
     code: block('foo', '~~~', 'a  b', '~~~', 'Text  here.'),
-    output: block('foo', '~~~', 'a  b', '~~~', 'Text here.'),
+    output: block('foo', '', '~~~', 'a  b', '~~~', '', 'Text here.'),
   },
   {
     name: 'one space past a label is indented',
@@ -594,4 +594,5 @@ export const messyGuarded = [
   '/**\n * - a\n *  ^^^\n *  b\n */\nexport const d = 1;\n',
   '/**\n * Example:\n *   a\n *   - b\n *    - c\n */\nexport const e = 1;\n',
   '/**\n * - a    one.  Two  three ,\n * - bb   two  three\n */\nexport const f = 1;\n',
+  '/**\n * Example:\n *   a\n *   # b\n * c\n */\nexport const g = 1;\n',
 ];

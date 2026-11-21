@@ -40,6 +40,7 @@ import {
   bulletIndentValid,
 } from './cases/bullet-indent.js';
 import { blankInvalid, blankValid } from './cases/blank-lines.js';
+import { paddingInvalid, paddingValid } from './cases/padding-lines.js';
 import {
   delimiterInvalid,
   delimiterSettled,
@@ -89,6 +90,7 @@ const RULES = [
   'bullet-align',
   'bullet-indent',
   'no-extra-blank-lines',
+  'padding-lines',
   'delimiter-lines',
   'single-line',
 ];
@@ -152,6 +154,8 @@ const converging = [
   ...bulletIndentInvalid,
   ...blankValid,
   ...blankInvalid,
+  ...paddingValid,
+  ...paddingInvalid,
   ...delimiterValid,
   ...delimiterInvalid,
   ...delimiterUnhandled,
@@ -244,13 +248,15 @@ for (const c of [
 }
 
 // A multi-line `{Type}`, a Markdown block or a comment with more than two stars
-// survives `--fix` with all the rules as it is.
+// survives `--fix` with all the rules as it is, apart from the blank lines that
+// `padding-lines` adds around a fence, a heading, or a table.
 for (const c of [...typeValid, ...blockValid, ...extraStars]) {
+  const padded = fixWith(c, ['padding-lines'], c.code);
   test(`all rules keep:  ${c.name}`, () => {
-    assert.equal(fixWith(c, RULES, c.code), c.code);
+    assert.equal(fixWith(c, RULES, c.code), padded);
   });
   test(`all rules keep with one space:  ${c.name}`, () => {
-    assert.equal(fixWith(withOneSpace(c), RULES, c.code), c.code);
+    assert.equal(fixWith(withOneSpace(c), RULES, c.code), padded);
   });
 }
 
