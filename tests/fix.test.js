@@ -42,6 +42,7 @@ import {
 import { blankInvalid, blankValid } from './cases/blank-lines.js';
 import { paddingInvalid, paddingValid } from './cases/padding-lines.js';
 import { tableInvalid, tableValid } from './cases/table-align.js';
+import { linkInvalid, linkValid } from './cases/link-spacing.js';
 import {
   delimiterInvalid,
   delimiterSettled,
@@ -82,6 +83,7 @@ const RULES = [
   'word-spacing',
   'no-extra-punctuation-space',
   'tag-spacing',
+  'link-spacing',
   'bullet-spacing',
   'no-exotic-whitespace',
   'star-align',
@@ -138,6 +140,8 @@ const converging = [
   ...wordInvalid,
   ...punctuationInvalid,
   ...tagInvalid,
+  ...linkValid,
+  ...linkInvalid,
   ...bulletInvalid,
   ...spacingMixed,
   ...exoticValid,

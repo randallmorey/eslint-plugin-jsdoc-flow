@@ -1,7 +1,7 @@
 // Random JSDoc blocks for the property tests, built from the pieces the rules
 // care about:  prose, tags, bullets, tables, fences, `@example`, braces, code
-// spans, abbreviations, links, odd stars, exotic whitespace, and both line
-// endings.
+// spans, abbreviations, links, badly spaced links, odd stars, exotic
+// whitespace, and both line endings.
 import fc from 'fast-check';
 
 const split = (s) => s.split(' ');
@@ -112,6 +112,29 @@ const table = fc
     return [lay(head), lay(rule.slice(0, n)), ...rows.slice(1).map(lay)];
   });
 
+// An inline tag or a link whose text is spaced badly, with words around it,
+// a code span or a pipe in it, and sometimes a line break inside it.
+const LINK_WORDS = split('Foo Store#save the a end. Label: `x  y` | Then');
+const LINK_GAPS = ['', ' ', ' ', '  ', '   ', '\t', ' \u200b', '\n', ' \n '];
+const OPENS = split('{@link {@link {@linkcode {@tutorial {@inheritDoc [ [');
+const link = fc
+  .tuple(
+    fc.array(fc.tuple(gap, fc.constantFrom(...WORDS)), { maxLength: 3 }),
+    fc.constantFrom(...OPENS),
+    fc.array(
+      fc.tuple(fc.constantFrom(...LINK_GAPS), fc.constantFrom(...LINK_WORDS)),
+      { maxLength: 4 },
+    ),
+    fc.constantFrom(...LINK_GAPS),
+    fc.constantFrom('](http://y)', '][ref]', '][ a  b ]', ')'),
+    fc.array(fc.tuple(gap, fc.constantFrom(...WORDS)), { maxLength: 3 }),
+  )
+  .map(([before, open, inner, last, close, after]) => {
+    const text = open + inner.map(([g, w]) => g + w).join('') + last;
+    const end = open === '[' ? close : '}';
+    return (join(before) + ' ' + text + end + join(after)).split('\n');
+  });
+
 export const settings = fc.record({
   width: fc.constantFrom(40, 60, 80, 100),
   spaces: fc.constantFrom(1, 2),
@@ -142,6 +165,7 @@ export const block = fc
         { weight: 6, arbitrary: line },
         { weight: 2, arbitrary: row },
         { weight: 1, arbitrary: table },
+        { weight: 1, arbitrary: link },
         fc.constant(['']),
       ),
       {

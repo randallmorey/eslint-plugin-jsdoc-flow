@@ -9,6 +9,7 @@ import { block } from './helpers.js';
 import { blankInvalid } from './cases/blank-lines.js';
 import { paddingInvalid } from './cases/padding-lines.js';
 import { tableInvalid } from './cases/table-align.js';
+import { linkInvalid } from './cases/link-spacing.js';
 import { blockInvalid } from './cases/blocks.js';
 import { delimiterInvalid } from './cases/delimiter-lines.js';
 import { bulletAlignInvalid } from './cases/bullet-align.js';
@@ -38,6 +39,7 @@ const invalidByRule = {
   'word-spacing': wordInvalid,
   'no-extra-punctuation-space': punctuationInvalid,
   'tag-spacing': tagInvalid,
+  'link-spacing': linkInvalid,
   'bullet-spacing': bulletInvalid,
   'no-exotic-whitespace': exoticInvalid,
   'star-align': starInvalid,

@@ -90,6 +90,7 @@ export interface RuleOptions {
   'word-spacing': [];
   'no-extra-punctuation-space': [];
   'tag-spacing': [];
+  'link-spacing': [];
   'bullet-spacing': [];
   'no-exotic-whitespace': [];
   'star-align': [];

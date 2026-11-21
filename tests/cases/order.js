@@ -213,4 +213,68 @@ export const orderCases = [
       'Text after.',
     ),
   },
+  {
+    name: 'badly spaced links, which wrap as their spaced text does',
+    settings: narrow,
+    code: code(
+      '/**',
+      ' * Calls {@link   Store#save  the save method } and then',
+      ' * returns a [ promise   of the result ](https://x.y).',
+      ' */',
+    ),
+    output: block(
+      'Calls {@link Store#save the save method}',
+      'and then returns',
+      'a [promise of the result](https://x.y).',
+    ),
+  },
+  {
+    name: "a badly spaced link in a tag's head, which sets its hang",
+    settings: narrow,
+    code: code(
+      '/**',
+      ' * @see {@link   Foo  bar } which is the one we want',
+      ' *   to see here, and the rest.',
+      ' */',
+    ),
+    output: block(
+      '@see {@link Foo bar} which is',
+      '                     the one we',
+      '                     want to see',
+      '                     here,',
+      '                     and the rest.',
+    ),
+  },
+  {
+    name: 'badly spaced links across lines',
+    code: code(
+      '/**',
+      ' * See {@link  Foo',
+      ' * bar  } and [ a',
+      ' * b ](c).',
+      ' */',
+    ),
+    output: block('See {@link Foo bar} and [a b](c).'),
+  },
+  {
+    name: 'a one-liner with a badly spaced link',
+    settings: narrow,
+    code: code('/** See {@link   Foo   } now, then go. */'),
+    output: block('See {@link Foo} now, then go.'),
+  },
+  {
+    name: 'a space inside a link before a capital or a number',
+    code: code(
+      '/**',
+      ' * One etc. [ Foo](u) two.  Mr. [ Smith ](u) and No. [ 5](u).',
+      ' */',
+    ),
+    output: block('One etc.  [Foo](u) two.  Mr. [Smith](u) and No. [5](u).'),
+  },
+  {
+    name: 'a tab and a zero-width space inside links',
+    settings: oneSpace,
+    code: code('/** See [​ a\t b ](c) and {@link Foo |\tbar }. */'),
+    output: block('See [a b](c) and {@link Foo | bar}.'),
+  },
 ];

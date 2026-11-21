@@ -305,4 +305,5 @@ export const messyBlocks = [
   '/**\n * @license\n * - Fourteen\n *  - fifteen\n */\nexport const p = 8;\n',
   '/**\n * @license\n * Sixteen:\n * ```js\n * a();\n * ```\n */\nexport const o = 9;\n',
   '/**\n * @license\n * | Seventeen | a |\n * |-|-|\n * | b | c | */\nexport const n = 10;\n',
+  '/**\n * @license\n * Eighteen {@link  a }.\n */\nexport const m = 11;\n',
 ];
