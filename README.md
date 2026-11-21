@@ -51,7 +51,7 @@ package is ESM-only.
 
 ## Usage
 
-Use the `recommended` config, which turns on all seventeen rules as warnings:
+Use the `recommended` config, which turns on all twenty rules as warnings:
 
 ```js
 // eslint.config.js
@@ -81,6 +81,7 @@ and `//` comments, and banners beginning with more than two stars such as
 | `jsdoc-flow/word-spacing`               | One space between other words                            | ✓       |
 | `jsdoc-flow/no-extra-punctuation-space` | No space before `, . ; : ) ]` or after `( [`             | ✓       |
 | `jsdoc-flow/tag-spacing`                | One space on either side of a tag's `-`                  | ✓       |
+| `jsdoc-flow/link-spacing`               | One space between words in `{@link}` tags and link text  | ✓       |
 | `jsdoc-flow/bullet-spacing`             | One space after a list item's marker                     | ✓       |
 | `jsdoc-flow/no-exotic-whitespace`       | Plain spaces, not tabs or other Unicode spaces           | ✓       |
 | `jsdoc-flow/star-align`                 | Put each line's `*` under the `/**`                      | ✓       |
@@ -90,6 +91,8 @@ and `//` comments, and banners beginning with more than two stars such as
 | `jsdoc-flow/bullet-align`               | Start a list item's wrapped lines under its text         | ✓       |
 | `jsdoc-flow/bullet-indent`              | Start the items at each level of a list in line          | ✓       |
 | `jsdoc-flow/no-extra-blank-lines`       | No blank line at a block's start or end, or two in a row | ✓       |
+| `jsdoc-flow/padding-lines`              | A blank line around each fence, heading, and table       | ✓       |
+| `jsdoc-flow/table-align`                | Line up the columns of each table                        | ✓       |
 | `jsdoc-flow/delimiter-lines`            | No text on a multi-line block's `/**` or `*/` line       | ✓       |
 | `jsdoc-flow/single-line`                | Spread a single-line JSDoc block over three lines        | ✓       |
 

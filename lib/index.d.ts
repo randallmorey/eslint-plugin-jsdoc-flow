@@ -90,6 +90,7 @@ export interface RuleOptions {
   'word-spacing': [];
   'no-extra-punctuation-space': [];
   'tag-spacing': [];
+  'link-spacing': [];
   'bullet-spacing': [];
   'no-exotic-whitespace': [];
   'star-align': [];
@@ -99,6 +100,8 @@ export interface RuleOptions {
   'bullet-align': [];
   'bullet-indent': [];
   'no-extra-blank-lines': [];
+  'padding-lines': [];
+  'table-align': [];
   'delimiter-lines': [];
   'single-line': [SingleLineOptions?];
 }
