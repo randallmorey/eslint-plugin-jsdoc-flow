@@ -70,6 +70,43 @@ export interface ReflowOptions {
 }
 
 /**
+ * The options of `jsdoc-flow/quote-flow`.
+ */
+export interface QuoteFlowOptions {
+  /**
+   * Whether a sentence's first two and last two words stay together
+   * (`sentence`), a single word after `, ; :` may not end a line or be a
+   * line alone (`clause`), and the first and last words inside parentheses
+   * stay with their neighbors (`paren`).  Each is `true` unless set.
+   */
+  orphans?: {
+    sentence?: boolean;
+    clause?: boolean;
+    paren?: boolean;
+  };
+  /**
+   * Whether an abbreviation beside a name stays with it, as in `Mr. Smith`,
+   * `true` unless set.
+   */
+  names?: boolean;
+  /**
+   * Whether `a`, `an`, `the` and one-letter words such as `I` stay with the
+   * word after them, `true` unless set.
+   */
+  shortWords?: boolean;
+  /**
+   * Whether a line may go one column past the width when its last character
+   * is closing punctuation, `true` unless set.
+   */
+  hang?: boolean;
+  /**
+   * The shortest a paragraph's last line's text may be, as a fraction of the
+   * width, `0.15` unless set, and off at `0`.
+   */
+  widows?: number;
+}
+
+/**
  * The options of `jsdoc-flow/single-line`.
  */
 export interface SingleLineOptions {
@@ -85,6 +122,7 @@ export interface SingleLineOptions {
  */
 export interface RuleOptions {
   reflow: [ReflowOptions?];
+  'quote-flow': [QuoteFlowOptions?];
   'sentence-spacing': [];
   'colon-spacing': [];
   'word-spacing': [];

@@ -10,6 +10,7 @@ import { blankInvalid } from './cases/blank-lines.js';
 import { paddingInvalid } from './cases/padding-lines.js';
 import { tableInvalid } from './cases/table-align.js';
 import { linkInvalid } from './cases/link-spacing.js';
+import { quoteInvalid } from './cases/quote-flow.js';
 import { blockInvalid } from './cases/blocks.js';
 import { delimiterInvalid } from './cases/delimiter-lines.js';
 import { bulletAlignInvalid } from './cases/bullet-align.js';
@@ -34,6 +35,7 @@ const crlf = (s) => s.replace(/\r?\n/g, '\r\n');
 // and fixes to the same text with CRLF.
 const invalidByRule = {
   reflow: [...invalid, ...blockInvalid],
+  'quote-flow': quoteInvalid,
   'sentence-spacing': sentenceInvalid,
   'colon-spacing': colonInvalid,
   'word-spacing': wordInvalid,

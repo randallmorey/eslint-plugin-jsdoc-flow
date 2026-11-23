@@ -85,10 +85,15 @@ const codeOf = ({ value }) => {
 };
 
 /**
- * The file's text without whitespace and the stars that start its lines.
+ * The file's text without whitespace, the stars that start its lines,
+ * and the blockquote markers after them or a `/**`.
  */
 const inkOf = (code) =>
-  code.replace(/\n\s*\*(?!\/)/g, '\n').replace(/[\s\u200b]/g, '');
+  code
+    .replace(/(\/\*\*|\n\s*\*(?!\/))(?:(?:[^\S\n]|\u200b)*>)*/g, (_, start) =>
+      start === '/**' ? start : '\n',
+    )
+    .replace(/[\s\u200b]/g, '');
 
 const results = {};
 let regions = 0;

@@ -43,6 +43,7 @@ import { blankInvalid, blankValid } from './cases/blank-lines.js';
 import { paddingInvalid, paddingValid } from './cases/padding-lines.js';
 import { tableInvalid, tableValid } from './cases/table-align.js';
 import { linkInvalid, linkValid } from './cases/link-spacing.js';
+import { quoteInvalid, quoteValid } from './cases/quote-flow.js';
 import {
   delimiterInvalid,
   delimiterSettled,
@@ -78,6 +79,7 @@ beforeEach(() => setImmediate());
 // unsafe case, which has no fix).
 const RULES = [
   'reflow',
+  'quote-flow',
   'sentence-spacing',
   'colon-spacing',
   'word-spacing',
@@ -164,6 +166,8 @@ const converging = [
   ...paddingInvalid,
   ...tableValid,
   ...tableInvalid,
+  ...quoteValid,
+  ...quoteInvalid,
   ...delimiterValid,
   ...delimiterInvalid,
   ...delimiterUnhandled,
@@ -222,7 +226,9 @@ for (const c of converging) {
   test(`all rules converge with one space:  ${c.name}`, () => {
     const all = settlesInAnyOrder(withOneSpace(c));
     assert.equal(fixWith(withOneSpace(c), RULES, all), all);
-    assert.deepEqual(wordsOf(all), wordsOf(fixWith(c, RULES, c.code)));
+    // A quote's `>` markers go with its lines, which may break elsewhere.
+    const inked = (t) => wordsOf(t).filter((w) => !/^>+$/.test(w));
+    assert.deepEqual(inked(all), inked(fixWith(c, RULES, c.code)));
   });
 }
 

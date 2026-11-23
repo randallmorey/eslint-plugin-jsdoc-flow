@@ -320,6 +320,17 @@ export const valid = [
       '```',
     ),
   },
+  {
+    name: "a blockquote's lines are kept, and left to `quote-flow`",
+    code: block(
+      '> one',
+      '> two  with: gaps',
+      '>three',
+      '> > nested',
+      '>',
+      'Text after it.',
+    ),
+  },
 ];
 
 export const invalid = [

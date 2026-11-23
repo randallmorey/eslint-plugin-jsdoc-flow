@@ -597,4 +597,5 @@ export const messyGuarded = [
   '/**\n * Example:\n *   a\n *   # b\n * c\n */\nexport const g = 1;\n',
   '/**\n * Example:\n *   x\n *   a | bb\n *   -|-\n * @returns c\n */\nexport const h = 1;\n',
   '/**\n * Example:\n *   x\n *   see {@link  a }\n * c\n */\nexport const i = 1;\n',
+  '/**\n * Example:\n *   x\n *   > a\n *   > b\n * c\n */\nexport const j = 1;\n',
 ];
