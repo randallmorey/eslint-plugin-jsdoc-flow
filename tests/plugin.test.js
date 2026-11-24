@@ -15,7 +15,7 @@ test('meta comes from package.json', () => {
   assert.deepEqual(plugin.meta, { name: pkg.name, version: pkg.version });
 });
 
-test('it has all twenty-two rules', () => {
+test('it has all twenty-three rules', () => {
   assert.deepEqual(Object.keys(plugin.rules), [
     'reflow',
     'quote-flow',
@@ -34,6 +34,7 @@ test('it has all twenty-two rules', () => {
     'bullet-align',
     'bullet-indent',
     'list-nesting',
+    'list-spacing',
     'no-extra-blank-lines',
     'padding-lines',
     'table-align',
@@ -42,7 +43,7 @@ test('it has all twenty-two rules', () => {
   ]);
 });
 
-test('the recommended config warns with all twenty-two rules', () => {
+test('the recommended config warns with all twenty-three rules', () => {
   const { recommended } = plugin.configs;
   assert.equal(recommended.name, 'jsdoc-flow/recommended');
   assert.equal(recommended.plugins['jsdoc-flow'], plugin);
@@ -61,7 +62,8 @@ test('the recommended config warns with all twenty-two rules', () => {
       '/**\n * | Eighteen | a |\n * |-|-|\n */\nexport const p = 11;\n' +
       '/**\n * Nineteen {@link  a }.\n */\nexport const o = 12;\n' +
       '/**\n * > Twenty\n * > one.\n */\nexport const n = 13;\n' +
-      '/**\n * 1. Twenty-two\n *   - three\n */\nexport const m = 14;\n',
+      '/**\n * 1. Twenty-two\n *   - three\n */\nexport const m = 14;\n' +
+      '/**\n * - Twenty-four\n *\n * - five\n */\nexport const l = 15;\n',
     [recommended],
     { filename: 'x.js' },
   );
@@ -90,6 +92,7 @@ test('the recommended config warns with all twenty-two rules', () => {
       ['jsdoc-flow/link-spacing', 1],
       ['jsdoc-flow/quote-flow', 1],
       ['jsdoc-flow/list-nesting', 1],
+      ['jsdoc-flow/list-spacing', 1],
     ],
   );
 });

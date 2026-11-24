@@ -138,6 +138,7 @@ export interface RuleOptions {
   'bullet-align': [];
   'bullet-indent': [];
   'list-nesting': [];
+  'list-spacing': [];
   'no-extra-blank-lines': [];
   'padding-lines': [];
   'table-align': [];

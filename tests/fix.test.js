@@ -44,6 +44,7 @@ import {
   nestingMixed,
   nestingValid,
 } from './cases/list-nesting.js';
+import { looseInvalid, looseValid } from './cases/list-spacing.js';
 import { blankInvalid, blankValid } from './cases/blank-lines.js';
 import { paddingInvalid, paddingValid } from './cases/padding-lines.js';
 import { tableInvalid, tableValid } from './cases/table-align.js';
@@ -100,6 +101,7 @@ const RULES = [
   'bullet-align',
   'bullet-indent',
   'list-nesting',
+  'list-spacing',
   'no-extra-blank-lines',
   'padding-lines',
   'table-align',
@@ -169,6 +171,8 @@ const converging = [
   ...nestingValid,
   ...nestingInvalid,
   ...nestingMixed,
+  ...looseValid,
+  ...looseInvalid,
   ...blankValid,
   ...blankInvalid,
   ...paddingValid,

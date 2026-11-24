@@ -51,7 +51,7 @@ package is ESM-only.
 
 ## Usage
 
-Use the `recommended` config, which turns on all twenty-two rules as warnings:
+Use the `recommended` config, which turns on all twenty-three rules as warnings:
 
 ```js
 // eslint.config.js
@@ -92,6 +92,7 @@ and `//` comments, and banners beginning with more than two stars such as
 | `jsdoc-flow/bullet-align`               | Start a list item's wrapped lines under its text         | ✓       |
 | `jsdoc-flow/bullet-indent`              | Start the items at each level of a list in line          | ✓       |
 | `jsdoc-flow/list-nesting`               | Start a nested list item at its parent's text            | ✓       |
+| `jsdoc-flow/list-spacing`               | No blank lines between a list's items                    | ✓       |
 | `jsdoc-flow/no-extra-blank-lines`       | No blank line at a block's start or end, or two in a row | ✓       |
 | `jsdoc-flow/padding-lines`              | A blank line around each fence, heading, and table       | ✓       |
 | `jsdoc-flow/table-align`                | Line up the columns of each table                        | ✓       |
