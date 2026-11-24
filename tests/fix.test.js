@@ -39,6 +39,11 @@ import {
   bulletIndentInvalid,
   bulletIndentValid,
 } from './cases/bullet-indent.js';
+import {
+  nestingInvalid,
+  nestingMixed,
+  nestingValid,
+} from './cases/list-nesting.js';
 import { blankInvalid, blankValid } from './cases/blank-lines.js';
 import { paddingInvalid, paddingValid } from './cases/padding-lines.js';
 import { tableInvalid, tableValid } from './cases/table-align.js';
@@ -94,6 +99,7 @@ const RULES = [
   'tag-align',
   'bullet-align',
   'bullet-indent',
+  'list-nesting',
   'no-extra-blank-lines',
   'padding-lines',
   'table-align',
@@ -160,6 +166,9 @@ const converging = [
   ...bulletAlignInvalid,
   ...bulletIndentValid,
   ...bulletIndentInvalid,
+  ...nestingValid,
+  ...nestingInvalid,
+  ...nestingMixed,
   ...blankValid,
   ...blankInvalid,
   ...paddingValid,

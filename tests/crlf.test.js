@@ -15,6 +15,7 @@ import { blockInvalid } from './cases/blocks.js';
 import { delimiterInvalid } from './cases/delimiter-lines.js';
 import { bulletAlignInvalid } from './cases/bullet-align.js';
 import { bulletIndentInvalid } from './cases/bullet-indent.js';
+import { nestingInvalid } from './cases/list-nesting.js';
 import { leadingInvalid, starInvalid, trailingInvalid } from './cases/edges.js';
 import { invalid } from './cases/reflow.js';
 import { singleInvalid } from './cases/single-line.js';
@@ -50,6 +51,7 @@ const invalidByRule = {
   'tag-align': alignInvalid,
   'bullet-align': bulletAlignInvalid,
   'bullet-indent': bulletIndentInvalid,
+  'list-nesting': nestingInvalid,
   'no-extra-blank-lines': blankInvalid,
   'padding-lines': paddingInvalid,
   'table-align': tableInvalid,

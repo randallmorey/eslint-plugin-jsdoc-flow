@@ -137,6 +137,7 @@ export interface RuleOptions {
   'tag-align': [];
   'bullet-align': [];
   'bullet-indent': [];
+  'list-nesting': [];
   'no-extra-blank-lines': [];
   'padding-lines': [];
   'table-align': [];
