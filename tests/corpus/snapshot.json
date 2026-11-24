@@ -53,11 +53,12 @@
     "blocks": 42,
     "changed": 38,
     "rules": {
+      "quote-flow": 4,
       "reflow": 30,
       "sentence-spacing": 20,
       "single-line": 10
     },
-    "sha256": "7a4f1cbd0605758dc2e862168b2587a4eda42c108c4d37c0d54245f11d66ddf7"
+    "sha256": "8e749e858ae772f2bea73caab235de569e7e4647df0fd75637f1bc8ac0758619"
   },
   "node/buffer.d.ts": {
     "blocks": 108,
@@ -90,6 +91,7 @@
     "rules": {
       "bullet-align": 9,
       "colon-spacing": 15,
+      "list-spacing": 1,
       "padding-lines": 1,
       "reflow": 154,
       "sentence-spacing": 96,
@@ -97,7 +99,7 @@
       "tag-align": 5,
       "word-spacing": 1
     },
-    "sha256": "e57478c4b778948d2d7225567a836c1e00c7b6e7175c82ac87ba0bb055e466af"
+    "sha256": "222070656e074f3216926edb73a1ccd51c1894e334c77bfba5972f276af2e0e0"
   },
   "node/events.d.ts": {
     "blocks": 53,
@@ -151,11 +153,12 @@
     "changed": 53,
     "rules": {
       "colon-spacing": 3,
+      "quote-flow": 1,
       "reflow": 53,
       "sentence-spacing": 30,
       "tag-align": 1
     },
-    "sha256": "32e5e43267f1c8a6c5fc9c4af075bed011696f8e7df9d0a9f252eedfefc7289f"
+    "sha256": "9ed1e5832ff78e146dedc2172c240c7d6a2ebdfb3dd63d50e4d9d1ceed5890b5"
   },
   "node/process.d.ts": {
     "blocks": 95,
@@ -175,10 +178,11 @@
     "changed": 29,
     "rules": {
       "colon-spacing": 3,
+      "quote-flow": 2,
       "reflow": 27,
       "sentence-spacing": 8
     },
-    "sha256": "b9ebdba7dbdd4bbab0e28f0b792971a9c06e46a0ce1ba6b98f3e0e1a58e8cdd1"
+    "sha256": "c0a0ede838754631e2bd9e9ecf95e550f4ad9f8b49153d04cd13c16538ade553"
   },
   "node/stream.d.ts": {
     "blocks": 85,

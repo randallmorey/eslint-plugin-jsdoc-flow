@@ -55,13 +55,11 @@ export const blockValid = [
     ),
   },
   {
-    name: 'a blockquote keeps each line verbatim',
+    name: 'a flowed blockquote, nested, with text right after it',
     code: block(
-      '> one',
-      '> two  with: gaps',
-      '>three',
-      '> > nested',
+      '> One two, with no gaps.',
       '>',
+      '> > Nested.',
       'Text after it.',
     ),
   },

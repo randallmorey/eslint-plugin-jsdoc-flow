@@ -61,11 +61,15 @@ const untouched = (code) => {
 };
 
 /**
- * The file's text without its whitespace and the stars that start its lines,
- * which a fix may change.
+ * The file's text without its whitespace, the stars that start its lines,
+ * and the blockquote markers after them or a `/**`, which a fix may change.
  */
 const inkOf = (code) =>
-  code.replace(/\n\s*\*(?!\/)/g, '\n').replace(/[\s\u200b]/g, '');
+  code
+    .replace(/(\/\*\*|\n\s*\*(?!\/))(?:(?:[^\S\n]|\u200b)*>)*/g, (_, start) =>
+      start === '/**' ? start : '\n',
+    )
+    .replace(/[\s\u200b]/g, '');
 
 const check = (arbitrary, predicate) =>
   fc.assert(fc.property(arbitrary, predicate), { numRuns: RUNS, seed: SEED });

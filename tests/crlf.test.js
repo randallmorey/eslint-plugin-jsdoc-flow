@@ -10,10 +10,13 @@ import { blankInvalid } from './cases/blank-lines.js';
 import { paddingInvalid } from './cases/padding-lines.js';
 import { tableInvalid } from './cases/table-align.js';
 import { linkInvalid } from './cases/link-spacing.js';
+import { quoteInvalid } from './cases/quote-flow.js';
 import { blockInvalid } from './cases/blocks.js';
 import { delimiterInvalid } from './cases/delimiter-lines.js';
 import { bulletAlignInvalid } from './cases/bullet-align.js';
 import { bulletIndentInvalid } from './cases/bullet-indent.js';
+import { nestingInvalid } from './cases/list-nesting.js';
+import { looseInvalid } from './cases/list-spacing.js';
 import { leadingInvalid, starInvalid, trailingInvalid } from './cases/edges.js';
 import { invalid } from './cases/reflow.js';
 import { singleInvalid } from './cases/single-line.js';
@@ -34,6 +37,7 @@ const crlf = (s) => s.replace(/\r?\n/g, '\r\n');
 // and fixes to the same text with CRLF.
 const invalidByRule = {
   reflow: [...invalid, ...blockInvalid],
+  'quote-flow': quoteInvalid,
   'sentence-spacing': sentenceInvalid,
   'colon-spacing': colonInvalid,
   'word-spacing': wordInvalid,
@@ -48,6 +52,8 @@ const invalidByRule = {
   'tag-align': alignInvalid,
   'bullet-align': bulletAlignInvalid,
   'bullet-indent': bulletIndentInvalid,
+  'list-nesting': nestingInvalid,
+  'list-spacing': looseInvalid,
   'no-extra-blank-lines': blankInvalid,
   'padding-lines': paddingInvalid,
   'table-align': tableInvalid,

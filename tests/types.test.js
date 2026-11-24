@@ -60,7 +60,7 @@ test('index.d.ts types the options of exactly the rules that take them', () => {
   const typed = Object.keys(plugin.rules).filter(
     (name) => plugin.rules[name].meta.schema?.length,
   );
-  assert.deepEqual(typed, ['reflow', 'single-line']);
+  assert.deepEqual(typed, ['reflow', 'quote-flow', 'single-line']);
   assert.deepEqual(membersOf('ReflowOptions'), [
     'orphans',
     'names',
@@ -68,6 +68,7 @@ test('index.d.ts types the options of exactly the rules that take them', () => {
     'hang',
     'widows',
   ]);
+  assert.deepEqual(membersOf('QuoteFlowOptions'), membersOf('ReflowOptions'));
   assert.deepEqual(membersOf('SingleLineOptions'), ['allowTags']);
 });
 

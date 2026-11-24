@@ -51,7 +51,7 @@ package is ESM-only.
 
 ## Usage
 
-Use the `recommended` config, which turns on all twenty rules as warnings:
+Use the `recommended` config, which turns on all twenty-three rules as warnings:
 
 ```js
 // eslint.config.js
@@ -76,6 +76,7 @@ and `//` comments, and banners beginning with more than two stars such as
 | Rule                                    | Description                                              | Fixable |
 | --------------------------------------- | -------------------------------------------------------- | ------- |
 | `jsdoc-flow/reflow`                     | Flow JSDoc text with consistent line breaks              | ✓       |
+| `jsdoc-flow/quote-flow`                 | Flow blockquote text inside its `>` markers              | ✓       |
 | `jsdoc-flow/sentence-spacing`           | Sentence spacing (default: two spaces)                   | ✓       |
 | `jsdoc-flow/colon-spacing`              | Colon spacing (default: two spaces)                      | ✓       |
 | `jsdoc-flow/word-spacing`               | One space between other words                            | ✓       |
@@ -90,6 +91,8 @@ and `//` comments, and banners beginning with more than two stars such as
 | `jsdoc-flow/tag-align`                  | Start a tag's continuation lines under its description   | ✓       |
 | `jsdoc-flow/bullet-align`               | Start a list item's wrapped lines under its text         | ✓       |
 | `jsdoc-flow/bullet-indent`              | Start the items at each level of a list in line          | ✓       |
+| `jsdoc-flow/list-nesting`               | Start a nested list item at its parent's text            | ✓       |
+| `jsdoc-flow/list-spacing`               | No blank lines between a list's items                    | ✓       |
 | `jsdoc-flow/no-extra-blank-lines`       | No blank line at a block's start or end, or two in a row | ✓       |
 | `jsdoc-flow/padding-lines`              | A blank line around each fence, heading, and table       | ✓       |
 | `jsdoc-flow/table-align`                | Line up the columns of each table                        | ✓       |
@@ -131,7 +134,7 @@ export default [
 An unknown setting is an error. In a TypeScript config, the exported `Settings`
 and `Rules` types catch typos too, as in `{ width: 100 } satisfies Settings`.
 
-`reflow` supports these options:
+`reflow` and `quote-flow` support these options:
 
 | Option       | Default                                         | Purpose                                                                                                 |
 | ------------ | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -148,9 +151,10 @@ directives are always preserved.
 
 ## Preserved formatting
 
-Prose and wrapped tag or list descriptions are reflowed. Markdown structures,
-fenced and indented code, `@example` blocks, and multi-line types retain their
-line structure. Spacing rules may still apply to some of these constructs.
+Prose, blockquotes, and wrapped tag or list descriptions are reflowed. Other
+Markdown structures, fenced and indented code, `@example` blocks, and
+multi-line types retain their line structure. Spacing rules may still apply to
+some of these constructs.
 
 Unfenced code, diagrams, and lists laid out in columns are also preserved when
 detected from their layout. Detection is heuristic: use a code fence or an
